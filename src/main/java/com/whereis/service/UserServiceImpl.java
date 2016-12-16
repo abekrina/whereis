@@ -14,7 +14,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findById(int id) {
-        return null;
+        return dao.findById(id);
     }
 
     @Override
@@ -23,16 +23,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUser(User user) {
-
-    }
-    @Override
     public User findUserByEmail(String email) {
         return dao.findUserByEmail(email);
     }
 
     @Override
     public void deleteUserByEmail(String email) {
-
+        dao.deleteUserByEmail(email);
     }
 }

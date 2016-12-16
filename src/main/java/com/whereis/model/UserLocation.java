@@ -10,13 +10,17 @@ public class UserLocation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private int userId;
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name = "users_id",
+            foreignKey = @ForeignKey(name = "USERS_ID_FK")
+    )
+    private User user;
 
     private Timestamp timestamp;
 
-    private double lat;
+    private double latitude;
 
-    private double lng;
+    private double longitude;
 
     private String ip;
 
@@ -28,12 +32,12 @@ public class UserLocation {
         this.id = id;
     }
 
-    public int getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Timestamp getTimestamp() {
@@ -44,20 +48,20 @@ public class UserLocation {
         this.timestamp = timestamp;
     }
 
-    public double getLat() {
-        return lat;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public void setLat(double lat) {
-        this.lat = lat;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 
-    public double getLng() {
-        return lng;
+    public double getLongitude() {
+        return longitude;
     }
 
-    public void setLng(double lng) {
-        this.lng = lng;
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public String getIp() {

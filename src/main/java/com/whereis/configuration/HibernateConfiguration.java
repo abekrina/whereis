@@ -2,29 +2,24 @@ package com.whereis.configuration;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.resource.ResourceException;
-import javax.resource.spi.*;
-import javax.security.auth.Subject;
 import javax.sql.DataSource;
-import javax.transaction.xa.XAResource;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jca.support.LocalConnectionFactoryBean;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.vendor.Database;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import java.io.PrintWriter;
 import java.util.Properties;
-import java.util.Set;
 
 @Configuration
 @EnableTransactionManagement
@@ -42,43 +37,6 @@ public class HibernateConfiguration {
         sessionFactory.setHibernateProperties(hibernateProperties());
 
         return sessionFactory;
-    }
-
-    @Bean
-    public LocalConnectionFactoryBean connectionFactory() {
-        LocalConnectionFactoryBean connectionFactory = new LocalConnectionFactoryBean();
-        connectionFactory.setManagedConnectionFactory(new ManagedConnectionFactory() {
-            @Override
-            public Object createConnectionFactory(ConnectionManager connectionManager) throws ResourceException {
-                return null;
-            }
-
-            @Override
-            public Object createConnectionFactory() throws ResourceException {
-                return null;
-            }
-
-            @Override
-            public ManagedConnection createManagedConnection(Subject subject, ConnectionRequestInfo connectionRequestInfo) throws ResourceException {
-                return null;
-            }
-
-            @Override
-            public ManagedConnection matchManagedConnections(Set set, Subject subject, ConnectionRequestInfo connectionRequestInfo) throws ResourceException {
-                return null;
-            }
-
-            @Override
-            public void setLogWriter(PrintWriter printWriter) throws ResourceException {
-
-            }
-
-            @Override
-            public PrintWriter getLogWriter() throws ResourceException {
-                return null;
-            }
-        });
-        return connectionFactory;
     }
 
     @Bean
@@ -102,9 +60,17 @@ public class HibernateConfiguration {
     }
 
     @Bean
-    @Qualifier(value = "entityManager")
     public EntityManager entityManager(EntityManagerFactory entityManagerFactory) {
         return entityManagerFactory.createEntityManager();
+    }
+
+    public JpaVendorAdapter vendorAdapter() {
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setDatabase(Database.POSTGRESQL);
+        vendorAdapter.setDatabasePlatform(environment.getRequiredProperty("hibernate.dialect"));
+        vendorAdapter.setShowSql(true);
+
+        return vendorAdapter;
     }
 
     @Bean

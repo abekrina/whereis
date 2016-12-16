@@ -4,6 +4,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.io.Serializable;
@@ -20,13 +21,11 @@ public abstract class AbstractDao<PK extends Serializable, T> {
     @Autowired
     SessionFactory sessionFactory;
 
+    @Autowired
+    EntityManager entityManager;
+
     protected Session getSession(){
         return sessionFactory.getCurrentSession();
-    }
-
-    @SuppressWarnings("unchecked")
-    public T getByKey(PK key) {
-        return (T) getSession().get(persistentClass, key);
     }
 
     public void persist(T entity) {
@@ -37,9 +36,18 @@ public abstract class AbstractDao<PK extends Serializable, T> {
         getSession().delete(entity);
     }
 
+    public T findById(int id) {
+        T t = entityManager.find(persistentClass, id);
+        return t;
+    }
+
     protected CriteriaQuery createEntityCriteria(){
         CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
         return criteriaBuilder.createQuery(persistentClass);
+    }
+
+    protected CriteriaBuilder getCriteriaBuilder() {
+        return entityManager.getCriteriaBuilder();
     }
 
 }

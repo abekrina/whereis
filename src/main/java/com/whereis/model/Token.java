@@ -11,6 +11,8 @@ public class Token {
     private int id;
 
     private String token;
+    //@OneToOne
+    private int userId;
 
     public int getId() {
         return id;
@@ -26,5 +28,13 @@ public class Token {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }
