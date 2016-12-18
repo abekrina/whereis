@@ -1,25 +1,54 @@
 package com.whereis;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
 
-@SpringBootApplication
-@EnableAutoConfiguration(exclude = HibernateJpaAutoConfiguration.class)
+import java.io.IOException;
+
+@Configuration
+@ComponentScan
 @EnableTransactionManagement(proxyTargetClass = true)
 public class Application {
-	public static void main(String[] args) {
-		ApplicationContext context =
-				new AnnotationConfigApplicationContext(Application.class);
-		MessagePrinter printer = context.getBean(MessagePrinter.class);
-		printer.printMessage();
-	}
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+	private static final int DEFAULT_PORT = 8080;
+	private static final String CONTEXT_PATH = "/";
+	private static final String CONFIG_LOCATION = "com.whereis.configuration";
+	private static final String MAPPING_URL = "/*";
+	private static final String DEFAULT_PROFILE = "dev";
+
+	public static void main(String[] args) throws Exception {
+		new Application().startJetty(8080);
 	}
 
+	private void startJetty(int port) throws Exception {
+		Server server = new Server(port);
+		server.setHandler(getServletContextHandler(getContext()));
+		server.start();
+		server.join();
+	}
+
+	private static ServletContextHandler getServletContextHandler(WebApplicationContext context) throws IOException {
+		ServletContextHandler contextHandler = new ServletContextHandler();
+		contextHandler.setErrorHandler(null);
+		contextHandler.setContextPath(CONTEXT_PATH);
+		contextHandler.addServlet(new ServletHolder(new DispatcherServlet(context)), MAPPING_URL);
+		contextHandler.addEventListener(new ContextLoaderListener(context));
+		// contextHandler.setResourceBase(new ClassPathResource("webapp").getURI().toString());
+		return contextHandler;
+	}
+
+	private static WebApplicationContext getContext() {
+		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+		context.setConfigLocation(CONFIG_LOCATION);
+		context.getEnvironment().setDefaultProfiles(DEFAULT_PROFILE);
+		return context;
+	}
 }

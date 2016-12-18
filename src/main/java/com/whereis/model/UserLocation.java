@@ -16,6 +16,8 @@ public class UserLocation {
     )
     private User user;
 
+    private int userId;
+
     private Timestamp timestamp;
 
     private double latitude;
@@ -38,6 +40,7 @@ public class UserLocation {
 
     public void setUser(User user) {
         this.user = user;
+        this.userId = user.getId();
     }
 
     public Timestamp getTimestamp() {

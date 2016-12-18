@@ -2,30 +2,35 @@ package com.whereis.dao;
 
 import com.whereis.model.User;
 import com.whereis.model.UserLocation;
-import com.whereis.model.UserLocation_;
+//import com.whereis.model.UserLocation_;
+import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 
+@Repository("userLocationDao")
 public class UserLocationDaoImpl extends AbstractDao<Integer, UserLocation> implements UserLocationDao{
-/*    public UserLocation getCurrentLocationOfUser(User user) {
+    public UserLocation getCurrentLocationOfUser(User user) {
         CriteriaBuilder builder = getCriteriaBuilder();
         @SuppressWarnings("unchecked")
-        CriteriaQuery<UserLocation> criteriaQuery = createEntityCriteria();
-        Root<UserLocation> userLocationRoot = criteriaQuery.from(UserLocation.class);
-        criteriaQuery.select(userLocationRoot);
-        //Join<User, UserLocation> join = userLocationRoot.join(UserLocation_.userId);
-        //criteriaQuery.where(builder.equal(join.get(UserLocation_.userId), user.getId()));
+        CriteriaQuery<UserLocation> query = createEntityCriteria();
+        Root<UserLocation> root = query.from(UserLocation.class);
+        query.select(root);
 
-        criteriaQuery.(builder.greatest(userLocationRoot.get(UserLocation_.timestamp)));
-        criteriaQuery.select(builder.greatest(userLocationRoot.get(UserLocation_.timestamp)));
+        //query.orderBy(builder.desc(root.get(UserLocation_.timestamp)));
+
         try {
-            return entityManager.createQuery(criteriaQuery).getSingleResult();
+            return entityManager.createQuery(query).getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
-    }*/
+    }
+
+    public void saveUserLocation(UserLocation location) {
+        Session currentSession = sessionFactory.getCurrentSession();
+        currentSession.saveOrUpdate(location);
+    }
+
+
 }

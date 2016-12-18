@@ -13,8 +13,8 @@ public class User implements Serializable {
 
     private int id;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserLocation> locations =  new ArrayList<>();
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<UserLocation> locations = new ArrayList<>();
 
     private String name;
 
@@ -44,11 +44,11 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public List<UserLocation> getLocations() {
-        return locations;
-    }
+//    public List<UserLocation> getLocations() {
+//        return locations;
+//    }
 
-    public void setLocations(List<UserLocation> locations) {
-        this.locations = locations;
-    }
+//    public void setLocations(List<UserLocation> locations) {
+//        this.locations = locations;
+//    }
 }

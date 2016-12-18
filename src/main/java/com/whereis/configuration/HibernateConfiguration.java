@@ -2,6 +2,7 @@ package com.whereis.configuration;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
 import org.hibernate.SessionFactory;
@@ -10,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+//import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -23,7 +24,7 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "com.whereis.models")
+//@EnableJpaRepositories(basePackages = "com.whereis.models")
 @PropertySource("classpath:application.properties")
 public class HibernateConfiguration {
     @Autowired

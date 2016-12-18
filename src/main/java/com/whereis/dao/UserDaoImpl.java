@@ -2,7 +2,7 @@ package com.whereis.dao;
 
 import com.whereis.model.User;
 
-import com.whereis.model.User_;
+//import com.whereis.model.User_;
 import org.hibernate.Session;
 
 import org.springframework.stereotype.Repository;
@@ -21,7 +21,7 @@ public class UserDaoImpl extends AbstractDao<Integer, User> implements UserDao {
         CriteriaQuery<User> criteriaQuery = createEntityCriteria();
         Root<User> userRoot = criteriaQuery.from(User.class);
         criteriaQuery.select(userRoot);
-        criteriaQuery.where(builder.equal(userRoot.get(User_.email), email));
+//        criteriaQuery.where(builder.equal(userRoot.get(User_.email), email));
         try {
             return entityManager.createQuery(criteriaQuery).getSingleResult();
         } catch (NoResultException e) {
