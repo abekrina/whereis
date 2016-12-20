@@ -2,7 +2,6 @@ package com.whereis.dao;
 
 import com.whereis.model.Location;
 import com.whereis.model.User;
-//import com.whereis.model.UserLocation_;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
@@ -17,13 +16,6 @@ public class DefaultLocationDao extends AbstractDao<Location> implements Locatio
         currentSession.saveOrUpdate(location);
     }
 
-    //TODO: groom this method
-    //TODO:         /\___/\
-    //TODO:        ( o   o )
-    //TODO:        (  =^=  )
-    //TODO:        (        )
-    //TODO:        (         )
-    //TODO:        (          )))))))))))
     @Override
     public Location getLastLocationForUser(User user) {
         CriteriaBuilder builder = getCriteriaBuilder();
@@ -31,12 +23,14 @@ public class DefaultLocationDao extends AbstractDao<Location> implements Locatio
         CriteriaQuery<Location> query = createEntityCriteria();
         Root<Location> root = query.from(Location.class);
         query.select(root);
-
-        //query.orderBy(builder.desc(root.get(UserLocation_.timestamp)));
+        query.where(builder.equal(root.get("userId"), user.getId()));
+        query.orderBy(builder.desc(root.get("timestamp")));
 
         try {
-            return entityManager.createQuery(query).getSingleResult();
+            return entityManager.createQuery(query).getResultList().get(0);
         } catch (NoResultException e) {
+            return null;
+        } catch (IndexOutOfBoundsException e) {
             return null;
         }
     }

@@ -28,13 +28,6 @@ public class DefaultUserDao extends AbstractDao<User> implements UserDao {
         currentSession.update(user);
     }
 
-    //TODO: groom this method
-    //TODO:         /\___/\
-    //TODO:        ( o   o )
-    //TODO:        (  =^=  )
-    //TODO:        (        )
-    //TODO:        (         )
-    //TODO:        (          )))))))))))
     @Override
     public User getByEmail(String email) {
         CriteriaBuilder builder = getCriteriaBuilder();
@@ -42,7 +35,7 @@ public class DefaultUserDao extends AbstractDao<User> implements UserDao {
         CriteriaQuery<User> criteriaQuery = createEntityCriteria();
         Root<User> userRoot = criteriaQuery.from(User.class);
         criteriaQuery.select(userRoot);
-//        criteriaQuery.where(builder.equal(userRoot.get(User_.email), email));
+        criteriaQuery.where(builder.equal(userRoot.get("email"), email));
         try {
             return entityManager.createQuery(criteriaQuery).getSingleResult();
         } catch (NoResultException e) {

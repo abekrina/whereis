@@ -25,7 +25,7 @@ public class Application {
 	private static final String DEFAULT_PROFILE = "dev";
 
 	public static void main(String[] args) throws Exception {
-		new Application().startJetty(8080);
+		new Application().startJetty(DEFAULT_PORT);
 	}
 
 	private void startJetty(int port) throws Exception {

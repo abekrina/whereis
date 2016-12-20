@@ -59,4 +59,11 @@ public class Controller {
         locationService.save(location);
     }
 
+    @RequestMapping("/getLastLocationForUser")
+    public Location getLastLocationForUser() {
+        User user = userService.getByEmail("larmyztab@gmail.com");
+        Location lastLocation = locationService.getLastLocationForUser(user);
+        return  lastLocation;
+    }
+
 }
