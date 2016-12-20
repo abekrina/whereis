@@ -13,9 +13,30 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 @Repository("userDao")
-public class DefaultUserDao extends AbstractDao<Integer, User> implements UserDao {
+public class DefaultUserDao extends AbstractDao<User> implements UserDao {
     @Override
-    public User findUserByEmail(String email) {
+    public void save(User user) {
+        if (getByEmail(user.getEmail()) == null) {
+            Session currentSession = sessionFactory.getCurrentSession();
+            currentSession.save(user);
+        }
+    }
+
+    @Override
+    public void update(User user) {
+        Session currentSession = sessionFactory.getCurrentSession();
+        currentSession.update(user);
+    }
+
+    //TODO: groom this method
+    //TODO:         /\___/\
+    //TODO:        ( o   o )
+    //TODO:        (  =^=  )
+    //TODO:        (        )
+    //TODO:        (         )
+    //TODO:        (          )))))))))))
+    @Override
+    public User getByEmail(String email) {
         CriteriaBuilder builder = getCriteriaBuilder();
         @SuppressWarnings("unchecked")
         CriteriaQuery<User> criteriaQuery = createEntityCriteria();
@@ -30,19 +51,7 @@ public class DefaultUserDao extends AbstractDao<Integer, User> implements UserDa
     }
 
     @Override
-    public void deleteUserByEmail(String email) {
-        delete(findUserByEmail(email));
+    public void deleteByEmail(String email) {
+        delete(getByEmail(email));
     }
-
-    @Override
-    public void saveUser(User user) {
-        if (findUserByEmail(user.getEmail()) == null) {
-            Session currentSession = sessionFactory.getCurrentSession();
-            currentSession.saveOrUpdate(user);
-        }
-    }
-
-    //update()
-
-
 }

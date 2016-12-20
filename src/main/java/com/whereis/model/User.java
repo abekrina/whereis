@@ -10,11 +10,7 @@ import java.util.List;
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private int id;
-
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<UserLocation> locations = new ArrayList<>();
 
     private String name;
 
@@ -43,12 +39,4 @@ public class User implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
-
-//    public List<UserLocation> getLocations() {
-//        return locations;
-//    }
-
-//    public void setLocations(List<UserLocation> locations) {
-//        this.locations = locations;
-//    }
 }

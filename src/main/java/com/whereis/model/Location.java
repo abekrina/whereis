@@ -4,17 +4,11 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "useraLocations")
+@Table(name = "locations")
 public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @ManyToOne(targetEntity = User.class)
-    @JoinColumn(name = "users_id",
-            foreignKey = @ForeignKey(name = "USERS_ID_FK")
-    )
-    private User user;
 
     private int userId;
 
@@ -34,13 +28,12 @@ public class Location {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-        this.userId = user.getId();
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public Timestamp getTimestamp() {

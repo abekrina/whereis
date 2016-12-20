@@ -9,15 +9,32 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service("userLocationService")
 @Transactional
-public class DefaultLocationService implements UserToGroupRelationService {
+public class DefaultLocationService implements LocationService {
     @Autowired
-    DefaultLocationDao userLocationDao;
+    DefaultLocationDao locationDao;
 
-    public Location getCurrentUserLocation(User user) {
-        return userLocationDao.getLastLocationForUser(user);
+    @Override
+    public Location get(int id) {
+        return null;
     }
 
-    public void saveUserLocation(Location location) {
-        userLocationDao.save(location);
+    @Override
+    public void save(Location location) {
+        locationDao.save(location);
+    }
+
+    @Override
+    public void update(Location location) {
+
+    }
+
+    @Override
+    public void delete(Location location) {
+
+    }
+
+    @Override
+    public Location getLastLocationForUser(User user) {
+        return locationDao.getLastLocationForUser(user);
     }
 }

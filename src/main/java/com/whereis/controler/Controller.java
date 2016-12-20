@@ -1,8 +1,8 @@
 package com.whereis.controler;
 
+import com.whereis.model.Location;
 import com.whereis.model.User;
-import com.whereis.model.UserLocation;
-import com.whereis.service.UserLocationService;
+import com.whereis.service.DefaultLocationService;
 import com.whereis.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,52 +10,53 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
 
+//TODO: All methods here would be rewritten
+
 @RestController
 public class Controller {
     @Autowired
     private UserService userService;
 
     @Autowired
-    private UserLocationService userLocationService;
+    private DefaultLocationService locationService;
 
-    @RequestMapping("/")
-    public String home() {
+    @RequestMapping("/saveUser")
+    public String saveUser() {
         User user = new User();
         user.setName("Alena");
         user.setEmail("larmyztab@gmail.com");
-        userService.saveUser(user);
+        userService.save(user);
 
         return "42";
     }
 
-    @RequestMapping("/findUser")
-    //
-    public User findUser() {
-        return userService.findUserByEmail("larmyztab@gmail.com");
+    @RequestMapping("/getUserByEmail")
+    public User getUserByEmail() {
+        return userService.getByEmail("larmyztab@gmail.com");
     }
 
     @RequestMapping("/getUserLocation")
-    public UserLocation getUserLocation() {
+    public Location getUserLocation() {
         User user = new User();
         user.setName("Alena");
         user.setEmail("larmyztab@gmail.com");
-        return userLocationService.getCurrentUserLocation(user);
+        return locationService.getLastLocationForUser(user);
     }
 
-    @RequestMapping("/saveUserLocation")
+    @RequestMapping("/saveLocation")
     public void saveUserLocation() {
         User user = new User();
         user.setName("Alena");
         user.setEmail("larmyztab@gmail.com");
         user.setId(1);
-        UserLocation userLocation = new UserLocation();
-        userLocation.setLatitude(0.123);
-        userLocation.setLongitude(0.321);
-        userLocation.setTimestamp(new Timestamp(1481877171));
-        userLocation.setIp("192.168.0.0");
-        userLocation.setUser(user);
+        Location location = new Location();
+        location.setLatitude(0.123);
+        location.setLongitude(0.321);
+        location.setTimestamp(new Timestamp(1481877171));
+        location.setIp("192.168.0.0");
+        location.setUserId(user.getId());
 
-        userLocationService.saveUserLocation(userLocation);
+        locationService.save(location);
     }
 
 }

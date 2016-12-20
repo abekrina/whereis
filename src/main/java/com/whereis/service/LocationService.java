@@ -1,8 +1,12 @@
 package com.whereis.service;
 
+import com.whereis.model.Location;
+import com.whereis.model.User;
+
 public interface LocationService {
-    LocationService get(int id);
-    void save(LocationService userToGroup);
-    void update(LocationService userToGroup);
-    void delete(LocationService userToGroup);
+    Location get(int id);
+    void save(Location location);
+    void update(Location location);
+    void delete(Location location);
+    Location getLastLocationForUser(User user);
 }

@@ -8,9 +8,9 @@ public class UserToGroupRelation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    //@ManyToMany
+
     private int userId;
-    //@ManyToMany
+
     private int groupId;
 
     private boolean joined;

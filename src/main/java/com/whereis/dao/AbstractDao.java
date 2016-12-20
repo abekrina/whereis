@@ -9,14 +9,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.io.Serializable;
 
-public abstract class AbstractDao<PK extends Serializable, T> {
+public abstract class AbstractDao<T> {
 
     private final Class<T> persistentClass;
-
-    @SuppressWarnings("unchecked")
-    public AbstractDao(){
-        this.persistentClass =(Class<T>) (this.getClass().getGenericSuperclass().getClass());
-    }
 
     @Autowired
     SessionFactory sessionFactory;
@@ -24,21 +19,18 @@ public abstract class AbstractDao<PK extends Serializable, T> {
     @Autowired
     EntityManager entityManager;
 
+    @SuppressWarnings("unchecked")
+    public AbstractDao(){
+        this.persistentClass =(Class<T>) (this.getClass().getGenericSuperclass().getClass());
+    }
+
+
+    /**
+    *   Service methods
+    */
+
     protected Session getSession(){
         return sessionFactory.getCurrentSession();
-    }
-
-    public void persist(T entity) {
-        getSession().persist(entity);
-    }
-
-    public void delete(T entity) {
-        getSession().delete(entity);
-    }
-
-    public T findById(int id) {
-        T t = entityManager.find(persistentClass, id);
-        return t;
     }
 
     protected CriteriaQuery createEntityCriteria(){
@@ -50,4 +42,22 @@ public abstract class AbstractDao<PK extends Serializable, T> {
         return entityManager.getCriteriaBuilder();
     }
 
+    //TODO: uncomment if needed else delete
+    /*public void persist(T entity) {
+        getSession().persist(entity);
+    }*/
+
+
+    /**
+     *   Next methods are common for all DAO's
+     */
+
+    public T get(int id) {
+        T t = entityManager.find(persistentClass, id);
+        return t;
+    }
+
+    public void delete(T entity) {
+        getSession().delete(entity);
+    }
 }

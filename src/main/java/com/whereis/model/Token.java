@@ -10,9 +10,9 @@ public class Token {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private String token;
-    //@OneToOne
     private int userId;
+
+    private String token;
 
     public int getId() {
         return id;
@@ -22,19 +22,19 @@ public class Token {
         this.id = id;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     public int getUserId() {
         return userId;
     }
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }
