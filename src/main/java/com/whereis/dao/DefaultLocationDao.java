@@ -1,7 +1,7 @@
 package com.whereis.dao;
 
+import com.whereis.model.Location;
 import com.whereis.model.User;
-import com.whereis.model.UserLocation;
 //import com.whereis.model.UserLocation_;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
@@ -10,12 +10,12 @@ import javax.persistence.NoResultException;
 import javax.persistence.criteria.*;
 
 @Repository("userLocationDao")
-public class UserLocationDaoImpl extends AbstractDao<Integer, UserLocation> implements UserLocationDao{
-    public UserLocation getCurrentLocationOfUser(User user) {
+public class DefaultLocationDao extends AbstractDao<Integer, Location> implements LocationDao {
+    public Location getCurrentLocationOfUser(User user) {
         CriteriaBuilder builder = getCriteriaBuilder();
         @SuppressWarnings("unchecked")
-        CriteriaQuery<UserLocation> query = createEntityCriteria();
-        Root<UserLocation> root = query.from(UserLocation.class);
+        CriteriaQuery<Location> query = createEntityCriteria();
+        Root<Location> root = query.from(Location.class);
         query.select(root);
 
         //query.orderBy(builder.desc(root.get(UserLocation_.timestamp)));
@@ -27,7 +27,7 @@ public class UserLocationDaoImpl extends AbstractDao<Integer, UserLocation> impl
         }
     }
 
-    public void saveUserLocation(UserLocation location) {
+    public void saveUserLocation(Location location) {
         Session currentSession = sessionFactory.getCurrentSession();
         currentSession.saveOrUpdate(location);
     }

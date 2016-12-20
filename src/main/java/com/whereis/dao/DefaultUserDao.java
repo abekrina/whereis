@@ -13,7 +13,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 @Repository("userDao")
-public class UserDaoImpl extends AbstractDao<Integer, User> implements UserDao {
+public class DefaultUserDao extends AbstractDao<Integer, User> implements UserDao {
     @Override
     public User findUserByEmail(String email) {
         CriteriaBuilder builder = getCriteriaBuilder();
@@ -41,6 +41,8 @@ public class UserDaoImpl extends AbstractDao<Integer, User> implements UserDao {
             currentSession.saveOrUpdate(user);
         }
     }
+
+    //update()
 
 
 }

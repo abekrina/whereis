@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.sql.Timestamp;
 
 @RestController
-public class HomeController {
+public class Controller {
     @Autowired
     private UserService userService;
 
@@ -29,6 +29,7 @@ public class HomeController {
     }
 
     @RequestMapping("/findUser")
+    //
     public User findUser() {
         return userService.findUserByEmail("larmyztab@gmail.com");
     }
