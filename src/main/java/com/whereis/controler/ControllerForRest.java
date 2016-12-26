@@ -3,6 +3,7 @@ package com.whereis.controler;
 import com.whereis.model.Location;
 import com.whereis.model.User;
 import com.whereis.service.DefaultLocationService;
+import com.whereis.service.LocationService;
 import com.whereis.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,12 +14,12 @@ import java.sql.Timestamp;
 //TODO: All methods here would be rewritten
 
 @RestController
-public class Controller {
+public class ControllerForRest {
     @Autowired
     private UserService userService;
 
     @Autowired
-    private DefaultLocationService locationService;
+    private LocationService locationService;
 
     @RequestMapping("/saveUser")
     public String saveUser() {
