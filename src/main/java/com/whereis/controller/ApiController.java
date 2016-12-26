@@ -12,7 +12,8 @@ import java.sql.Timestamp;
 //TODO: All methods here would be rewritten
 
 @org.springframework.web.bind.annotation.RestController
-public class ApiController {
+public class ApiController extends AbstractController {
+
     @Autowired
     private UserService userService;
 

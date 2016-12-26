@@ -16,6 +16,7 @@ import javax.sql.DataSource;
 @ComponentScan(basePackages = "com.whereis")
 @PropertySource("classpath:application.properties")
 public class AppConfiguration {
+
     @Autowired
     private Environment environment;
 
