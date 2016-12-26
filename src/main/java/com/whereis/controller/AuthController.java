@@ -10,9 +10,14 @@ import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.whereis.model.User;
+import com.whereis.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.google.api.services.plus.Plus;
+import com.google.api.services.plus.model.Person;
 
 import java.io.IOException;
 
@@ -21,6 +26,19 @@ public class AuthController extends AbstractController {
     private static final HttpTransport TRANSPORT = new NetHttpTransport();
 
     private static final JacksonFactory JSON_FACTORY = new JacksonFactory();
+
+    @Autowired
+    private UserService userService;
+
+    private GoogleCredential buildCredential() throws IOException {
+        String tokenData = (String) httpSession.getAttribute("token");
+
+        return new GoogleCredential.Builder()
+            .setJsonFactory(JSON_FACTORY)
+            .setTransport(TRANSPORT)
+            .setClientSecrets(CLIENT_ID, CLIENT_SECRET).build()
+            .setFromTokenResponse(JSON_FACTORY.fromString(tokenData, GoogleTokenResponse.class));
+    }
 
     @RequestMapping(value = "/connect", method = RequestMethod.POST)
     public ResponseEntity connect(
@@ -46,9 +64,23 @@ public class AuthController extends AbstractController {
             ).execute();
 
             GoogleIdToken idToken = tokenResponse.parseIdToken();
-            String gplusId = idToken.getPayload().getSubject();
+            GoogleIdToken.Payload payload = idToken.getPayload();
 
             httpSession.setAttribute("token", tokenResponse.toString());
+
+            User existingUser = userService.getByEmail(payload.getEmail());
+
+            if (existingUser == null) {
+                Plus plus = new Plus.Builder(TRANSPORT, JSON_FACTORY, buildCredential())
+                    .setApplicationName("")
+                    .build();
+                Person profile = plus.people().get("me").execute();
+
+                User user = new User();
+                user.setName(profile.getDisplayName());
+                user.setEmail(payload.getEmail());
+                userService.save(user);
+            }
 
             return new ResponseEntity<>(
                 "Successfully connected user",
@@ -76,11 +108,7 @@ public class AuthController extends AbstractController {
         }
 
         try {
-            GoogleCredential credential = new GoogleCredential.Builder()
-                .setJsonFactory(JSON_FACTORY)
-                .setTransport(TRANSPORT)
-                .setClientSecrets(CLIENT_ID, CLIENT_SECRET).build()
-                .setFromTokenResponse(JSON_FACTORY.fromString(tokenData, GoogleTokenResponse.class));
+            GoogleCredential credential = buildCredential();
 
             HttpResponse revokeResponse = TRANSPORT.createRequestFactory()
                 .buildGetRequest(new GenericUrl(String.format(
