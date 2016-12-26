@@ -1,20 +1,18 @@
-package com.whereis.controler;
+package com.whereis.controller;
 
 import com.whereis.model.Location;
 import com.whereis.model.User;
-import com.whereis.service.DefaultLocationService;
 import com.whereis.service.LocationService;
 import com.whereis.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
 
 //TODO: All methods here would be rewritten
 
-@RestController
-public class ControllerForRest {
+@org.springframework.web.bind.annotation.RestController
+public class ApiController {
     @Autowired
     private UserService userService;
 
