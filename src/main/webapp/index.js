@@ -62,7 +62,7 @@
     }
 
     function connectToServer(code) {
-        return fetch(`/api/connect?state=${config.state}`, {
+        return fetch(`/api/?state=${config.state}`, {
             credentials: 'include',
             method: 'POST',
             body: code

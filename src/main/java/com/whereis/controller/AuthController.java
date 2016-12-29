@@ -10,16 +10,20 @@ import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.plus.Plus;
+import com.google.api.services.plus.model.Person;
 import com.whereis.model.User;
 import com.whereis.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.web.bind.annotation.*;
-import com.google.api.services.plus.Plus;
-import com.google.api.services.plus.model.Person;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 public class AuthController extends AbstractController {
