@@ -47,7 +47,9 @@
 
     function onConnect() {
         auth.grantOfflineAccess().then((response) => {
-            connectToServer(response.code);
+            connectToServer(response.code).then(() => {
+                document.write(document.cookie);
+            });
         });
     }
 
@@ -62,7 +64,7 @@
     }
 
     function connectToServer(code) {
-        return fetch(`/api/?state=${config.state}`, {
+        return fetch(`/api/login?unique_visitor_code=${config.unique_visitor_code}`, {
             credentials: 'include',
             method: 'POST',
             body: code

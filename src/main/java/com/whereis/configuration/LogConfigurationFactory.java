@@ -17,7 +17,7 @@ import java.net.URI;
 
 @Plugin(name = "LogConfigurationFactory", category = ConfigurationFactory.CATEGORY)
 @Order(50)
-public class CustomConfigurationFactory extends ConfigurationFactory {
+public class LogConfigurationFactory extends ConfigurationFactory {
 
     static Configuration createConfiguration(final String name, ConfigurationBuilder<BuiltConfiguration> builder) {
         builder.setConfigurationName(name);

@@ -1,6 +1,8 @@
 package com.whereis.dao;
 
 import com.whereis.model.Group;
+import com.whereis.model.Invite;
+import com.whereis.model.User;
 
 public interface GroupDao {
     /**
@@ -15,4 +17,5 @@ public interface GroupDao {
      */
     void save(Group group);
     void update(Group group);
+    Group getByIdentity(String identity);
 }

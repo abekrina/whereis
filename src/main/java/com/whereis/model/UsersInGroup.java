@@ -1,6 +1,8 @@
 package com.whereis.model;
 
 import javax.persistence.*;
+import java.sql.Time;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "usersInGroups")
@@ -9,11 +11,11 @@ public class UsersInGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private int userId;
+    private int user_id;
 
-    private int groupId;
+    private int group_id;
 
-    private boolean joined;
+    private Timestamp joined_at;
 
     public int getId() {
         return id;
@@ -24,26 +26,26 @@ public class UsersInGroup {
     }
 
     public int getUserId() {
-        return userId;
+        return user_id;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserId(int user_id) {
+        this.user_id = user_id;
     }
 
     public int getGroupId() {
-        return groupId;
+        return group_id;
     }
 
     public void setGroupId(int groupId) {
-        this.groupId = groupId;
+        this.group_id = groupId;
     }
 
-    public boolean isJoined() {
-        return joined;
+    public Timestamp getJoinedAt() {
+        return joined_at;
     }
 
-    public void setJoined(boolean joined) {
-        this.joined = joined;
+    public void setJoinedAt(Timestamp joined) {
+        this.joined_at = joined;
     }
 }

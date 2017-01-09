@@ -1,7 +1,11 @@
 package com.whereis.exceptions;
 
-/**
- * Created by amakarova on 29/12/16.
- */
-public class GoogleApiException {
+public class GoogleApiException extends Exception{
+    public GoogleApiException() {
+        super();
+    }
+
+    public GoogleApiException(Exception e) {
+        super(e);
+    }
 }

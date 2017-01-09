@@ -1,5 +1,6 @@
 package com.whereis.authentication;
 
+import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -18,8 +19,11 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.common.exceptions.UnapprovedClientAuthenticationException;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
@@ -45,73 +49,82 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     private UserService userService;
 
-    private GoogleCredential buildCredential() throws IOException {
-        String tokenData = (String) httpSession.getAttribute("token");
+    private GoogleCredential buildCredential(TokenResponse tokenResponse) throws IOException {
 
         return new GoogleCredential.Builder()
                 .setJsonFactory(JSON_FACTORY)
                 .setTransport(TRANSPORT)
                 .setClientSecrets(CLIENT_ID, CLIENT_SECRET).build()
-                //TODO: fix NPE
-                .setFromTokenResponse(JSON_FACTORY.fromString(tokenData, GoogleTokenResponse.class));
+                .setFromTokenResponse(JSON_FACTORY.fromString(tokenResponse.toString(), GoogleTokenResponse.class));
     }
 
     @Override
     public Authentication authenticate(Authentication auth) throws AuthenticationException {
-        //TODO: throw exception if not authorized
-        TokenAgainstCodeAuthentication tokenAuth = (TokenAgainstCodeAuthentication) auth;
+        if (!(auth instanceof GoogleAuthentication)) {
+            return null;
+        }
+        GoogleAuthentication tokenAuth = (GoogleAuthentication) auth;
         // Check if user is already connected
         //TODO:  учесть то что токен экспайрится
-        if (tokenAuth.getCredentials() != null) {
+        try {
+            tokenAuth.getCredentials();
             tokenAuth.setAuthenticated(true);
             return tokenAuth;
+        } catch (NullPointerException e) {
         }
 
-        // Check state param
-        if (!tokenAuth.getName().equals(httpSession.getAttribute("state"))) {
+        if (!tokenAuth.getName().equals(httpSession.getAttribute("unique_visitor_code"))) {
             tokenAuth.setAuthenticated(false);
-            return tokenAuth;
+            throw new InsufficientAuthenticationException("Unique visitor code changed");
         }
 
-        getToken(tokenAuth);
-
-        return tokenAuth;
-    }
-
-    private boolean getToken(TokenAgainstCodeAuthentication tokenAuth) {
+        GoogleTokenResponse tokenResponse = null;
         try {
-            GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
+            tokenResponse = new GoogleAuthorizationCodeTokenRequest(
                     TRANSPORT, JSON_FACTORY, CLIENT_ID, CLIENT_SECRET, tokenAuth.getCode(), "postmessage"
             ).execute();
 
-            tokenAuth.setCredentials(tokenResponse.toString());
+            tokenAuth.setCredentials(tokenResponse);
             tokenAuth.setAuthenticated(true);
-            Plus plus = new Plus.Builder(TRANSPORT, JSON_FACTORY, buildCredential())
+            setUserInfo(tokenAuth);
+        } catch (TokenResponseException e) {
+            logger.error("User not authorized by Google due to error " + e.getDetails().getError() +
+                    " see explanation here https://tools.ietf.org/html/rfc6749#section-8.5 ", e);
+            tokenAuth.setAuthenticated(false);
+            throw new UnapprovedClientAuthenticationException("Google refused to authenticate due error "
+                    + e.getDetails().getError(), e);
+        } catch (IOException e) {
+            logger.error("Error during getting token from Google", e);
+            tokenAuth.setAuthenticated(false);
+            throw new AuthenticationServiceException("IO error", e);
+        }
+        return tokenAuth;
+    }
+
+    private void setUserInfo(GoogleAuthentication auth) throws IOException {
+        GoogleIdToken idToken = auth.getGoogleTokenResponse().parseIdToken();
+        GoogleIdToken.Payload payload = idToken.getPayload();
+
+        User user = userService.getByEmail(payload.getEmail());
+        if (user == null) {
+            Plus plus = new Plus.Builder(TRANSPORT, JSON_FACTORY, buildCredential(auth.getGoogleTokenResponse()))
                     .setApplicationName("")
                     .build();
-
-            GoogleIdToken idToken = tokenResponse.parseIdToken();
-            GoogleIdToken.Payload payload = idToken.getPayload();
-
-            User user = userService.getByEmail(payload.getEmail());
-            if (user == null) {
-                //TODO: прикрутить log4j
-                //TODO: передавать эксепшн в лог
-                userService.createGoogleUser(plus);
-                logger.info("User with email " + user.getEmail() + " registered successfully");
-            }
-        } catch (GoogleApiException | IOException e) {
-            tokenAuth.setAuthenticated(false);
-            //TODO: choose exception and implement error handling
-            // after setting log4j
-            //throw new AuthenticationException(e);
-        } catch (TokenResponseException e) {
-
+            User newUser = userService.createGoogleUser(plus);
+            logger.info("User with email " + newUser.getEmail() + " registered successfully");
+            //TODO: welcome new user by email :)
+            auth.setPrincipal(newUser);
+        } else {
+            auth.setPrincipal(user);
         }
     }
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return true;
+        if (aClass.equals(GoogleAuthentication.class)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -11,7 +11,7 @@ public class Group {
 
     private String name;
 
-    private String token;
+    private String identity;
 
     public int getId() {
         return id;
@@ -29,11 +29,11 @@ public class Group {
         this.name = name;
     }
 
-    public String getToken() {
-        return token;
+    public String getIdentity() {
+        return identity;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setIdentity(String identity) {
+        this.identity = identity;
     }
 }

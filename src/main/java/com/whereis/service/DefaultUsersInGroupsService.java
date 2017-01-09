@@ -3,8 +3,10 @@ package com.whereis.service;
 import com.whereis.dao.UsersInGroupsDao;
 import com.whereis.model.UsersInGroup;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class DefaultUsersInGroupsService implements UserToGroupRelationService {
+@Service
+public class DefaultUsersInGroupsService implements UsersInGroupsService {
     @Autowired
     UsersInGroupsDao dao;
 

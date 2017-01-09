@@ -10,7 +10,7 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private int userId;
+    private int user_id;
 
     private Timestamp timestamp;
 
@@ -29,11 +29,11 @@ public class Location {
     }
 
     public int getUserId() {
-        return userId;
+        return user_id;
     }
 
     public void setUserId(int userId) {
-        this.userId = userId;
+        this.user_id = userId;
     }
 
     public Timestamp getTimestamp() {

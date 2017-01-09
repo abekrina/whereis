@@ -6,12 +6,13 @@ import com.whereis.service.LocationService;
 import com.whereis.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
 
-//TODO: All methods here would be rewritten
+//TODO: All methods here will be rewritten
 
-@org.springframework.web.bind.annotation.RestController
+@RestController
 public class ApiController extends AbstractController {
 
     @Autowired
@@ -23,7 +24,7 @@ public class ApiController extends AbstractController {
     @RequestMapping("/saveUser")
     public String saveUser() {
         User user = new User();
-        user.setName("Alena");
+        //user.setName("Alena");
         user.setEmail("larmyztab@gmail.com");
         userService.save(user);
 
@@ -38,7 +39,7 @@ public class ApiController extends AbstractController {
     @RequestMapping("/getUserLocation")
     public Location getUserLocation() {
         User user = new User();
-        user.setName("Alena");
+        //user.setName("Alena");
         user.setEmail("larmyztab@gmail.com");
         return locationService.getLastLocationForUser(user);
     }
@@ -46,7 +47,7 @@ public class ApiController extends AbstractController {
     @RequestMapping("/saveLocation")
     public void saveUserLocation() {
         User user = new User();
-        user.setName("Alena");
+        //user.setName("Alena");
         user.setEmail("larmyztab@gmail.com");
         user.setId(1);
         Location location = new Location();
@@ -65,5 +66,4 @@ public class ApiController extends AbstractController {
         Location lastLocation = locationService.getLastLocationForUser(user);
         return  lastLocation;
     }
-
 }

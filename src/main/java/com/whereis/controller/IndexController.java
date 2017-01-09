@@ -13,12 +13,12 @@ public class IndexController extends AbstractController {
 
     @RequestMapping(value = "/config.json", method = RequestMethod.GET)
     public HashMap<String, String> getConfig() {
-        String state = new BigInteger(130, new SecureRandom()).toString(32);
+        String unique_visitor_code = new BigInteger(130, new SecureRandom()).toString(32);
         HashMap<String, String> config = new HashMap<>();
 
-        httpSession.setAttribute("state", state);
+        httpSession.setAttribute("unique_visitor_code", unique_visitor_code);
         config.put("clientId", CLIENT_ID);
-        config.put("state", state);
+        config.put("unique_visitor_code", unique_visitor_code);
 
         return config;
     }

@@ -1,5 +1,7 @@
 package com.whereis.authentication;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.whereis.model.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -8,13 +10,14 @@ import java.util.Collection;
 
 public class GoogleAuthentication implements Authentication {
     private String code;
-    private String state;
-    private String token;
+    private String unique_visitor_code;
+    private GoogleTokenResponse googleToken;
     private boolean isAuthenticated = false;
+    private User principal;
 
-    public GoogleAuthentication(String code, String state) {
+    public GoogleAuthentication(String code, String unique_visitor_code) {
         this.code = code;
-        this.state = state;
+        this.unique_visitor_code = unique_visitor_code;
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -22,19 +25,26 @@ public class GoogleAuthentication implements Authentication {
     }
     @Override
     public Object getCredentials() {
-        return token;
+        return googleToken.getAccessToken();
     }
-    public void setCredentials(String token){
-        this.token = token;
+    GoogleTokenResponse getGoogleTokenResponse() {
+        return googleToken;
+    }
+    public void setCredentials(GoogleTokenResponse token){
+        this.googleToken = token;
     }
     @Override
     public Object getDetails() {
-        return null;
+        return googleToken.getExpiresInSeconds();
     }
     @Override
     public Object getPrincipal() {
-        return null;
+        return principal;
     }
+    public void setPrincipal(User user) {
+        this.principal = user;
+    }
+
     @Override
     public boolean isAuthenticated() {
         return isAuthenticated;
@@ -45,7 +55,8 @@ public class GoogleAuthentication implements Authentication {
     }
     @Override
     public String getName() {
-        return state;
+        //TODO: think about what to return
+        return unique_visitor_code;
     }
 
     public String getCode() {

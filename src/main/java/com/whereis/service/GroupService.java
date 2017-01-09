@@ -7,4 +7,5 @@ public interface GroupService {
     void save(Group group);
     void update(Group group);
     void delete(Group group);
+    Group getByIdentity(String identity);
 }

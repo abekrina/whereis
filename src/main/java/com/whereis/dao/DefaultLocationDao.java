@@ -4,11 +4,12 @@ import com.whereis.model.Location;
 import com.whereis.model.User;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.*;
 
-@Repository("userLocationDao")
+@Repository("locationDao")
 public class DefaultLocationDao extends AbstractDao<Location> implements LocationDao {
     @Override
     public void save(Location location) {

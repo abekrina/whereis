@@ -1,10 +1,9 @@
 package com.whereis.configuration;
 
-import com.whereis.authentication.AuthenticationTokenFilter;
-import com.whereis.authentication.AuthenticationTokenProvider;
+import com.whereis.authentication.GoogleAuthenticationFilter;
+import com.whereis.authentication.GoogleAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -17,10 +16,10 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 //@ComponentScan(basePackages = {"com.whereis"})
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
-    AuthenticationTokenFilter authenticationTokenFilter;
+    GoogleAuthenticationFilter authenticationTokenFilter;
 
     @Autowired
-    AuthenticationTokenProvider tokenAuthenticationProvider;
+    GoogleAuthenticationProvider tokenAuthenticationProvider;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -29,7 +28,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatcher("/api/*")
                 .authenticationProvider(tokenAuthenticationProvider)
                 .authorizeRequests()
-                .anyRequest().authenticated();
+                .anyRequest().authenticated()
+        .and()
+                .csrf()
+                //TODO: Enable this!
+                .disable();
     }
 
     @Override
@@ -40,12 +43,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public AuthenticationTokenFilter filter() {
-        return new AuthenticationTokenFilter();
-    }
-
-    @Bean
-    public AuthenticationTokenProvider provider() {
-        return new AuthenticationTokenProvider();
+    public GoogleAuthenticationFilter filter() {
+        return new GoogleAuthenticationFilter();
     }
 }
+
+
+
+//TODO: выяснить можно ли разделить пользователей по ролям чтобы хендлить админство в группе
