@@ -9,24 +9,28 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.plus.Plus;
-import com.google.api.services.plus.model.Person;
+import com.whereis.exceptions.GoogleApiException;
 import com.whereis.model.User;
 import com.whereis.service.UserService;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.logging.Logger;
 
-public class AuthenticationTokenProvider implements AuthenticationProvider {
+@Service
+public class GoogleAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     protected HttpSession httpSession;
 
-    private static final Logger logger = Logger.getLogger(AuthenticationTokenProvider.class.getName());
+    private static final Logger logger = LogManager.getLogger(GoogleAuthenticationProvider.class);
 
     private static final HttpTransport TRANSPORT = new NetHttpTransport();
 
@@ -48,16 +52,16 @@ public class AuthenticationTokenProvider implements AuthenticationProvider {
                 .setJsonFactory(JSON_FACTORY)
                 .setTransport(TRANSPORT)
                 .setClientSecrets(CLIENT_ID, CLIENT_SECRET).build()
+                //TODO: fix NPE
                 .setFromTokenResponse(JSON_FACTORY.fromString(tokenData, GoogleTokenResponse.class));
     }
 
     @Override
     public Authentication authenticate(Authentication auth) throws AuthenticationException {
-        TokenAuthentication tokenAuth = (TokenAuthentication) auth;
-        /*if (auth.isAuthenticated())
-            return auth;*/
+        //TODO: throw exception if not authorized
+        TokenAgainstCodeAuthentication tokenAuth = (TokenAgainstCodeAuthentication) auth;
         // Check if user is already connected
-        //  учесть то что токен экспайрится
+        //TODO:  учесть то что токен экспайрится
         if (tokenAuth.getCredentials() != null) {
             tokenAuth.setAuthenticated(true);
             return tokenAuth;
@@ -69,39 +73,41 @@ public class AuthenticationTokenProvider implements AuthenticationProvider {
             return tokenAuth;
         }
 
-        // Try to upgrade token
+        getToken(tokenAuth);
+
+        return tokenAuth;
+    }
+
+    private boolean getToken(TokenAgainstCodeAuthentication tokenAuth) {
         try {
             GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
                     TRANSPORT, JSON_FACTORY, CLIENT_ID, CLIENT_SECRET, tokenAuth.getCode(), "postmessage"
             ).execute();
 
+            tokenAuth.setCredentials(tokenResponse.toString());
+            tokenAuth.setAuthenticated(true);
+            Plus plus = new Plus.Builder(TRANSPORT, JSON_FACTORY, buildCredential())
+                    .setApplicationName("")
+                    .build();
+
             GoogleIdToken idToken = tokenResponse.parseIdToken();
             GoogleIdToken.Payload payload = idToken.getPayload();
 
-            //httpSession.setAttribute("token", tokenResponse.toString());
-            tokenAuth.setCredentials(tokenResponse.toString());
-            tokenAuth.setAuthenticated(true);
-            User existingUser = userService.getByEmail(payload.getEmail());
-
-            if (existingUser == null) {
-                Plus plus = new Plus.Builder(TRANSPORT, JSON_FACTORY, buildCredential())
-                        .setApplicationName("")
-                        .build();
-                Person profile = plus.people().get("me").execute();
-
-                User user = new User();
-                user.setName(profile.getDisplayName());
-                user.setEmail(payload.getEmail());
-                userService.save(user);
+            User user = userService.getByEmail(payload.getEmail());
+            if (user == null) {
+                //TODO: прикрутить log4j
+                //TODO: передавать эксепшн в лог
+                userService.createGoogleUser(plus);
+                logger.info("User with email " + user.getEmail() + " registered successfully");
             }
+        } catch (GoogleApiException | IOException e) {
+            tokenAuth.setAuthenticated(false);
+            //TODO: choose exception and implement error handling
+            // after setting log4j
+            //throw new AuthenticationException(e);
         } catch (TokenResponseException e) {
-            tokenAuth.setAuthenticated(false);
-            // сообщить об ошибке
-        } catch (IOException e) {
-            tokenAuth.setAuthenticated(false);
-            //сообщить об ошибке "Failed to read token data from Google"
+
         }
-        return tokenAuth;
     }
 
     @Override

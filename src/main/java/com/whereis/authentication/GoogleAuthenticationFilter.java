@@ -5,18 +5,19 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.servlet.*;
+import javax.servlet.Filter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class AuthenticationTokenFilter implements Filter {
+public class GoogleAuthenticationFilter implements Filter {
 
-    private static final Logger logger = Logger.getLogger(AuthenticationTokenFilter.class.getName());
+    private static final Logger logger = Logger.getLogger(GoogleAuthenticationFilter.class.getName());
 
     @Override
     public void init(FilterConfig fc) throws ServletException {
-        logger.info("Init AuthenticationTokenFilter");
+        logger.info("Init GoogleAuthenticationFilter");
     }
 
     @Override
@@ -36,7 +37,7 @@ public class AuthenticationTokenFilter implements Filter {
             if (!params.isEmpty() && params.containsKey("state")) {
                 String state = params.get("state")[0];
                 if (code != null) {
-                    Authentication auth = new TokenAuthentication(code, state);
+                    Authentication auth = new GoogleAuthentication(code, state);
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             }

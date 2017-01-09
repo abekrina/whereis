@@ -6,13 +6,13 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class TokenAuthentication implements Authentication {
+public class GoogleAuthentication implements Authentication {
     private String code;
     private String state;
     private String token;
     private boolean isAuthenticated = false;
 
-    public TokenAuthentication(String code, String state) {
+    public GoogleAuthentication(String code, String state) {
         this.code = code;
         this.state = state;
     }

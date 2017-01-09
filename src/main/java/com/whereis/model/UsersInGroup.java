@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "usersInGroups")
-public class UserToGroupRelation {
+public class UsersInGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
