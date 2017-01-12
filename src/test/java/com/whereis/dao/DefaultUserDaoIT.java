@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -32,15 +33,24 @@ public class DefaultUserDaoIT extends AbstractTransactionalTestNGSpringContextTe
 
     User defaultUser;
 
-    Helper helper = new Helper();
-
     @BeforeTest
     public void initialize() {
-        setupDefaultUser();
+        // Set configuration for logger
         ConfigurationFactory.setConfigurationFactory(new LogConfigurationFactory());
+
+        // Create test user object
+        setupDefaultUser();
     }
 
-    @AfterMethod
+    private void setupDefaultUser()   {
+        defaultUser = new User();
+        defaultUser.setId(1);
+        defaultUser.setEmail("sweetpotatodevelopment@gmail.com");
+        defaultUser.setFirstName("Potato");
+        defaultUser.setLastName("Development");
+    }
+
+    @BeforeMethod
     public void cleanup() throws SQLException {
         Statement databaseTruncationStatement = null;
         try {
@@ -52,26 +62,11 @@ public class DefaultUserDaoIT extends AbstractTransactionalTestNGSpringContextTe
         }
     }
 
-    @Rollback(false)
-    @Transactional
-    public void saveUser() {
-        userDao.save(defaultUser);
-    }
-
-    private void setupDefaultUser()   {
-        defaultUser = new User();
-        defaultUser.setId(1);
-        defaultUser.setEmail("sweetpotatodevelopment@gmail.com");
-        defaultUser.setFirstName("Potato");
-        defaultUser.setLastName("Development");
-    }
-
-    @Rollback(false)
-    @Transactional(propagation = Propagation.NEVER)
     @Test
+    @Transactional(propagation = Propagation.NEVER)
     public void save_NoSuchUser() {
-        helper.saveUser(userDao);
-        Assert.assertEquals(userDao.getByEmail(defaultUser.getEmail()), defaultUser);
+        userDao.save(defaultUser);
+        Assert.assertEquals(userDao.get(1), defaultUser);
     }
 
     @Test
