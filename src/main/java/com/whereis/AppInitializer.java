@@ -1,5 +1,7 @@
 package com.whereis;
 
+import com.whereis.configuration.LogConfigurationFactory;
+import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -17,6 +19,8 @@ public class AppInitializer implements WebApplicationInitializer {
 
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
+		ConfigurationFactory.setConfigurationFactory(new LogConfigurationFactory());
+
 		WebApplicationContext context = getContext();
 		servletContext.addListener(new RequestContextListener());
 		servletContext.addListener(new ContextLoaderListener(context));

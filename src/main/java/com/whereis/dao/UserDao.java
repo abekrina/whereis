@@ -1,6 +1,9 @@
 package com.whereis.dao;
 
 import com.whereis.model.User;
+import org.hibernate.Session;
+
+import javax.persistence.EntityManager;
 
 
 public interface UserDao {
@@ -9,7 +12,7 @@ public interface UserDao {
      */
     User get(int id);
     void delete(User user);
-
+    Session getSession();
     /**
      *  Methods specific for every implementation of this interface
      */

@@ -70,7 +70,9 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
             tokenAuth.getCredentials();
             tokenAuth.setAuthenticated(true);
             return tokenAuth;
+            //TODO: почему тут catch?
         } catch (NullPointerException e) {
+
         }
 
         if (!tokenAuth.getName().equals(httpSession.getAttribute("unique_visitor_code"))) {
@@ -90,12 +92,10 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
         } catch (TokenResponseException e) {
             logger.error("User not authorized by Google due to error " + e.getDetails().getError() +
                     " see explanation here https://tools.ietf.org/html/rfc6749#section-8.5 ", e);
-            tokenAuth.setAuthenticated(false);
             throw new UnapprovedClientAuthenticationException("Google refused to authenticate due error "
                     + e.getDetails().getError(), e);
         } catch (IOException e) {
             logger.error("Error during getting token from Google", e);
-            tokenAuth.setAuthenticated(false);
             throw new AuthenticationServiceException("IO error", e);
         }
         return tokenAuth;

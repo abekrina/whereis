@@ -1,5 +1,8 @@
-package com.whereis.configuration;
+package com.whereis.testconfig;
 
+import com.whereis.dao.AbstractDao;
+import com.whereis.dao.DefaultUserDao;
+import com.whereis.model.User;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +11,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -22,20 +27,19 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
+@PropertySource("classpath:test-application.properties")
+@PropertySource("classpath:test-secrets.properties")
 @EnableTransactionManagement
 @ComponentScan(basePackages = "com.whereis")
-@PropertySource("classpath:application.properties")
-@PropertySource("classpath:secrets.properties")
-public class HibernateConfiguration {
-
+public class TestHibernateConfiguration {
     @Autowired
     private Environment environment;
 
     public Properties hibernateProperties() {
         Properties properties = new Properties();
-        properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
-        properties.put("hibernate.show_sql", environment.getRequiredProperty("hibernate.show_sql"));
-        properties.put("hibernate.hbm2ddl.auto", environment.getRequiredProperty("hibernate.hbm2ddl.auto"));
+        properties.put("hibernate.dialect", environment.getRequiredProperty("test.hibernate.dialect"));
+        properties.put("hibernate.show_sql", environment.getRequiredProperty("test.hibernate.show_sql"));
+        properties.put("hibernate.hbm2ddl.auto", environment.getRequiredProperty("test.hibernate.hbm2ddl.auto"));
 
         return properties;
     }
@@ -48,10 +52,10 @@ public class HibernateConfiguration {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(environment.getRequiredProperty("jdbc.driverClassName"));
-        dataSource.setUrl(environment.getRequiredProperty("jdbc.url"));
-        dataSource.setUsername(environment.getRequiredProperty("jdbc.username"));
-        dataSource.setPassword(environment.getRequiredProperty("jdbc.password"));
+        dataSource.setDriverClassName(environment.getRequiredProperty("test.jdbc.driverClassName"));
+        dataSource.setUrl(environment.getRequiredProperty("test.jdbc.url"));
+        dataSource.setUsername(environment.getRequiredProperty("test.jdbc.username"));
+        dataSource.setPassword(environment.getRequiredProperty("test.jdbc.password"));
 
         return dataSource;
     }
@@ -60,7 +64,7 @@ public class HibernateConfiguration {
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan(new String[] { "com.whereis.model" });
+        sessionFactory.setPackagesToScan("com.whereis.model");
         sessionFactory.setHibernateProperties(hibernateProperties());
 
         return sessionFactory;
@@ -85,6 +89,8 @@ public class HibernateConfiguration {
     public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
         HibernateTransactionManager transactionManager = new HibernateTransactionManager();
         transactionManager.setSessionFactory(sessionFactory);
+        transactionManager.setPrepareConnection(false);
+        transactionManager.afterPropertiesSet();
 
         return transactionManager;
     }

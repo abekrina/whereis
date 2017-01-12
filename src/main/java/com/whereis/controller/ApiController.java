@@ -24,7 +24,8 @@ public class ApiController extends AbstractController {
     @RequestMapping("/saveUser")
     public String saveUser() {
         User user = new User();
-        //user.setName("Alena");
+        user.setFirstName("Alena");
+        user.setLastName("Bekrina");
         user.setEmail("larmyztab@gmail.com");
         userService.save(user);
 

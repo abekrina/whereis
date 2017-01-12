@@ -13,7 +13,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 @Configuration
 @EnableWebSecurity
-//@ComponentScan(basePackages = {"com.whereis"})
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     GoogleAuthenticationFilter authenticationTokenFilter;

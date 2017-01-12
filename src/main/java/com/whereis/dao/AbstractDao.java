@@ -10,6 +10,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 public abstract class AbstractDao<T> {
 
@@ -23,7 +25,17 @@ public abstract class AbstractDao<T> {
 
     @SuppressWarnings("unchecked")
     public AbstractDao(){
-        this.persistentClass =(Class<T>) (this.getClass().getGenericSuperclass().getClass());
+        Type type = getClass().getGenericSuperclass();
+
+        while (!(type instanceof ParameterizedType) || ((ParameterizedType) type).getRawType() != AbstractDao.class) {
+            if (type instanceof ParameterizedType) {
+                type = ((Class<?>) ((ParameterizedType) type).getRawType()).getGenericSuperclass();
+            } else {
+                type = ((Class<?>) type).getGenericSuperclass();
+            }
+        }
+
+        this.persistentClass =(Class<T>) ((ParameterizedType) type).getActualTypeArguments()[0];
     }
 
 
@@ -45,17 +57,19 @@ public abstract class AbstractDao<T> {
     }
 
     //TODO: uncomment if needed else delete
-    /*public void persist(T entity) {
+    public void persist(T entity) {
         getSession().persist(entity);
-    }*/
+    }
 
 
     /**
      *   Next methods are common for all DAO's
      */
 
+    //TODO: Fix get
     public T get(int id) {
-        T t = entityManager.find(persistentClass, id);
+        T t = getSession().get(persistentClass, id);
+       // T t = entityManager.find(persistentClass, id);
         return t;
     }
 

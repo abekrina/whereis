@@ -49,4 +49,16 @@ public class User implements Serializable {
     public void setLastName(String last_name) {
         this.last_name = last_name;
     }
+
+    @Override
+    public boolean equals(Object user) {
+        User otherUser = (User) user;
+        if ( otherUser.getId() == id
+                && otherUser.getEmail().equals(email)
+                && otherUser.getFirstName().equals(first_name)
+                && otherUser.getLastName().equals(last_name)) {
+            return true;
+        }
+        return false;
+    }
 }

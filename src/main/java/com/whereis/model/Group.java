@@ -6,6 +6,7 @@ import javax.persistence.*;
 @Table(name = "groups")
 public class Group {
     @Id
+    //TODO: заменить  id на identity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 

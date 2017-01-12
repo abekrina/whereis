@@ -5,6 +5,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 @Entity
+//TODO:change to users_in_group
 @Table(name = "usersInGroups")
 public class UsersInGroup {
     @Id
