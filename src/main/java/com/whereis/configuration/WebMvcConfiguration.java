@@ -1,11 +1,10 @@
 package com.whereis.configuration;
 
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-@Configuration
-@ComponentScan(basePackages = "com.whereis")
 @EnableWebMvc
-public class ApplicationConfiguration {
+@Configuration
+public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
 }
