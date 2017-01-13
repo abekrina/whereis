@@ -64,15 +64,12 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
             return null;
         }
         GoogleAuthentication tokenAuth = (GoogleAuthentication) auth;
+        
         // Check if user is already connected
         //TODO:  учесть то что токен экспайрится
-        try {
-            tokenAuth.getCredentials();
+        if (tokenAuth.getCredentials() != null) {
             tokenAuth.setAuthenticated(true);
             return tokenAuth;
-            //TODO: почему тут catch?
-        } catch (NullPointerException e) {
-
         }
 
         if (!tokenAuth.getName().equals(httpSession.getAttribute("unique_visitor_code"))) {

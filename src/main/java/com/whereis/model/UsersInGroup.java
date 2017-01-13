@@ -49,4 +49,14 @@ public class UsersInGroup {
     public void setJoinedAt(Timestamp joined) {
         this.joined_at = joined;
     }
+
+    @Override
+    public boolean equals(Object usersInGroupObj) {
+        UsersInGroup usersInGroup = (UsersInGroup) usersInGroupObj;
+        if (usersInGroup.getId() == id && usersInGroup.getUserId() == user_id
+                && usersInGroup.getGroupId() == group_id) {
+            return true;
+        }
+        return false;
+    }
 }

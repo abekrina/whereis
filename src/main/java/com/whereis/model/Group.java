@@ -7,6 +7,7 @@ import javax.persistence.*;
 public class Group {
     @Id
     //TODO: заменить  id на identity
+    @Deprecated
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 

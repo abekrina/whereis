@@ -1,5 +1,8 @@
 package com.whereis.dao;
 
+import com.whereis.exceptions.NoUserInGroup;
+import com.whereis.model.Group;
+import com.whereis.model.User;
 import com.whereis.model.UsersInGroup;
 
 public interface UsersInGroupsDao {
@@ -14,4 +17,5 @@ public interface UsersInGroupsDao {
      */
     void save(UsersInGroup user);
     void update(UsersInGroup user);
+    void leave(Group group, User user) throws NoUserInGroup;
 }
