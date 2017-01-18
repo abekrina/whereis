@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class GoogleAuthenticationFilter implements Filter {
 
-    private static final Logger logger = LogManager.getLogger(GoogleAuthenticationFilter.class.getName());
+    private static final Logger logger = LogManager.getLogger(GoogleAuthenticationFilter.class);
 
     @Override
     public void init(FilterConfig fc) throws ServletException {

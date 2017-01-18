@@ -1,5 +1,7 @@
 package com.whereis.dao;
 
+import com.whereis.exceptions.NoSuchUser;
+import com.whereis.exceptions.UserWithEmailExists;
 import com.whereis.model.User;
 import org.hibernate.Session;
 
@@ -16,8 +18,8 @@ public interface UserDao {
     /**
      *  Methods specific for every implementation of this interface
      */
-    void save(User user);
-    void update(User user);
+    void save(User user) throws UserWithEmailExists;
+    void update(User user) throws NoSuchUser;
     User getByEmail(String email);
     void deleteByEmail(String email);
 }

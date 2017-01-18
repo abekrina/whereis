@@ -2,16 +2,14 @@ package com.whereis.dao;
 
 import com.whereis.authentication.GoogleAuthenticationFilter;
 import com.whereis.exceptions.NoUserInGroup;
+import com.whereis.exceptions.UserAlreadyInGroup;
 import com.whereis.model.Group;
-import com.whereis.model.Invite;
 import com.whereis.model.User;
 import com.whereis.model.UsersInGroup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
@@ -26,33 +24,53 @@ public class DefaultUsersInGroupsDao extends AbstractDao<UsersInGroup> implement
     private static final Logger logger = LogManager.getLogger(GoogleAuthenticationFilter.class);
 
     @Override
-    public void save(UsersInGroup user) {
+    public void save(UsersInGroup user) throws UserAlreadyInGroup {
+        if (findRelationInDB(user) instanceof UsersInGroup) {
+            throw new UserAlreadyInGroup("User is present in group: ");
+        }
         Session currentSession = sessionFactory.getCurrentSession();
         currentSession.save(user);
     }
 
     @Override
     public void update(UsersInGroup user) {
-        Session currentSession = sessionFactory.getCurrentSession();
-        currentSession.update(user);
+        if (get(user.getId()) != null) {
+            Session currentSession = sessionFactory.getCurrentSession();
+            currentSession.update(user);
+        }
     }
 
     @Override
     public void leave(Group group, User user) throws NoUserInGroup {
+        UsersInGroup requestedUserInGroup = new UsersInGroup();
+        requestedUserInGroup.setUserId(user.getId());
+        requestedUserInGroup.setGroupId(group.getId());
+
+        UsersInGroup relationToDelete = findRelationInDB(requestedUserInGroup);
+        if (relationToDelete == null) {
+            logger.error("Group identity:" + group.getIdentity() + " name:" + group.getName());
+            throw new NoUserInGroup(user.toString());
+        } else {
+            delete(relationToDelete);
+        }
+    }
+
+    // Returns null if not found
+    @Override
+    public UsersInGroup findRelationInDB (UsersInGroup usersInGroup) {
         CriteriaBuilder builder = getCriteriaBuilder();
         @SuppressWarnings("unchecked")
         CriteriaQuery<UsersInGroup> criteriaQuery = createEntityCriteria();
         Root<UsersInGroup> usersInGroupRoot = criteriaQuery.from(UsersInGroup.class);
         criteriaQuery.select(usersInGroupRoot);
-        criteriaQuery.where(builder.and(builder.equal(usersInGroupRoot.get("user_id"), user.getId())),
-                builder.equal(usersInGroupRoot.get("group_id"), group.getId()));
-        UsersInGroup relationToDelete = null;
+        criteriaQuery.where(builder.and(builder.equal(usersInGroupRoot.get("user_id"), usersInGroup.getUserId())),
+                builder.equal(usersInGroupRoot.get("group_id"), usersInGroup.getGroupId()));
+        UsersInGroup relation = null;
         try {
-            relationToDelete = getSession().createQuery(criteriaQuery).getSingleResult();
-            delete(relationToDelete);
+            relation = getSession().createQuery(criteriaQuery).getSingleResult();
+            return relation;
         } catch (NoResultException e) {
-            logger.error("Group identity:" + group.getIdentity() + " name:" + group.getName());
-            throw new NoUserInGroup(e);
+            return null;
         }
     }
 }

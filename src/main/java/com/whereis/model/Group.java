@@ -1,13 +1,13 @@
 package com.whereis.model;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "groups")
 public class Group {
     @Id
     //TODO: заменить  id на identity
-    @Deprecated
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
@@ -37,5 +37,32 @@ public class Group {
 
     public void setIdentity(String identity) {
         this.identity = identity;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(" id: ");
+        builder.append(id);
+        builder.append(" name: ");
+        builder.append(name);
+        builder.append(" identity: ");
+        builder.append(identity);
+        return builder.toString();
+    }
+
+    /*
+    *   Checks equality of database entries
+    */
+    @Override
+    public boolean equals(Object anotherGroup) {
+        if (anotherGroup == this) return true;
+        if (!(anotherGroup instanceof Group)) {
+            return false;
+        }
+        Group otherGroup = (Group) anotherGroup;
+        return otherGroup.getId() == id
+                && Objects.equals(otherGroup.getIdentity(),identity)
+                && Objects.equals(otherGroup.getName(), name);
     }
 }

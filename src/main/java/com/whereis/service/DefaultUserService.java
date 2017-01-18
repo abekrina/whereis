@@ -2,11 +2,12 @@ package com.whereis.service;
 
 import com.google.api.services.plus.Plus;
 import com.google.api.services.plus.model.Person;
+import com.whereis.authentication.GoogleAuthenticationFilter;
 import com.whereis.dao.UserDao;
-import com.whereis.exceptions.GoogleApiException;
-import com.whereis.exceptions.GoogleApiNotAccessibleException;
-import com.whereis.exceptions.UserNotFoundException;
+import com.whereis.exceptions.*;
 import com.whereis.model.User;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,9 @@ import java.io.IOException;
 @Service("userService")
 @Transactional
 public class DefaultUserService implements UserService {
+
+    private static final Logger logger = LogManager.getLogger(GoogleAuthenticationFilter.class);
+
     @Autowired
     public UserDao dao;
 
@@ -25,12 +29,12 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public void save(User user) {
+    public void save(User user) throws UserWithEmailExists {
         dao.save(user);
     }
 
     @Override
-    public void update(User user) {
+    public void update(User user) throws NoSuchUser {
         dao.update(user);
     }
 
@@ -63,7 +67,12 @@ public class DefaultUserService implements UserService {
         }
 
         newUser.setEmail(userEmail);
-        save(newUser);
+        try {
+            save(newUser);
+        } catch (UserWithEmailExists userWithEmailExists) {
+            logger.error("Attempting to register user this email which already exists ", userWithEmailExists);
+            throw new IOException("Attempting to register user this email which already exists ", userWithEmailExists);
+        }
         return newUser;
     }
 }

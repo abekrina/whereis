@@ -3,6 +3,7 @@ package com.whereis.controller;
 import com.whereis.authentication.GoogleAuthentication;
 import com.whereis.authentication.GoogleAuthenticationFilter;
 import com.whereis.exceptions.NoUserInGroup;
+import com.whereis.exceptions.UserAlreadyInGroup;
 import com.whereis.model.Group;
 import com.whereis.model.Invite;
 import com.whereis.model.User;
@@ -81,8 +82,13 @@ public class GroupController extends AbstractController {
         userInGroupPresence.setGroupId(targetGroup.getId());
         //TODO: move this to postgres
         userInGroupPresence.setJoinedAt(new Timestamp(System.currentTimeMillis()));
-        usersInGroupsService.save(userInGroupPresence);
-        inviteService.delete(inviteForUser);
+        try {
+            usersInGroupsService.save(userInGroupPresence);
+            inviteService.delete(inviteForUser);
+        } catch (UserAlreadyInGroup userAlreadyInGroup) {
+            logger.error("Trying to add user which alresdy in group " + userInGroupPresence.toString());
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity(HttpStatus.OK);
     }
     // TODO:  неправильный id пользователя

@@ -1,5 +1,6 @@
 package com.whereis.controller;
 
+import com.whereis.exceptions.UserWithEmailExists;
 import com.whereis.model.Location;
 import com.whereis.model.User;
 import com.whereis.service.LocationService;
@@ -27,7 +28,12 @@ public class ApiController extends AbstractController {
         user.setFirstName("Alena");
         user.setLastName("Bekrina");
         user.setEmail("larmyztab@gmail.com");
-        userService.save(user);
+        try {
+            userService.save(user);
+        } catch (UserWithEmailExists userWithEmailExists) {
+            userWithEmailExists.printStackTrace();
+            return "user exists";
+        }
 
         return "42";
     }

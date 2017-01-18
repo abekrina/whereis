@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "users")
@@ -52,13 +53,33 @@ public class User implements Serializable {
 
     @Override
     public boolean equals(Object user) {
-        User otherUser = (User) user;
-        if ( otherUser.getId() == id
-                && otherUser.getEmail().equals(email)
-                && otherUser.getFirstName().equals(first_name)
-                && otherUser.getLastName().equals(last_name)) {
-            return true;
+        if (user == this) return true;
+        if (!(user instanceof User)) {
+            return false;
         }
-        return false;
+        User otherUser = (User) user;
+        return otherUser.getId() == id
+                && Objects.equals(otherUser.getEmail(), email)
+                && Objects.equals(otherUser.getFirstName(), first_name)
+                && Objects.equals(otherUser.getLastName(), last_name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email, first_name, last_name);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(" id: ");
+        builder.append(id);
+        builder.append(" email: ");
+        builder.append(email);
+        builder.append(" first name: ");
+        builder.append(first_name);
+        builder.append(" last name: ");
+        builder.append(last_name);
+        return builder.toString();
     }
 }

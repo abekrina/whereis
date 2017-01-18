@@ -3,6 +3,7 @@ package com.whereis.service;
 import com.whereis.dao.GroupDao;
 import com.whereis.dao.UsersInGroupsDao;
 import com.whereis.exceptions.NoUserInGroup;
+import com.whereis.exceptions.UserAlreadyInGroup;
 import com.whereis.model.Group;
 import com.whereis.model.User;
 import com.whereis.model.UsersInGroup;
@@ -23,7 +24,7 @@ public class DefaultUsersInGroupsService implements UsersInGroupsService {
     }
 
     @Override
-    public void save(UsersInGroup userInGroup) {
+    public void save(UsersInGroup userInGroup) throws UserAlreadyInGroup {
         dao.save(userInGroup);
     }
 
