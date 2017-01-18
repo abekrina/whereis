@@ -1,6 +1,7 @@
 package com.whereis.service;
 
 import com.whereis.dao.InviteDao;
+import com.whereis.exceptions.UserAlreadyInvited;
 import com.whereis.model.Group;
 import com.whereis.model.Invite;
 import com.whereis.model.User;
@@ -18,7 +19,7 @@ public class DefaultInviteService implements InviteService {
     }
 
     @Override
-    public void save(Invite invite) {
+    public void save(Invite invite) throws UserAlreadyInvited {
         dao.save(invite);
     }
 

@@ -4,6 +4,7 @@ import com.whereis.authentication.GoogleAuthentication;
 import com.whereis.authentication.GoogleAuthenticationFilter;
 import com.whereis.exceptions.NoUserInGroup;
 import com.whereis.exceptions.UserAlreadyInGroup;
+import com.whereis.exceptions.UserAlreadyInvited;
 import com.whereis.model.Group;
 import com.whereis.model.Invite;
 import com.whereis.model.User;
@@ -52,13 +53,13 @@ public class GroupController extends AbstractController {
     @RequestMapping(value = "/{identity}/invite", method = RequestMethod.POST)
     public ResponseEntity inviteUser(@PathVariable("identity") String identity, @RequestBody Invite invite) {
         invite.setGroupId(groupService.getByIdentity(identity).getId());
-            if (inviteService.getSameInvite(invite) == null) {
-                inviteService.save(invite);
-            } else {
-                // TODO: make response object and custom exceptions
-                // send message that user already invited
-                return new ResponseEntity(HttpStatus.I_AM_A_TEAPOT);
-            }
+        try {
+            inviteService.save(invite);
+        } catch (UserAlreadyInvited userAlreadyInvited) {
+            // TODO: make response object and custom exceptions
+            // send message that user already invited
+            return new ResponseEntity(HttpStatus.I_AM_A_TEAPOT);
+        }
         return new ResponseEntity(HttpStatus.OK);
     }
 

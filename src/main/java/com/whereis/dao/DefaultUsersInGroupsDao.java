@@ -25,7 +25,7 @@ public class DefaultUsersInGroupsDao extends AbstractDao<UsersInGroup> implement
 
     @Override
     public void save(UsersInGroup user) throws UserAlreadyInGroup {
-        if (findRelationInDB(user) instanceof UsersInGroup) {
+        if (findRelationInDB(user) != null) {
             throw new UserAlreadyInGroup("User is present in group: ");
         }
         Session currentSession = sessionFactory.getCurrentSession();
