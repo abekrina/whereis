@@ -29,7 +29,6 @@ import java.util.Properties;
 @Configuration
 @PropertySource("classpath:test-application.properties")
 @PropertySource("classpath:test-secrets.properties")
-@EnableTransactionManagement
 @ComponentScan(basePackages = "com.whereis")
 public class TestHibernateConfiguration {
     @Autowired

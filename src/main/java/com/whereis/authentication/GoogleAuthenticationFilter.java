@@ -1,5 +1,7 @@
 package com.whereis.authentication;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,11 +11,10 @@ import javax.servlet.Filter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Logger;
 
 public class GoogleAuthenticationFilter implements Filter {
 
-    private static final Logger logger = Logger.getLogger(GoogleAuthenticationFilter.class.getName());
+    private static final Logger logger = LogManager.getLogger(GoogleAuthenticationFilter.class);
 
     @Override
     public void init(FilterConfig fc) throws ServletException {

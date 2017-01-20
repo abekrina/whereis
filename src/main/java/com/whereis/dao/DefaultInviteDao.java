@@ -1,5 +1,6 @@
 package com.whereis.dao;
 
+import com.whereis.exceptions.UserAlreadyInvited;
 import com.whereis.model.Group;
 import com.whereis.model.Invite;
 import com.whereis.model.User;
@@ -19,18 +20,25 @@ import java.util.Calendar;
 public class DefaultInviteDao extends  AbstractDao<Invite> implements InviteDao {
 
     @Override
-    public void save(Invite invite) {
-        if (invite.getTimestamp() == null) {
-            invite.setTimestamp(new Timestamp(Calendar.getInstance().getTime().getTime()));
+    public void save(Invite invite) throws UserAlreadyInvited {
+        if (getSameInvite(invite) == null) {
+            if (invite.getTimestamp() == null) {
+                invite.setTimestamp(new Timestamp(Calendar.getInstance().getTime().getTime()));
+            }
+            Session currentSession = sessionFactory.getCurrentSession();
+            currentSession.save(invite);
+        } else {
+            throw new UserAlreadyInvited("Invite for email " + invite.getSentToEmail()
+                    + " to group " + invite.getGroupId() + " already exists");
         }
-        Session currentSession = sessionFactory.getCurrentSession();
-        currentSession.save(invite);
     }
 
     @Override
     public void update(Invite invite) {
-        Session currentSession = sessionFactory.getCurrentSession();
-        currentSession.update(invite);
+        if (get(invite.getId()) != null) {
+            Session currentSession = sessionFactory.getCurrentSession();
+            currentSession.update(invite);
+        }
     }
 
     @Override
@@ -43,30 +51,20 @@ public class DefaultInviteDao extends  AbstractDao<Invite> implements InviteDao 
         criteriaQuery.where(builder.and(builder.equal(inviteRoot.get("sent_to_email"), invite.getSentToEmail())),
                 builder.equal(inviteRoot.get("group_id"), invite.getGroupId()));
         try {
-            return entityManager.createQuery(criteriaQuery).getSingleResult();
+            return getSession().createQuery(criteriaQuery).getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
     }
 
+
+    // Returns null if no invites for user and group
     @Override
     public Invite getPendingInviteFor(User user, Group group) {
-        CriteriaBuilder builder = getCriteriaBuilder();
-        @SuppressWarnings("unchecked")
-        CriteriaQuery<Invite> criteriaQuery = createEntityCriteria();
-        Root<Invite> inviteRoot = criteriaQuery.from(Invite.class);
-        criteriaQuery.select(inviteRoot);
-        criteriaQuery.where(builder.and(builder.equal(inviteRoot.get("group_id"), group.getId())),
-                                       (builder.equal(inviteRoot.get("sent_to_email"), user.getEmail())));
-        try {
-            return entityManager.createQuery(criteriaQuery).getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
+        Invite pendingInvite = new Invite();
+        pendingInvite.setGroupId(group.getId());
+        pendingInvite.setSentToEmail(user.getEmail());
 
-    public void delete(Invite invite) {
-        Session currentSession = sessionFactory.getCurrentSession();
-        currentSession.delete(invite);
+        return getSameInvite(pendingInvite);
     }
 }

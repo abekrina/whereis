@@ -1,82 +1,92 @@
 package com.whereis.dao;
 
-import com.whereis.configuration.LogConfigurationFactory;
+import com.whereis.exceptions.NoSuchUser;
+import com.whereis.exceptions.UserWithEmailExists;
 import com.whereis.model.User;
 import com.whereis.testconfig.TestHibernateConfiguration;
 import com.whereis.testconfig.TestWebMvcConfiguration;
-import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.sql.Statement;
-
+// Настроить surefire
 @ContextConfiguration(classes = {TestHibernateConfiguration.class, TestWebMvcConfiguration.class})
 @WebAppConfiguration
-public class DefaultUserDaoIT extends AbstractTransactionalTestNGSpringContextTests {
+public class DefaultUserDaoIT extends AbstractIntTestForDao {
     @Autowired
-    DataSource dataSource;
+    private UserDao userDao;
 
-    @Autowired
-    UserDao userDao;
-
-    User defaultUser;
-
-    @BeforeTest
-    public void initialize() {
-        // Set configuration for logger
-        ConfigurationFactory.setConfigurationFactory(new LogConfigurationFactory());
-
-        // Create test user object
-        setupDefaultUser();
-    }
+    private User defaultUser;
 
     private void setupDefaultUser()   {
-        defaultUser = new User();
+        if (defaultUser == null) {
+            defaultUser = new User();
+        }
         defaultUser.setId(1);
         defaultUser.setEmail("sweetpotatodevelopment@gmail.com");
         defaultUser.setFirstName("Potato");
         defaultUser.setLastName("Development");
     }
 
-    @BeforeMethod
-    public void cleanup() throws SQLException {
-        Statement databaseTruncationStatement = null;
-        try {
-            databaseTruncationStatement = dataSource.getConnection().createStatement();
-            databaseTruncationStatement.executeUpdate("DELETE FROM users WHERE id >= 1;");
-            databaseTruncationStatement.execute("ALTER SEQUENCE users_id_seq RESTART WITH 1;");
-        } finally {
-            databaseTruncationStatement.close();
-        }
+    @Override
+    void setupTestData() {
+        setupDefaultUser();
+        MAIN_TABLE = "users";
+        MAIN_SEQUENCE = "users_id_seq";
     }
 
     @Test
-    @Transactional(propagation = Propagation.NEVER)
-    public void save_NoSuchUser() {
+    public void testSaveUser() throws UserWithEmailExists {
         userDao.save(defaultUser);
         Assert.assertEquals(userDao.get(1), defaultUser);
     }
 
+    @Test(expectedExceptions = UserWithEmailExists.class)
+    public void testUserNotSavedIfSameEmailExists() throws UserWithEmailExists {
+        userDao.save(defaultUser);
+
+        User userWithSameEmail = new User();
+        userWithSameEmail.setEmail(defaultUser.getEmail());
+        userWithSameEmail.setFirstName("Some");
+        userWithSameEmail.setLastName("User");
+
+        userDao.save(userWithSameEmail);
+    }
+
     @Test
-    @Transactional(propagation = Propagation.NEVER)
-    public void save_SameUserExists() {
+    public void testUpdateUser() throws NoSuchUser, UserWithEmailExists {
+        userDao.save(defaultUser);
+
+        defaultUser.setFirstName("Alena");
+        defaultUser.setLastName("Bekrina");
+        defaultUser.setEmail("abekrina@gmail.com");
+        userDao.update(defaultUser);
+
+        Assert.assertEquals(userDao.get(1).getFirstName(), "Alena");
+        Assert.assertEquals(userDao.get(1).getLastName(), "Bekrina");
+        Assert.assertEquals(userDao.get(1).getEmail(), "abekrina@gmail.com");
+    }
+
+    @Test(expectedExceptions = NoSuchUser.class)
+    public void testUpdateNonExistingUser() throws NoSuchUser {
+        // Expect exception in this case
+        userDao.update(defaultUser);
+    }
+
+    @Test
+    public void testGetUserByEmail() throws UserWithEmailExists {
+        userDao.save(defaultUser);
+        Assert.assertEquals(userDao.getByEmail(defaultUser.getEmail()), defaultUser);
+    }
+
+    @Test
+    public void testDeleteUser() throws UserWithEmailExists {
         userDao.save(defaultUser);
         Assert.assertEquals(userDao.get(1), defaultUser);
-
-        // Attempting to save same user one more time
-        userDao.save(defaultUser);
-        Assert.assertNull(userDao.get(2));
-        }
+        userDao.delete(defaultUser);
+        Assert.assertNull(userDao.get(1));
+    }
 }
+//TODO: почитать про java coding style

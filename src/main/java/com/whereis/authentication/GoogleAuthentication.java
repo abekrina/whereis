@@ -55,8 +55,7 @@ public class GoogleAuthentication implements Authentication {
     }
     @Override
     public String getName() {
-        //TODO: think about what to return
-        return unique_visitor_code;
+        return principal.getFirstName() + principal.getLastName() + principal.getId();
     }
 
     public String getCode() {

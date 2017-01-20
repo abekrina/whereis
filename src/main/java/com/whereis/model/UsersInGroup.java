@@ -3,6 +3,7 @@ package com.whereis.model;
 import javax.persistence.*;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 @Entity
 //TODO:change to users_in_group
@@ -48,5 +49,25 @@ public class UsersInGroup {
 
     public void setJoinedAt(Timestamp joined) {
         this.joined_at = joined;
+    }
+
+    @Override
+    public boolean equals(Object usersInGroupObj) {
+        UsersInGroup usersInGroup = (UsersInGroup) usersInGroupObj;
+        if (usersInGroup.getId() == id && usersInGroup.getUserId() == user_id
+                && usersInGroup.getGroupId() == group_id) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, user_id, group_id);
+    }
+
+    @Override
+    public String toString() {
+        return "user_id: " + user_id + " group_id " + group_id;
     }
 }

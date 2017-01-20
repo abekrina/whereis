@@ -1,7 +1,9 @@
 package com.whereis.dao;
 
+import com.whereis.model.Group;
 import com.whereis.model.Location;
-import com.whereis.model.User;
+
+import java.util.List;
 
 public interface LocationDao {
     /**
@@ -14,5 +16,7 @@ public interface LocationDao {
      *  Methods specific for every implementation of this interface
      */
     void save(Location location);
-    Location getLastLocationForUser(User user);
+    Location getLastLocationForUser(int userId);
+
+    List<Location> getLastLocationsForGroupMembers(Group group);
 }
