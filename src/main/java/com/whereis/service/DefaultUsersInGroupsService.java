@@ -13,34 +13,39 @@ import org.springframework.stereotype.Service;
 @Service
 public class DefaultUsersInGroupsService implements UsersInGroupsService {
     @Autowired
-    UsersInGroupsDao dao;
+    UsersInGroupsDao usersInGroupsDao;
 
     @Autowired
     GroupDao groupDao;
 
     @Override
     public UsersInGroup get(int id) {
-        return dao.get(id);
+        return usersInGroupsDao.get(id);
     }
 
     @Override
     public void save(UsersInGroup userInGroup) throws UserAlreadyInGroup {
-        dao.save(userInGroup);
+        usersInGroupsDao.save(userInGroup);
     }
 
     @Override
     public void update(UsersInGroup userInGroup) {
-        dao.update(userInGroup);
+        usersInGroupsDao.update(userInGroup);
     }
 
     @Override
     public void delete(UsersInGroup userInGroup) {
-        dao.delete(userInGroup);
+        usersInGroupsDao.delete(userInGroup);
     }
 
     @Override
     public void leave(String groupIdentity, User user) throws NoUserInGroup {
         Group groupToLeave = groupDao.getByIdentity(groupIdentity);
-        dao.leave(groupToLeave, user);
+        usersInGroupsDao.leave(groupToLeave, user);
+    }
+
+    @Override
+    public UsersInGroup findUserInGroup(Group group, User user) {
+        return usersInGroupsDao.findUserInGroup(group, user);
     }
 }

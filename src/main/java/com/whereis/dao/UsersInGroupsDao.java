@@ -20,5 +20,7 @@ public interface UsersInGroupsDao {
     void update(UsersInGroup user);
     void leave(Group group, User user) throws NoUserInGroup;
 
-    UsersInGroup findRelationInDB(UsersInGroup usersInGroup);
+    UsersInGroup findUserInGroup(UsersInGroup usersInGroup);
+
+    UsersInGroup findUserInGroup(Group group, User user);
 }

@@ -20,6 +20,8 @@ public class Location {
 
     private String ip;
 
+    private String group_identity;
+
     public int getId() {
         return id;
     }
@@ -66,5 +68,14 @@ public class Location {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+
+    public String getGroupIdentity() {
+        return group_identity;
+    }
+
+    public void setGroupIdentity(String group_identity) {
+        this.group_identity = group_identity;
     }
 }

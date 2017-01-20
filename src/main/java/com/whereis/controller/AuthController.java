@@ -27,125 +27,32 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 public class AuthController extends AbstractController {
-/*    private static final HttpTransport TRANSPORT = new NetHttpTransport();
 
-    private static final JacksonFactory JSON_FACTORY = new JacksonFactory();*/
-/*
-    @Autowired
-    private UserService userService;*/
+    @RequestMapping(value = "/config.json", method = RequestMethod.GET)
+    public HashMap<String, String> getConfig() {
+        String unique_visitor_code = new BigInteger(130, new SecureRandom()).toString(32);
+        HashMap<String, String> config = new HashMap<>();
 
-/*    private GoogleCredential buildCredential() throws IOException {
-        String tokenData = (String) httpSession.getAttribute("token");
+        httpSession.setAttribute("unique_visitor_code", unique_visitor_code);
+        config.put("clientId", CLIENT_ID);
+        config.put("unique_visitor_code", unique_visitor_code);
 
-        return new GoogleCredential.Builder()
-            .setJsonFactory(JSON_FACTORY)
-            .setTransport(TRANSPORT)
-            .setClientSecrets(CLIENT_ID, CLIENT_SECRET).build()
-            .setFromTokenResponse(JSON_FACTORY.fromString(tokenData, GoogleTokenResponse.class));
-    }*/
-
-/*    @RequestMapping(value = "/connect", method = RequestMethod.POST)
-    public ResponseEntity connect(
-        @RequestParam("state") String stateParam,
-        @RequestBody String code
-    ) throws IOException {
-        String tokenData = (String) httpSession.getAttribute("token");
-
-        // Check if user is already connected
-        if (tokenData != null) {
-            return new ResponseEntity<>("User already connected", HttpStatus.OK);
-        }
-
-        // Check state param
-        if (!stateParam.equals(httpSession.getAttribute("state"))) {
-            return new ResponseEntity<>("Invalid state param", HttpStatus.UNAUTHORIZED);
-        }
-
-        // Try to upgrade token
-        try {
-            GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
-                TRANSPORT, JSON_FACTORY, CLIENT_ID, CLIENT_SECRET, code, "postmessage"
-            ).execute();
-
-            GoogleIdToken idToken = tokenResponse.parseIdToken();
-            GoogleIdToken.Payload payload = idToken.getPayload();
-
-            httpSession.setAttribute("token", tokenResponse.toString());
-
-            User existingUser = userService.getByEmail(payload.getEmail());
-
-            if (existingUser == null) {
-                Plus plus = new Plus.Builder(TRANSPORT, JSON_FACTORY, buildCredential())
-                    .setApplicationName("")
-                    .build();
-                Person profile = plus.people().get("me").execute();
-
-                User user = new User();
-                user.setName(profile.getDisplayName());
-                user.setEmail(payload.getEmail());
-                userService.save(user);
-            }
-
-            return new ResponseEntity<>(
-                "Successfully connected user",
-                HttpStatus.OK
-            );
-        } catch (TokenResponseException e) {
-            return new ResponseEntity<>(
-                "Failed to upgrade the authorization code",
-                HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        } catch (IOException e) {
-            return new ResponseEntity<>(
-                "Failed to read token data from Google",
-                HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
+        return config;
     }
-
-    @RequestMapping(value = "/disconnect", method = RequestMethod.GET)
-    public ResponseEntity disconnect() {
-        String tokenData = (String) httpSession.getAttribute("token");
-
-        if (tokenData == null) {
-            return new ResponseEntity<>("User not connected", HttpStatus.UNAUTHORIZED);
-        }
-
-        try {
-            GoogleCredential credential = buildCredential();
-
-            HttpResponse revokeResponse = TRANSPORT.createRequestFactory()
-                .buildGetRequest(new GenericUrl(String.format(
-                    "https://accounts.google.com/o/oauth2/revoke?token=%s",
-                    credential.getAccessToken()
-                ))).execute();
-
-            httpSession.removeAttribute("token");
-
-            return new ResponseEntity<>(
-                "Successfully disconnected",
-                HttpStatus.OK
-            );
-        } catch (IOException e) {
-            return new ResponseEntity<>(
-                "Failed to revoke token for given user",
-                HttpStatus.BAD_REQUEST
-            );
-        }
-    }*/
 
     @RequestMapping("/login")
-    public void login() {
-
-    }
+    public void login() {}
 
     @RequestMapping(value="/logout")
-    public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null){
             new SecurityContextLogoutHandler().logout(request, response, auth);

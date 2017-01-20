@@ -1,17 +1,25 @@
 package com.whereis.service;
 
-import com.whereis.dao.DefaultLocationDao;
+import com.whereis.dao.LocationDao;
+import com.whereis.dao.UsersInGroupsDao;
+import com.whereis.model.Group;
 import com.whereis.model.User;
 import com.whereis.model.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service("userLocationService")
 @Transactional
 public class DefaultLocationService implements LocationService {
     @Autowired
-    DefaultLocationDao locationDao;
+    LocationDao locationDao;
+
+    @Autowired
+    UsersInGroupsDao usersInGroupsDao;
 
     @Override
     public Location get(int id) {
@@ -35,6 +43,14 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public Location getLastLocationForUser(User user) {
-        return locationDao.getLastLocationForUser(user);
+        return locationDao.getLastLocationForUser(user.getId());
+    }
+
+    @Override
+    public List<Location> getLocationsOfGroupMembers(Group group, User currentUser) {
+        if (usersInGroupsDao.findUserInGroup(group, currentUser) != null) {
+            return locationDao.getLastLocationsForGroupMembers(group);
+        }
+        return new ArrayList<>();
     }
 }

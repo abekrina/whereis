@@ -88,12 +88,12 @@ public class DefaultUsersInGroupDaoIT extends AbstractIntTestForDao {
     @Test
     public void testFindRelationInDB() throws UserAlreadyInGroup {
         usersInGroupsDao.save(defaultUsersInGroup);
-        Assert.assertEquals(usersInGroupsDao.findRelationInDB(defaultUsersInGroup), defaultUsersInGroup);
+        Assert.assertEquals(usersInGroupsDao.findUserInGroup(defaultUsersInGroup), defaultUsersInGroup);
     }
 
     @Test
     public void testFindAbsentRelationInDB() {
-        Assert.assertNull(usersInGroupsDao.findRelationInDB(defaultUsersInGroup));
+        Assert.assertNull(usersInGroupsDao.findUserInGroup(defaultUsersInGroup));
     }
 
     @Test

@@ -25,7 +25,7 @@ public class DefaultUsersInGroupsDao extends AbstractDao<UsersInGroup> implement
 
     @Override
     public void save(UsersInGroup user) throws UserAlreadyInGroup {
-        if (findRelationInDB(user) != null) {
+        if (findUserInGroup(user) != null) {
             throw new UserAlreadyInGroup("User is present in group: ");
         }
         Session currentSession = sessionFactory.getCurrentSession();
@@ -46,7 +46,7 @@ public class DefaultUsersInGroupsDao extends AbstractDao<UsersInGroup> implement
         requestedUserInGroup.setUserId(user.getId());
         requestedUserInGroup.setGroupId(group.getId());
 
-        UsersInGroup relationToDelete = findRelationInDB(requestedUserInGroup);
+        UsersInGroup relationToDelete = findUserInGroup(requestedUserInGroup);
         if (relationToDelete == null) {
             logger.error("Group identity:" + group.getIdentity() + " name:" + group.getName());
             throw new NoUserInGroup(user.toString());
@@ -57,7 +57,7 @@ public class DefaultUsersInGroupsDao extends AbstractDao<UsersInGroup> implement
 
     // Returns null if not found
     @Override
-    public UsersInGroup findRelationInDB (UsersInGroup usersInGroup) {
+    public UsersInGroup findUserInGroup(UsersInGroup usersInGroup) {
         CriteriaBuilder builder = getCriteriaBuilder();
         @SuppressWarnings("unchecked")
         CriteriaQuery<UsersInGroup> criteriaQuery = createEntityCriteria();
@@ -65,6 +65,24 @@ public class DefaultUsersInGroupsDao extends AbstractDao<UsersInGroup> implement
         criteriaQuery.select(usersInGroupRoot);
         criteriaQuery.where(builder.and(builder.equal(usersInGroupRoot.get("user_id"), usersInGroup.getUserId())),
                 builder.equal(usersInGroupRoot.get("group_id"), usersInGroup.getGroupId()));
+        UsersInGroup relation = null;
+        try {
+            relation = getSession().createQuery(criteriaQuery).getSingleResult();
+            return relation;
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public UsersInGroup findUserInGroup(Group group, User user) {
+        CriteriaBuilder builder = getCriteriaBuilder();
+        @SuppressWarnings("unchecked")
+        CriteriaQuery<UsersInGroup> criteriaQuery = createEntityCriteria();
+        Root<UsersInGroup> usersInGroupRoot = criteriaQuery.from(UsersInGroup.class);
+        criteriaQuery.select(usersInGroupRoot);
+        criteriaQuery.where(builder.and(builder.equal(usersInGroupRoot.get("user_id"), user.getId())),
+                builder.equal(usersInGroupRoot.get("group_id"), group.getId()));
         UsersInGroup relation = null;
         try {
             relation = getSession().createQuery(criteriaQuery).getSingleResult();
