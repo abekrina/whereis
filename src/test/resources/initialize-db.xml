@@ -1,57 +1,10 @@
-<!--
-<!DOCTYPE dataset SYSTEM "dataset.dtd">
-<dataset>
-    <table name="usersingroups">
-        <column>id</column>
-        <column>user_id</column>
-        <column>group_id</column>
-        <column>joined_at</column>
-        <row>
-            <value>1</value>
-            <value>1</value>
-            <value>1</value>
-            <value>123123123</value>
-        </row>
-        <row>
-            <value>2</value>
-            <value>2</value>
-            <value>1</value>
-            <value>123123124</value>
-        </row>
-    </table>
-    <table name="users">
-        <column>id</column>
-        <column>first_name</column>
-        <column>last_name</column>
-        <column>email</column>
-        <row>
-            <value>1</value>
-            <value>Potato</value>
-            <value>Development</value>
-            <value>sweetpotatodevelopment@gmail.com</value>
-        </row>
-        <row>
-            <value>2</value>
-            <value>Alena</value>
-            <value>Bekrina</value>
-            <value>abekrina@gmail.com</value>
-        </row>
-    </table>
-    <table name='groups'>
-        <column>id</column>
-        <column>name</column>
-        <column>identity</column>
-        <row>
-            <value>1</value>
-            <value>BestGroupEver</value>
-            <value>i1d2e3n4t5i6t7y8</value>
-        </row>
-    </table>
-</dataset>-->
 <dataset>
     <users  id="1" first_name="Potato" last_name="Development" email="sweetpotatodevelopment@gmail.com" />
     <users  id="2" first_name="Alena" last_name="Bekrina" email="abekrina@gmail.com" />
     <groups id="1" name="BestGroup" identity="i1d2e3n4t5i6t7y8" />
     <usersingroups id="1" user_id="1" group_id="1" joined_at="2017-01-11 11:11:11.000000000" />
     <usersingroups id="2" user_id="2" group_id="1" joined_at="2017-01-11 12:11:11.000000000" />
+    <invites />
+    <locations />
+    <tokens />
 </dataset>
