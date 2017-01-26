@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 
 @ContextConfiguration(classes = {TestHibernateConfiguration.class, TestWebMvcConfiguration.class})
 @WebAppConfiguration
-public class DefaultUsersInGroupDaoIT extends AbstractIntTestForDao {
+public class DefaultUsersInGroupDaoIT extends AbstractIntegrationTest {
     @Autowired
     DataSource dataSource;
 

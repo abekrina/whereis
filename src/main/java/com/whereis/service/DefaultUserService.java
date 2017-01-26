@@ -39,8 +39,8 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public void delete(User user) {
-        dao.delete(user);
+    public boolean delete(User user) {
+        return dao.delete(user.getClass(), user.getId());
     }
 
     @Override

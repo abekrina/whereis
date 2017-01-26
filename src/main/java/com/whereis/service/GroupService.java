@@ -8,6 +8,6 @@ public interface GroupService {
     Group get(int id);
     void save(Group group) throws GroupWithIdentityExists;
     void update(Group group) throws NoSuchGroup;
-    void delete(Group group);
+    boolean delete(Group group);
     Group getByIdentity(String identity);
 }

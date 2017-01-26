@@ -1,7 +1,6 @@
 package com.whereis.dao;
 
 import com.whereis.model.Location;
-import com.whereis.model.User;
 import com.whereis.testconfig.TestHibernateConfiguration;
 import com.whereis.testconfig.TestWebMvcConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import java.sql.Timestamp;
 
 @ContextConfiguration(classes = {TestHibernateConfiguration.class, TestWebMvcConfiguration.class})
 @WebAppConfiguration
-public class DefaultLocationDaoIT extends AbstractIntTestForDao {
+public class DefaultLocationDaoIT extends AbstractIntegrationTest {
     @Autowired
     LocationDao locationDao;
 

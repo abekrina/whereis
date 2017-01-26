@@ -10,7 +10,7 @@ public interface LocationDao {
      *  Methods are implemented in AbstractDao
      */
     Location get(int id);
-    void delete(Location location);
+    boolean delete(Class <? extends Location> type, int id);
 
     /**
      *  Methods specific for every implementation of this interface

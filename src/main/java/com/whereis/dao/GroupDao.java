@@ -12,7 +12,7 @@ public interface GroupDao {
      *  @see AbstractDao
      */
     Group get(int id);
-    void delete(Group group);
+    boolean delete(Class<? extends Group> type, int id);
 
     /**
      *  Methods specific for every implementation of this interface

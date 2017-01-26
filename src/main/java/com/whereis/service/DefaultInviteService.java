@@ -29,8 +29,8 @@ public class DefaultInviteService implements InviteService {
     }
 
     @Override
-    public void delete(Invite invite) {
-        dao.delete(invite);
+    public boolean delete(Invite invite) {
+        return dao.delete(invite.getClass(), invite.getId());
     }
 
     @Override

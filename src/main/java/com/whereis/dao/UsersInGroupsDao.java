@@ -11,7 +11,7 @@ public interface UsersInGroupsDao {
      *  Methods are implemented in AbstractDao
      */
     UsersInGroup get(int id);
-    void delete(UsersInGroup user);
+    boolean delete(Class <? extends UsersInGroup> type, int id);
 
     /**
      *  Methods specific for every implementation of this interface

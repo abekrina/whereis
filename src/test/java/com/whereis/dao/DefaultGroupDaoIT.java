@@ -16,7 +16,7 @@ import javax.sql.DataSource;
 
 @ContextConfiguration(classes = {TestHibernateConfiguration.class, TestWebMvcConfiguration.class})
 @WebAppConfiguration
-public class DefaultGroupDaoIT extends AbstractIntTestForDao {
+public class DefaultGroupDaoIT extends AbstractIntegrationTest {
     @Autowired
     DataSource dataSource;
 
@@ -26,7 +26,7 @@ public class DefaultGroupDaoIT extends AbstractIntTestForDao {
     Group defaultGroup;
 
     @Override
-    void setupTestData() {
+    public void setupTestData() {
         setupDefaultGroup();
         MAIN_TABLE = "groups";
         MAIN_SEQUENCE = "groups_id_seq";

@@ -51,7 +51,7 @@ public class DefaultUsersInGroupsDao extends AbstractDao<UsersInGroup> implement
             logger.error("Group identity:" + group.getIdentity() + " name:" + group.getName());
             throw new NoUserInGroup(user.toString());
         } else {
-            delete(relationToDelete);
+            delete(relationToDelete.getClass(), relationToDelete.getId());
         }
     }
 

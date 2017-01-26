@@ -10,7 +10,7 @@ public interface InviteDao {
      *  Methods are implemented in AbstractDao
      */
     Invite get(int id);
-    void delete(Invite invite);
+    boolean delete(Class <? extends Invite> type, int id);
 
     /**
      *  Methods specific for every implementation of this interface

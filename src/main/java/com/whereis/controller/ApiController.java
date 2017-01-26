@@ -92,7 +92,6 @@ public class ApiController extends AbstractController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    // TODO:  неправильный id пользователя
     @RequestMapping(value = "/{identity}/leave", method = RequestMethod.DELETE)
     public ResponseEntity leaveGroup(@PathVariable("identity") String identity) {
         User currentUser = getcurrentUser();

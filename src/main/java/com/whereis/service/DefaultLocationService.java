@@ -37,8 +37,8 @@ public class DefaultLocationService implements LocationService {
     }
 
     @Override
-    public void delete(Location location) {
-
+    public boolean delete(Location location) {
+        return locationDao.delete(location.getClass(), location.getId());
     }
 
     @Override

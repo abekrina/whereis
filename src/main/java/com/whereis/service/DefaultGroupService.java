@@ -5,7 +5,6 @@ import com.whereis.dao.GroupDao;
 import com.whereis.exceptions.GroupWithIdentityExists;
 import com.whereis.exceptions.NoSuchGroup;
 import com.whereis.model.Group;
-import com.whereis.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,8 +53,8 @@ public class DefaultGroupService implements GroupService {
     }
 
     @Override
-    public void delete(Group group) {
-        dao.delete(group);
+    public boolean delete(Group group) {
+        return dao.delete(group.getClass(), group.getId());
     }
 
     @Override

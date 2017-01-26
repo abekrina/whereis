@@ -18,4 +18,9 @@ public class DefaultTokenService extends AbstractDao<Token> implements TokenServ
     public void update(Token token) {
         dao.update(token);
     }
+
+    @Override
+    public boolean delete(Token token) {
+        return dao.delete(token.getClass(), token.getId());
+    }
 }

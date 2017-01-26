@@ -2,14 +2,13 @@ package com.whereis.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dbunit.DataSourceDatabaseTester;
 import org.dbunit.IDatabaseTester;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
+import org.springframework.test.context.transaction.TestTransaction;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.net.MalformedURLException;
 
@@ -17,8 +16,7 @@ public class DBUnitHelper {
 
     final static Logger logger = LogManager.getLogger(DBUnitHelper.class);
 
-    private static IDatabaseTester databaseTester = null;
-    private static IDataSet dataSet = null;
+    public static final String BASE = "src/test/resources/";
 
     /**
      * @param fileName The name of the file (full path actually) storing flat dataset information for the test
@@ -27,30 +25,26 @@ public class DBUnitHelper {
      * @throws DataSetException
      */
     public static IDataSet readDataSet(String fileName) throws MalformedURLException, DataSetException {
-        File file = new File(fileName);
+        File file = new File(BASE + fileName);
         FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
-        dataSet = builder.build(file);
+        IDataSet dataSet = builder.build(file);
         return dataSet;
     }
 
 
     /**
-     * Sets up working IDatabaseTester for the current test Suite
-     * @param dataSource data source to connect to DB. For now i just use data sources provided by Spring injections
-     * @param dataSet data for testing
+     * Apply another dataset to IDatabaseTester
+     * @param databaseTester IDatabaseTester which needs to be configured
+     * @param dataSetPath  path to file with data for testing
      * @return IDatabaseTester
      * @throws Exception
      */
-    public static IDatabaseTester setUpDatabaseTester(DataSource dataSource, IDataSet dataSet) throws Exception {
-
-        databaseTester = new DataSourceDatabaseTester(dataSource);
-
-        //Set up before and after test behaviour
-        databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
-        databaseTester.setTearDownOperation(DatabaseOperation.TRUNCATE_TABLE);
-        //Applying dataset
+    public static IDatabaseTester applyDataset(IDatabaseTester databaseTester, String dataSetPath) throws Exception {
+        IDataSet dataSet = readDataSet(dataSetPath);
         databaseTester.setDataSet(dataSet);
-
+        databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
+        databaseTester.setTearDownOperation(DatabaseOperation.DELETE_ALL);
+        databaseTester.onSetup();
         return databaseTester;
     }
 }

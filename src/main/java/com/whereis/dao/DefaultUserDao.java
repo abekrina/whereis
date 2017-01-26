@@ -66,6 +66,7 @@ public class DefaultUserDao extends AbstractDao<User> implements UserDao {
 
     @Override
     public void deleteByEmail(String email) {
-        delete(getByEmail(email));
+        User user = getByEmail(email);
+        delete(user.getClass(), user.getId());
     }
 }

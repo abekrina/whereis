@@ -34,8 +34,8 @@ public class DefaultUsersInGroupsService implements UsersInGroupsService {
     }
 
     @Override
-    public void delete(UsersInGroup userInGroup) {
-        usersInGroupsDao.delete(userInGroup);
+    public boolean delete(UsersInGroup userInGroup) {
+        return usersInGroupsDao.delete(userInGroup.getClass(), userInGroup.getId());
     }
 
     @Override

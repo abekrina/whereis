@@ -8,7 +8,7 @@ public interface TokenDao {
      *  @see AbstractDao
      */
     Token get(int id);
-    void delete(Token token);
+    boolean delete(Class <? extends Token> type, int id);
 
     /**
      *  Methods specific for every implementation of this interface

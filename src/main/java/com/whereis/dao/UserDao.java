@@ -13,7 +13,7 @@ public interface UserDao {
      *  Methods are implemented in AbstractDao
      */
     User get(int id);
-    void delete(User user);
+    boolean delete(Class <? extends User> type, int id);
     Session getSession();
     /**
      *  Methods specific for every implementation of this interface
