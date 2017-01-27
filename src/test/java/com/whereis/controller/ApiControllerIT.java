@@ -2,6 +2,7 @@ package com.whereis.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.mockrunner.mock.jdbc.MockResultSet;
 import com.whereis.authentication.GoogleAuthentication;
 import com.whereis.dao.AbstractIntegrationTest;
 import com.whereis.testconfig.TestHibernateConfiguration;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.http.converter.json.GsonFactoryBean;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -21,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
@@ -29,6 +32,8 @@ import org.testng.annotations.Test;
 import javax.sql.DataSource;
 
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -42,6 +47,8 @@ public class ApiControllerIT extends AbstractIntegrationTest {
     private MockMvc mockMvc;
     @Autowired
     WebApplicationContext wac;
+
+    JdbcTemplate  jdbcTemplate = new JdbcTemplate();
 
     @Autowired
     DataSource dataSource;
@@ -109,6 +116,20 @@ public class ApiControllerIT extends AbstractIntegrationTest {
                 "i1d2e3n4t5i6t7y8").with(authentication(authentication)).contentType(MediaType.APPLICATION_JSON)
                 .content(location.toString()))
                 .andExpect(status().isOk());
+
+        HashMap<String, Object> locationRow = new HashMap<>();
+        locationRow.put("latitude", 37.345345);
+        locationRow.put("longitude", -121.34535);
+
+        MockResultSet locationResultSet = new MockResultSet("location");
+        locationResultSet.addColumn("latitude");
+        locationResultSet.addColumn("longitude");
+        locationResultSet.addRow(locationRow);
+
+        Statement statement = dataSource.getConnection().createStatement();
+        statement.execute("SELECT * FROM locations");
+
+        Assert.assertEquals(statement.getResultSet(), locationResultSet);
     }
 
     @Test
@@ -117,6 +138,6 @@ public class ApiControllerIT extends AbstractIntegrationTest {
             @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
                     scripts = "classpath:controller-it-setup-cleanup/setupSaveLocation.sql")})
     public void testGetLocations() {
-        
+
     }
 }
