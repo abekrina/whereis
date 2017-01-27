@@ -66,8 +66,7 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
         GoogleAuthentication tokenAuth = (GoogleAuthentication) auth;
 
         // Check if user is already connected
-        //TODO:  учесть то что токен экспайрится
-        if (tokenAuth.getCredentials() != null) {
+        if (tokenAuth.getGoogleToken() != null) {
             tokenAuth.setAuthenticated(true);
             return tokenAuth;
         }

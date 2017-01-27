@@ -1,8 +1,5 @@
 package com.whereis.testconfig;
 
-import com.whereis.dao.AbstractDao;
-import com.whereis.dao.DefaultUserDao;
-import com.whereis.model.User;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,20 +8,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
+
+import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.H2;
 
 @Configuration
 @PropertySource("classpath:test-application.properties")
@@ -50,6 +46,18 @@ public class TestHibernateConfiguration {
 
     @Bean
     public DataSource dataSource() {
+        return new EmbeddedDatabaseBuilder()
+                .generateUniqueName(true)
+                .setType(H2)
+                .setScriptEncoding("UTF-8")
+                .ignoreFailedDrops(true)
+                //.addScript("controller-it-setup-cleanup/schema.sql")
+                //.addScripts("user_data.sql", "country_data.sql")
+                .build();
+    }
+
+/*  @Bean
+    public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(environment.getRequiredProperty("test.jdbc.driverClassName"));
         dataSource.setUrl(environment.getRequiredProperty("test.jdbc.url"));
@@ -57,7 +65,7 @@ public class TestHibernateConfiguration {
         dataSource.setPassword(environment.getRequiredProperty("test.jdbc.password"));
 
         return dataSource;
-    }
+    }*/
 
     @Bean
     public LocalSessionFactoryBean sessionFactory() {

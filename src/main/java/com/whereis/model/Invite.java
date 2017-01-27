@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 @Table(name = "invites")
 public class Invite {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     private int sent_by;

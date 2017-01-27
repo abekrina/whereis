@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.Assert;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.sql.Timestamp;
@@ -24,11 +25,8 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
     private User defaultUser;
     private Group defaultGroup;
 
-    @Override
-    void setupTestData() {
-        MAIN_TABLE = "invites";
-        MAIN_SEQUENCE = "invites_id_seq";
-
+    @BeforeTest
+    public void setupTestData() {
         setupDefaultInvite();
         setupDefaultUser();
         setupDefaultGroup();
@@ -67,13 +65,13 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
     @Test
     public void testSaveInvite() throws UserAlreadyInvited {
         inviteDao.save(defaultInvite);
-        Assert.assertEquals(inviteDao.get(1), defaultInvite);
+        Assert.assertEquals(inviteDao.get(defaultInvite.getId()), defaultInvite);
     }
 
     @Test(expectedExceptions = UserAlreadyInvited.class)
     public void testSaveDuplicateInvite() throws UserAlreadyInvited {
         inviteDao.save(defaultInvite);
-        Assert.assertEquals(inviteDao.get(1), defaultInvite);
+        Assert.assertEquals(inviteDao.get(defaultInvite.getId()), defaultInvite);
         inviteDao.save(defaultInvite);
     }
 

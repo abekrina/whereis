@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.Assert;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import javax.sql.DataSource;
@@ -59,10 +60,8 @@ public class DefaultUsersInGroupDaoIT extends AbstractIntegrationTest {
         defaultUsersInGroup.setJoinedAt(new Timestamp(1231231231));
     }
 
-    @Override
-    void setupTestData() {
-        MAIN_SEQUENCE = "usersingroups_id_seq";
-        MAIN_TABLE = "usersingroups";
+    @BeforeTest
+    public void setupTestData() {
         setupDefaultUser();
         setupDefaultGroup();
         setupUsersInGroup();
@@ -99,13 +98,13 @@ public class DefaultUsersInGroupDaoIT extends AbstractIntegrationTest {
     @Test
     public void testSaveRelation() throws UserAlreadyInGroup {
         usersInGroupsDao.save(defaultUsersInGroup);
-        Assert.assertEquals(usersInGroupsDao.get(1), defaultUsersInGroup);
+        Assert.assertEquals(usersInGroupsDao.get(defaultUsersInGroup.getId()), defaultUsersInGroup);
     }
 
     @Test(expectedExceptions = UserAlreadyInGroup.class)
     public void testSaveRelationAlreadyExisting() throws UserAlreadyInGroup {
         usersInGroupsDao.save(defaultUsersInGroup);
-        Assert.assertEquals(usersInGroupsDao.get(1), defaultUsersInGroup);
+        Assert.assertEquals(usersInGroupsDao.get(defaultUsersInGroup.getId()), defaultUsersInGroup);
         usersInGroupsDao.save(defaultUsersInGroup);
     }
 }

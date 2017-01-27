@@ -42,7 +42,9 @@ public class ApiController extends AbstractController {
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity createGroup(@RequestBody Group group) {
         try {
-            groupService.save(group);
+            // This method automatically adds current user in his new group
+            groupService.save(group, getCurrentUser());
+
         } catch (Exception e) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
@@ -69,9 +71,7 @@ public class ApiController extends AbstractController {
             //TODO: message about wrong group
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-        SecurityContext context = (SecurityContext) httpSession.getAttribute("SPRING_SECURITY_CONTEXT");
-        Authentication auth = context.getAuthentication();
-        User currentUser = (User) auth.getPrincipal();
+        User currentUser = getCurrentUser();
         Invite inviteForUser = inviteService.getPendingInviteFor(currentUser, targetGroup);
         if (inviteForUser == null) {
             //TODO: message about no invite
@@ -94,7 +94,7 @@ public class ApiController extends AbstractController {
 
     @RequestMapping(value = "/{identity}/leave", method = RequestMethod.DELETE)
     public ResponseEntity leaveGroup(@PathVariable("identity") String identity) {
-        User currentUser = getcurrentUser();
+        User currentUser = getCurrentUser();
         try {
             usersInGroupsService.leave(identity, currentUser);
         } catch (NoUserInGroup noUserInGroup) {
@@ -109,14 +109,16 @@ public class ApiController extends AbstractController {
                                        @RequestBody Location location,
                                        HttpServletRequest request) {
         location.setTimestamp(new Timestamp(Calendar.getInstance().getTime().getTime()));
-        location.setIp(request.getRemoteAddr());
+        if (request.getRemoteAddr() != null) {
+            location.setIp(request.getRemoteAddr());
+        }
         location.setGroupIdentity(identity);
-        location.setUserId(getcurrentUser().getId());
+        location.setUserId(getCurrentUser().getId());
         locationService.save(location);
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    private User getcurrentUser() {
+    private User getCurrentUser() {
         SecurityContext context = (SecurityContext) httpSession.getAttribute("SPRING_SECURITY_CONTEXT");
         Authentication auth = context.getAuthentication();
         return (User) auth.getPrincipal();
@@ -124,6 +126,6 @@ public class ApiController extends AbstractController {
 
     @RequestMapping(value = "/{identity}/getlocations", method = RequestMethod.GET)
     public List<Location> getLocationOfGroupMembers(@PathVariable("identity") String identity) {
-        return locationService.getLocationsOfGroupMembers(groupService.getByIdentity(identity), getcurrentUser());
+        return locationService.getLocationsOfGroupMembers(groupService.getByIdentity(identity), getCurrentUser());
     }
 }

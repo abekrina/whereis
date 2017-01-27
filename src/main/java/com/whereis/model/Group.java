@@ -8,7 +8,7 @@ import java.util.Objects;
 public class Group {
     @Id
     //TODO: заменить  id на identity
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     private String name;

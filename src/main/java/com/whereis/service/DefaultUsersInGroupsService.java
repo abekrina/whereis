@@ -48,4 +48,12 @@ public class DefaultUsersInGroupsService implements UsersInGroupsService {
     public UsersInGroup findUserInGroup(Group group, User user) {
         return usersInGroupsDao.findUserInGroup(group, user);
     }
+
+    @Override
+    public void addUserToGroup(Group group, User user) throws UserAlreadyInGroup {
+        UsersInGroup usersInGroup = new UsersInGroup();
+        usersInGroup.setUserId(user.getId());
+        usersInGroup.setGroupId(group.getId());
+        save(usersInGroup);
+    }
 }

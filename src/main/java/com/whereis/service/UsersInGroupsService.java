@@ -14,4 +14,6 @@ public interface UsersInGroupsService {
     void leave(String groupIdentity, User user) throws NoUserInGroup;
 
     UsersInGroup findUserInGroup(Group group, User user);
+
+    void addUserToGroup(Group group, User user) throws UserAlreadyInGroup;
 }

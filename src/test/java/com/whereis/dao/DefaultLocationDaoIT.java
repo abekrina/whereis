@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.sql.Timestamp;
@@ -19,11 +21,8 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
 
     private Location defaultLocation;
 
-    @Override
-    void setupTestData() {
-        MAIN_TABLE = "locations";
-        MAIN_SEQUENCE = "locations_id_seq";
-
+    @BeforeTest
+    public void setupTestData() {
         setupDefaultLocation();
     }
 
@@ -42,7 +41,7 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
     @Test
     public void testSaveLocation() {
         locationDao.save(defaultLocation);
-        Assert.assertEquals(locationDao.get(1), defaultLocation);
+        Assert.assertEquals(locationDao.get(defaultLocation.getId()), defaultLocation);
     }
 
     @Test

@@ -27,6 +27,9 @@ public class GoogleAuthentication implements Authentication {
     public Object getCredentials() {
         return googleToken.getAccessToken();
     }
+    GoogleTokenResponse getGoogleToken() {
+        return googleToken;
+    }
     GoogleTokenResponse getGoogleTokenResponse() {
         return googleToken;
     }
@@ -55,7 +58,7 @@ public class GoogleAuthentication implements Authentication {
     }
     @Override
     public String getName() {
-        return principal.getFirstName() + principal.getLastName() + principal.getId();
+        return unique_visitor_code;
     }
 
     public String getCode() {

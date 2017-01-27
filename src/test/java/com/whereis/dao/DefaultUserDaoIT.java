@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.Assert;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 // Настроить surefire
@@ -30,17 +31,15 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
         defaultUser.setLastName("Development");
     }
 
-    @Override
-    void setupTestData() {
+    @BeforeTest
+    public void setupTestData() {
         setupDefaultUser();
-        MAIN_TABLE = "users";
-        MAIN_SEQUENCE = "users_id_seq";
     }
 
     @Test
     public void testSaveUser() throws UserWithEmailExists {
         userDao.save(defaultUser);
-        Assert.assertEquals(userDao.get(1), defaultUser);
+        Assert.assertEquals(userDao.get(defaultUser.getId()), defaultUser);
     }
 
     @Test(expectedExceptions = UserWithEmailExists.class)
@@ -64,9 +63,9 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
         defaultUser.setEmail("abekrina@gmail.com");
         userDao.update(defaultUser);
 
-        Assert.assertEquals(userDao.get(1).getFirstName(), "Alena");
-        Assert.assertEquals(userDao.get(1).getLastName(), "Bekrina");
-        Assert.assertEquals(userDao.get(1).getEmail(), "abekrina@gmail.com");
+        Assert.assertEquals(userDao.get(defaultUser.getId()).getFirstName(), "Alena");
+        Assert.assertEquals(userDao.get(defaultUser.getId()).getLastName(), "Bekrina");
+        Assert.assertEquals(userDao.get(defaultUser.getId()).getEmail(), "abekrina@gmail.com");
     }
 
     @Test(expectedExceptions = NoSuchUser.class)
@@ -84,9 +83,8 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
     @Test
     public void testDeleteUser() throws UserWithEmailExists {
         userDao.save(defaultUser);
-        Assert.assertEquals(userDao.get(1), defaultUser);
+        Assert.assertEquals(userDao.get(defaultUser.getId()), defaultUser);
         userDao.delete(defaultUser.getClass(), defaultUser.getId());
-        Assert.assertNull(userDao.get(1));
+        Assert.assertNull(userDao.get(defaultUser.getId()));
     }
 }
-//TODO: почитать про java coding style

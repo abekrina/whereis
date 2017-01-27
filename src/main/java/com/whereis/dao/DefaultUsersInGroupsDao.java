@@ -16,6 +16,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.sql.Timestamp;
 
 @Transactional
 @Repository("usersInGroupsDao")
@@ -25,6 +26,7 @@ public class DefaultUsersInGroupsDao extends AbstractDao<UsersInGroup> implement
 
     @Override
     public void save(UsersInGroup user) throws UserAlreadyInGroup {
+        user.setJoinedAt(new Timestamp(System.currentTimeMillis()));
         if (findUserInGroup(user) != null) {
             throw new UserAlreadyInGroup("User is present in group: ");
         }

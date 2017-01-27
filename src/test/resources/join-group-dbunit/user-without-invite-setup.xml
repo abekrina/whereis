@@ -1,9 +1,0 @@
-<dataset>
-    <users  id="1" first_name="Potato" last_name="Development" email="sweetpotatodevelopment@gmail.com" />
-    <users  id="2" first_name="Alena" last_name="Bekrina" email="abekrina@gmail.com" />
-    <groups id="1" name="BestGroup" identity="i1d2e3n4t5i6t7y8" />
-    <usersingroups id="1" user_id="1" group_id="1" joined_at="2017-01-11 12:11:11.000000000" />
-    <invites />
-    <locations />
-    <tokens />
-</dataset>
