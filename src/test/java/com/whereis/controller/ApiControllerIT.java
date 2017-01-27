@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 import com.mockrunner.mock.jdbc.MockResultSet;
 import com.whereis.authentication.GoogleAuthentication;
 import com.whereis.dao.AbstractIntegrationTest;
+import com.whereis.dao.LocationDao;
+import com.whereis.model.Location;
 import com.whereis.testconfig.TestHibernateConfiguration;
 import com.whereis.testconfig.TestWebMvcConfiguration;
 import com.whereis.util.ControllerTestHelper;
@@ -20,6 +22,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -39,6 +42,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebAppConfiguration
@@ -52,6 +56,9 @@ public class ApiControllerIT extends AbstractIntegrationTest {
 
     @Autowired
     DataSource dataSource;
+
+    @Autowired
+    LocationDao locationDao;
 
     @BeforeMethod
     public void setup() throws SQLException {
@@ -99,45 +106,79 @@ public class ApiControllerIT extends AbstractIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
+    //TODO: Add case when user not in the group
     @Test
     @WithMockUser
     @SqlGroup({
             @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
-                    scripts = "classpath:controller-it-setup-cleanup/setupSaveLocation.sql")})
+                    scripts = "classpath:controller-it-setup/setupSaveLocation.sql")})
     public void testSaveLocation() throws Exception {
+        // Setup data
+        Location expectedLocation = new Location();
+        expectedLocation.setUserId(1);
+        expectedLocation.setLatitude(37.345345);
+        expectedLocation.setLongitude(-121.34535);
+        expectedLocation.setGroupIdentity("i1d2e3n4t5i6t7y8");
+        expectedLocation.setIp("127.0.0.1");
+
         GoogleAuthentication authentication = ControllerTestHelper.getTestAuthentication(1,
                 "sweetpotatodevelopment@gmail.com",
                 "Potato", "Development");
 
         JsonObject location = new JsonObject();
-        location.addProperty("latitude", 37.345345);
-        location.addProperty("longitude", -121.34535);
+        location.addProperty("latitude", expectedLocation.getLatitude());
+        location.addProperty("longitude", expectedLocation.getLongitude());
+
+        // Send query with test data
         mockMvc.perform(MockMvcRequestBuilders.put("/group/{identity}/savemylocation",
-                "i1d2e3n4t5i6t7y8").with(authentication(authentication)).contentType(MediaType.APPLICATION_JSON)
+                expectedLocation.getGroupIdentity()).with(authentication(authentication)).contentType(MediaType.APPLICATION_JSON)
                 .content(location.toString()))
                 .andExpect(status().isOk());
 
-        HashMap<String, Object> locationRow = new HashMap<>();
-        locationRow.put("latitude", 37.345345);
-        locationRow.put("longitude", -121.34535);
+        // Get result of query from database
+        Location actualLocation = locationDao.getLastLocationForUser(1);
 
-        MockResultSet locationResultSet = new MockResultSet("location");
-        locationResultSet.addColumn("latitude");
-        locationResultSet.addColumn("longitude");
-        locationResultSet.addRow(locationRow);
-
-        Statement statement = dataSource.getConnection().createStatement();
-        statement.execute("SELECT * FROM locations");
-
-        Assert.assertEquals(statement.getResultSet(), locationResultSet);
+        Assert.assertEquals(actualLocation.getGroupIdentity(), expectedLocation.getGroupIdentity());
+        Assert.assertEquals(actualLocation.getIp(), expectedLocation.getIp());
+        Assert.assertEquals(actualLocation.getLatitude(), expectedLocation.getLatitude());
+        Assert.assertEquals(actualLocation.getLongitude(), expectedLocation.getLongitude());
+        Assert.assertEquals(actualLocation.getUserId(), expectedLocation.getUserId());
     }
 
+
+    // TODO: add case with more locations with auth.principal location. Shouldn't return auth.principal's location
     @Test
     @WithMockUser
     @SqlGroup({
             @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
-                    scripts = "classpath:controller-it-setup-cleanup/setupSaveLocation.sql")})
-    public void testGetLocations() {
+                    scripts = "classpath:controller-it-setup/setupGetLocation.sql")})
+    public void testGetLocations() throws Exception {
+        // Setup data
+        Location expectedLocation = new Location();
+        expectedLocation.setUserId(2);
+        expectedLocation.setLatitude(37.345345);
+        expectedLocation.setLongitude(-121.34535);
+        expectedLocation.setGroupIdentity("i1d2e3n4t5i6t7y8");
+        expectedLocation.setIp("127.0.0.1");
 
+        GoogleAuthentication authentication = ControllerTestHelper.getTestAuthentication(1,
+                "sweetpotatodevelopment@gmail.com",
+                "Potato", "Development");
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/group/{identity}/getlocations",
+                "i1d2e3n4t5i6t7y8").with(authentication(authentication)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andReturn();
+        String expectedJson = "[null,{" +
+                "\"id\":1," +
+                "\"timestamp\":1455767272690," +
+                "\"latitude\":37.345345," +
+                "\"longitude\":-121.232323," +
+                "\"ip\":\"127.0.0.1\"," +
+                "\"userId\":2," +
+                "\"groupIdentity\":\"i1d2e3n4t5i6t7y8\"" +
+                "}]";
+        Assert.assertEquals(result.getResponse().getContentAsString(), expectedJson);
     }
 }

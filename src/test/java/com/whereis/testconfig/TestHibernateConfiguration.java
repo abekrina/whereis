@@ -51,7 +51,7 @@ public class TestHibernateConfiguration {
                 .setType(H2)
                 .setScriptEncoding("UTF-8")
                 .ignoreFailedDrops(true)
-                //.addScript("controller-it-setup-cleanup/schema.sql")
+                //.addScript("controller-it-setup/schema.sql")
                 //.addScripts("user_data.sql", "country_data.sql")
                 .build();
     }

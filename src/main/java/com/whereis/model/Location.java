@@ -80,4 +80,5 @@ public class Location {
     public void setGroupIdentity(String group_identity) {
         this.group_identity = group_identity;
     }
+
 }

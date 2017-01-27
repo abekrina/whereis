@@ -28,9 +28,8 @@ public class DefaultLocationDao extends AbstractDao<Location> implements Locatio
         query.select(root);
         query.where(builder.equal(root.get("user_id"), userId));
         query.orderBy(builder.desc(root.get("timestamp")));
-
         try {
-            return getSession().createQuery(query).getSingleResult();
+            return getSession().createQuery(query).setMaxResults(1).getSingleResult();
         } catch (NoResultException e) {
             return null;
         }

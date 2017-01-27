@@ -118,14 +118,14 @@ public class ApiController extends AbstractController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/{identity}/getlocations", method = RequestMethod.GET)
+    public List<Location> getLocationOfGroupMembers(@PathVariable("identity") String identity) {
+        return locationService.getLocationsOfGroupMembers(groupService.getByIdentity(identity), getCurrentUser());
+    }
+
     private User getCurrentUser() {
         SecurityContext context = (SecurityContext) httpSession.getAttribute("SPRING_SECURITY_CONTEXT");
         Authentication auth = context.getAuthentication();
         return (User) auth.getPrincipal();
-    }
-
-    @RequestMapping(value = "/{identity}/getlocations", method = RequestMethod.GET)
-    public List<Location> getLocationOfGroupMembers(@PathVariable("identity") String identity) {
-        return locationService.getLocationsOfGroupMembers(groupService.getByIdentity(identity), getCurrentUser());
     }
 }
