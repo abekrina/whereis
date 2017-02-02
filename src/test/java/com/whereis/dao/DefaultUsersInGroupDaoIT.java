@@ -35,7 +35,6 @@ public class DefaultUsersInGroupDaoIT extends AbstractIntegrationTest {
         if (defaultUser == null) {
             defaultUser = new User();
         }
-        defaultUser.setId(1);
         defaultUser.setEmail("sweetpotatodevelopment@gmail.com");
         defaultUser.setFirstName("Potato");
         defaultUser.setLastName("Development");
@@ -45,7 +44,6 @@ public class DefaultUsersInGroupDaoIT extends AbstractIntegrationTest {
         if (defaultGroup == null) {
             defaultGroup = new Group();
         }
-        defaultGroup.setId(1);
         defaultGroup.setIdentity("12345");
         defaultGroup.setName("Default group");
     }
@@ -54,7 +52,6 @@ public class DefaultUsersInGroupDaoIT extends AbstractIntegrationTest {
         if (defaultUsersInGroup == null) {
             defaultUsersInGroup = new UsersInGroup();
         }
-        defaultUsersInGroup.setId(1);
         defaultUsersInGroup.setGroupId(defaultGroup.getId());
         defaultUsersInGroup.setUserId(defaultUser.getId());
         defaultUsersInGroup.setJoinedAt(new Timestamp(1231231231));

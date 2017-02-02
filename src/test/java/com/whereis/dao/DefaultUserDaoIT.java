@@ -25,7 +25,6 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
         if (defaultUser == null) {
             defaultUser = new User();
         }
-        defaultUser.setId(1);
         defaultUser.setEmail("sweetpotatodevelopment@gmail.com");
         defaultUser.setFirstName("Potato");
         defaultUser.setLastName("Development");

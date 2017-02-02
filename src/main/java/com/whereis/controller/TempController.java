@@ -56,7 +56,6 @@ public class TempController extends AbstractController {
         User user = new User();
         //user.setName("Alena");
         user.setEmail("larmyztab@gmail.com");
-        user.setId(1);
         Location location = new Location();
         location.setLatitude(0.123);
         location.setLongitude(0.321);

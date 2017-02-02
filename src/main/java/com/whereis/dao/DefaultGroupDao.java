@@ -26,7 +26,7 @@ public class DefaultGroupDao extends AbstractDao<Group> implements GroupDao {
     public void save(Group group) throws GroupWithIdentityExists {
         if (getByIdentity(group.getIdentity()) == null) {
             Session currentSession = sessionFactory.getCurrentSession();
-            currentSession.save(group);
+            currentSession.persist(group);
         } else {
             throw new GroupWithIdentityExists(group.toString());
         }

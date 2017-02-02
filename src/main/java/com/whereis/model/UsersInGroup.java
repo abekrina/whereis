@@ -10,21 +10,17 @@ import java.util.Objects;
 @Table(name = "usersInGroups")
 public class UsersInGroup {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    @GeneratedValue
+    protected int id;
 
-    private int user_id;
+    protected int user_id;
 
-    private int group_id;
+    protected int group_id;
 
-    private Timestamp joined_at;
+    protected Timestamp joined_at;
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getUserId() {

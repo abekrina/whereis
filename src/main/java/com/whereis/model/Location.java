@@ -9,27 +9,23 @@ import java.sql.Timestamp;
 @Table(name = "locations")
 public class Location {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    @GeneratedValue
+    protected int id;
 
-    private int user_id;
+    protected int user_id;
 
-    private Timestamp timestamp;
+    protected Timestamp timestamp;
 
-    private double latitude;
+    protected double latitude;
 
-    private double longitude;
+    protected double longitude;
 
-    private String ip;
+    protected String ip;
 
-    private String group_identity;
+    protected String group_identity;
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getUserId() {

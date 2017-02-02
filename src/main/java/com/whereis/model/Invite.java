@@ -1,30 +1,28 @@
 package com.whereis.model;
 
+import org.hibernate.annotations.Immutable;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Immutable
 @Table(name = "invites")
 public class Invite {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    @GeneratedValue
+    protected int id;
 
-    private int sent_by;
+    protected int sent_by;
 
-    private String sent_to_email;
+    protected String sent_to_email;
 
-    //@Temporal(TemporalType.TIMESTAMP)
-    private Timestamp timestamp;
+    protected Timestamp timestamp;
 
-    private int group_id;
+    protected int group_id;
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getSentBy() {

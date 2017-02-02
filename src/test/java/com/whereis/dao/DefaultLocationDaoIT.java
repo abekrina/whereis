@@ -30,7 +30,6 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
         if (defaultLocation == null) {
             defaultLocation = new Location();
         }
-        defaultLocation.setId(1);
         defaultLocation.setUserId(1);
         defaultLocation.setTimestamp(new Timestamp(1484767310));
         defaultLocation.setLatitude(111111);

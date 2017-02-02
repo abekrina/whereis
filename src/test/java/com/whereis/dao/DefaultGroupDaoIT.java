@@ -35,7 +35,6 @@ public class DefaultGroupDaoIT extends AbstractIntegrationTest {
         if (defaultGroup == null) {
             defaultGroup = new Group();
         }
-        defaultGroup.setId(1);
         defaultGroup.setIdentity("12345");
         defaultGroup.setName("Default Group");
     }

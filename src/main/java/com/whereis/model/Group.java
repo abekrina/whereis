@@ -7,20 +7,15 @@ import java.util.Objects;
 @Table(name = "groups")
 public class Group {
     @Id
-    //TODO: заменить  id на identity
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    @GeneratedValue
+    protected int id;
 
-    private String name;
+    protected String name;
 
-    private String identity;
+    protected String identity;
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {

@@ -10,21 +10,17 @@ import java.util.Objects;
 @Table(name = "users")
 public class User implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    @GeneratedValue
+    protected int id;
 
-    private String first_name;
+    protected String first_name;
 
-    private String last_name;
+    protected String last_name;
 
-    private String email;
+    protected String email;
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getEmail() {

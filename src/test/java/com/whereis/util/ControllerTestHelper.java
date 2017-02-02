@@ -7,7 +7,6 @@ public class ControllerTestHelper {
 
     public static GoogleAuthentication getTestAuthentication(int id, String email, String firstName, String lastName) {
         User testUser = new User();
-        testUser.setId(id);
         testUser.setEmail(email);
         testUser.setFirstName(firstName);
         testUser.setLastName(lastName);

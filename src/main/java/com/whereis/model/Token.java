@@ -8,29 +8,25 @@ import java.sql.Timestamp;
 @Table(name = "tokens")
 public class Token {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    @GeneratedValue
+    protected int id;
 
-    private int user_id;
+    protected int user_id;
 
-    private String access_token;
+    protected String access_token;
 
-    private String refresh_token;
+    protected String refresh_token;
 
-    private String token_type;
+    protected String token_type;
 
-    private int expires_in;
+    protected int expires_in;
 
-    private Timestamp issued;
+    protected Timestamp issued;
 
-    private String scope;
+    protected String scope;
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getUserId() {
