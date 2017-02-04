@@ -61,7 +61,6 @@ public class TempController extends AbstractController {
         location.setLongitude(0.321);
         location.setTimestamp(new Timestamp(1481877171));
         location.setIp("192.168.0.0");
-        location.setUserId(user.getId());
 
         locationService.save(location);
     }

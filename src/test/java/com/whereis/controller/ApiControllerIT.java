@@ -1,20 +1,16 @@
 package com.whereis.controller;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.mockrunner.mock.jdbc.MockResultSet;
 import com.whereis.authentication.GoogleAuthentication;
 import com.whereis.dao.AbstractIntegrationTest;
 import com.whereis.dao.LocationDao;
 import com.whereis.model.Location;
+import com.whereis.model.User;
 import com.whereis.testconfig.TestHibernateConfiguration;
 import com.whereis.testconfig.TestWebMvcConfiguration;
 import com.whereis.util.ControllerTestHelper;
-import org.codehaus.jackson.node.JsonNodeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.GsonBuilderUtils;
-import org.springframework.http.converter.json.GsonFactoryBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
@@ -29,14 +25,11 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import javax.sql.DataSource;
 
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -60,11 +53,33 @@ public class ApiControllerIT extends AbstractIntegrationTest {
     @Autowired
     LocationDao locationDao;
 
+    private User defaultUser1;
+
+    private User defaultUser2;
+
     @BeforeMethod
     public void setup() throws SQLException {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
                 .apply(springSecurity())
                 .build();
+
+        setupDefaultUsers();
+    }
+
+    private void setupDefaultUsers()   {
+        if (defaultUser1 == null) {
+            defaultUser1 = new User();
+        }
+        defaultUser1.setEmail("sweetpotatodevelopment@gmail.com");
+        defaultUser1.setFirstName("Potato");
+        defaultUser1.setLastName("Development");
+
+        if (defaultUser2 == null) {
+            defaultUser2 = new User();
+        }
+        defaultUser2.setEmail("abekrina@gmail.com");
+        defaultUser2.setFirstName("Alena");
+        defaultUser2.setLastName("Bekrina");
     }
 
     @AfterTest
@@ -115,7 +130,7 @@ public class ApiControllerIT extends AbstractIntegrationTest {
     public void testSaveLocation() throws Exception {
         // Setup data
         Location expectedLocation = new Location();
-        expectedLocation.setUserId(1);
+        expectedLocation.setUser(defaultUser1);
         expectedLocation.setLatitude(37.345345);
         expectedLocation.setLongitude(-121.34535);
         expectedLocation.setGroupIdentity("i1d2e3n4t5i6t7y8");
@@ -136,13 +151,13 @@ public class ApiControllerIT extends AbstractIntegrationTest {
                 .andExpect(status().isOk());
 
         // Get result of query from database
-        Location actualLocation = locationDao.getLastLocationForUser(1);
+        Location actualLocation = locationDao.getLastLocationForUser(defaultUser1);
 
         Assert.assertEquals(actualLocation.getGroupIdentity(), expectedLocation.getGroupIdentity());
         Assert.assertEquals(actualLocation.getIp(), expectedLocation.getIp());
         Assert.assertEquals(actualLocation.getLatitude(), expectedLocation.getLatitude());
         Assert.assertEquals(actualLocation.getLongitude(), expectedLocation.getLongitude());
-        Assert.assertEquals(actualLocation.getUserId(), expectedLocation.getUserId());
+        Assert.assertEquals(actualLocation.getUser(), expectedLocation.getUser());
     }
 
 
@@ -155,7 +170,7 @@ public class ApiControllerIT extends AbstractIntegrationTest {
     public void testGetLocations() throws Exception {
         // Setup data
         Location expectedLocation = new Location();
-        expectedLocation.setUserId(2);
+        expectedLocation.setUser(defaultUser2);
         expectedLocation.setLatitude(37.345345);
         expectedLocation.setLongitude(-121.34535);
         expectedLocation.setGroupIdentity("i1d2e3n4t5i6t7y8");

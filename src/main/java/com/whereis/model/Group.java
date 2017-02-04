@@ -1,6 +1,10 @@
 package com.whereis.model;
 
+import com.sun.istack.internal.NotNull;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -10,9 +14,19 @@ public class Group {
     @GeneratedValue
     protected int id;
 
+    @NotNull
+    @Column(nullable = false)
     protected String name;
 
+    @NotNull
+    @Column(nullable = false)
     protected String identity;
+
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(name = "usersInGroups",
+               joinColumns = @JoinColumn(name = "userId"),
+               inverseJoinColumns = @JoinColumn(name = "groupId"))
+    protected List<User> users = new ArrayList<>();
 
     public int getId() {
         return id;

@@ -1,5 +1,6 @@
 package com.whereis.model;
 
+import com.sun.istack.internal.NotNull;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
@@ -15,10 +16,14 @@ public class Invite {
 
     protected int sent_by;
 
+    @NotNull
+    @Column(nullable = false)
     protected String sent_to_email;
 
     protected Timestamp timestamp;
 
+    @NotNull
+    @Column(nullable = false)
     protected int group_id;
 
     public int getId() {

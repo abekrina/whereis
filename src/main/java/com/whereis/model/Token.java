@@ -1,6 +1,8 @@
 package com.whereis.model;
 
 
+import com.sun.istack.internal.NotNull;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
@@ -11,6 +13,8 @@ public class Token {
     @GeneratedValue
     protected int id;
 
+    @NotNull
+    @Column(nullable = false)
     protected int user_id;
 
     protected String access_token;
@@ -19,6 +23,8 @@ public class Token {
 
     protected String token_type;
 
+    @NotNull
+    @Column(nullable = false)
     protected int expires_in;
 
     protected Timestamp issued;

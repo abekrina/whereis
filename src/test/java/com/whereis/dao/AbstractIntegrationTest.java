@@ -2,6 +2,7 @@ package com.whereis.dao;
 
 import com.whereis.configuration.LogConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;

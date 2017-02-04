@@ -2,43 +2,44 @@ package com.whereis.dao;
 
 import com.whereis.model.Group;
 import com.whereis.model.Location;
+import com.whereis.model.User;
 import com.whereis.model.UsersInGroup;
 import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NoResultException;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
 @Transactional
 @Repository("locationDao")
 public class DefaultLocationDao extends AbstractDao<Location> implements LocationDao {
+    @Autowired
+    UserDao userDao;
+
     @Override
     public void save(Location location) {
         Session currentSession = sessionFactory.getCurrentSession();
-        currentSession.save(location);
+        currentSession.persist(location);
     }
 
     @Override
-    public Location getLastLocationForUser(int userId) {
-        CriteriaBuilder builder = getCriteriaBuilder();
-        @SuppressWarnings("unchecked")
-        CriteriaQuery<Location> query = createEntityCriteria();
-        Root<Location> root = query.from(Location.class);
-        query.select(root);
-        query.where(builder.equal(root.get("user_id"), userId));
-        query.orderBy(builder.desc(root.get("timestamp")));
+    public Location getLastLocationForUser(User user) {
         try {
-            return getSession().createQuery(query).setMaxResults(1).getSingleResult();
-        } catch (NoResultException e) {
+            List<Location> locations = user.getLocations();
+            return locations.get(locations.size() - 1);
+        } catch (IndexOutOfBoundsException e) {
             return null;
         }
     }
 
     @Override
     public List<Location> getLastLocationsForGroupMembers(Group group) {
+
         CriteriaBuilder builder = getCriteriaBuilder();
         @SuppressWarnings("unchecked")
         CriteriaQuery<UsersInGroup> usersInGroupCriteriaQuery = createEntityCriteria();
@@ -49,9 +50,8 @@ public class DefaultLocationDao extends AbstractDao<Location> implements Locatio
 
         List<Location> locations = new ArrayList<>();
         for (UsersInGroup user : usersInGroup) {
-            locations.add(getLastLocationForUser(user.getUserId()));
+            locations.add(getLastLocationForUser(userDao.get(user.getUserId())));
         }
-
         return locations;
     }
 }

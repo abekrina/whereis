@@ -1,10 +1,12 @@
 package com.whereis.model;
 
-import org.hibernate.validator.constraints.NotBlank;
+import com.sun.istack.internal.NotNull;
+import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
+@Immutable
 @Entity
 @Table(name = "locations")
 public class Location {
@@ -12,28 +14,39 @@ public class Location {
     @GeneratedValue
     protected int id;
 
-    protected int user_id;
+    //TODO: override equals and hashcode
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    protected User user;
 
+    @NotNull
+    @Column(nullable = false, name = "timestamp")
     protected Timestamp timestamp;
 
+    @NotNull
+    @Column(nullable = false)
     protected double latitude;
 
+    @NotNull
+    @Column(nullable = false)
     protected double longitude;
 
     protected String ip;
 
+    @NotNull
+    @Column(nullable = false)
     protected String group_identity;
 
     public int getId() {
         return id;
     }
 
-    public int getUserId() {
-        return user_id;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(int userId) {
-        this.user_id = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Timestamp getTimestamp() {
@@ -67,7 +80,6 @@ public class Location {
     public void setIp(String ip) {
         this.ip = ip;
     }
-
 
     public String getGroupIdentity() {
         return group_identity;

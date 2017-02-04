@@ -1,20 +1,25 @@
 package com.whereis.model;
 
+import com.sun.istack.internal.NotNull;
+
 import javax.persistence.*;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
-//TODO:change to users_in_group
 @Table(name = "usersInGroups")
 public class UsersInGroup {
     @Id
     @GeneratedValue
     protected int id;
 
+    @NotNull
+    @Column(nullable = false)
     protected int user_id;
 
+    @NotNull
+    @Column(nullable = false)
     protected int group_id;
 
     protected Timestamp joined_at;

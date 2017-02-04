@@ -1,23 +1,44 @@
 package com.whereis.model;
 
+import com.sun.istack.internal.NotNull;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.OrderBy;
+
+
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
+@FilterDef(name = "lastLocation")
 @Table(name = "users")
 public class User implements Serializable {
     @Id
     @GeneratedValue
     protected int id;
 
+    @NotNull
+    @Column(nullable = false)
     protected String first_name;
 
+    @NotNull
+    @Column(nullable = false)
     protected String last_name;
 
+    @NotNull
+    @Column(nullable = false)
     protected String email;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, targetEntity = Location.class)
+    //@Filter(name = "lastLocation", condition = "MAX(locations.timestamp)")
+    // TODO: check collection type for hibernate
+    @OrderBy(clause = "timestamp")
+    protected List<Location> locations = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.PERSIST)
+    protected List<Group> groups = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -45,6 +66,10 @@ public class User implements Serializable {
 
     public void setLastName(String last_name) {
         this.last_name = last_name;
+    }
+
+    public List<Location> getLocations() {
+        return locations;
     }
 
     @Override

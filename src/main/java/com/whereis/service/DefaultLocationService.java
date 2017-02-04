@@ -43,7 +43,7 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public Location getLastLocationForUser(User user) {
-        return locationDao.getLastLocationForUser(user.getId());
+        return locationDao.getLastLocationForUser(user);
     }
 
     @Override

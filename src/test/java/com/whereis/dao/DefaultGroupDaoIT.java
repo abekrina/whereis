@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -24,9 +25,9 @@ public class DefaultGroupDaoIT extends AbstractIntegrationTest {
     @Autowired
     GroupDao groupDao;
 
-    Group defaultGroup;
+    private Group defaultGroup;
 
-    @BeforeTest
+    @BeforeMethod
     public void setupTestData() {
         setupDefaultGroup();
     }
