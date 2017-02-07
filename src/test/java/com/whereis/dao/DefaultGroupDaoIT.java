@@ -2,7 +2,11 @@ package com.whereis.dao;
 
 import com.whereis.exceptions.GroupWithIdentityExists;
 import com.whereis.exceptions.NoSuchGroup;
+import com.whereis.exceptions.UserAlreadyInGroup;
+import com.whereis.exceptions.UserWithEmailExists;
 import com.whereis.model.Group;
+import com.whereis.model.User;
+import com.whereis.model.UsersInGroup;
 import com.whereis.testconfig.TestHibernateConfiguration;
 import com.whereis.testconfig.TestWebMvcConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,30 +18,49 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import javax.sql.DataSource;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @ContextConfiguration(classes = {TestHibernateConfiguration.class, TestWebMvcConfiguration.class})
 @WebAppConfiguration
 public class DefaultGroupDaoIT extends AbstractIntegrationTest {
-    @Autowired
-    DataSource dataSource;
 
     @Autowired
     GroupDao groupDao;
 
+    @Autowired
+    UserDao userDao;
+
+    @Autowired
+    UsersInGroupsDao usersInGroupsDao;
+
     private Group defaultGroup;
 
+    private User defaultOwnerUser;
+
+    private UsersInGroup defaultUserToGroup;
+
     @BeforeMethod
-    public void setupTestData() {
+    public void setupTestData() throws UserWithEmailExists, UserAlreadyInGroup {
         setupDefaultGroup();
+        setupDefaultOwnerUser();
     }
 
     private void setupDefaultGroup() {
-        if (defaultGroup == null) {
-            defaultGroup = new Group();
-        }
+        defaultGroup = new Group();
         defaultGroup.setIdentity("12345");
         defaultGroup.setName("Default Group");
+    }
+
+    private void setupDefaultOwnerUser() throws UserWithEmailExists {
+        defaultOwnerUser = new User();
+        defaultOwnerUser.setEmail("sweetpotatodevelopment@gmail.com");
+        defaultOwnerUser.setFirstName("Potato");
+        defaultOwnerUser.setLastName("Development");
+        //defaultOwnerUser.getGroups().add(new UsersInGroup(defaultOwnerUser, defaultGroup, new Timestamp(123123123)));
+        userDao.save(defaultOwnerUser);
     }
 
     @Test

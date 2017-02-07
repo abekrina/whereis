@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -22,15 +23,13 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
     private User defaultUser;
 
     private void setupDefaultUser()   {
-        if (defaultUser == null) {
-            defaultUser = new User();
-        }
+        defaultUser = new User();
         defaultUser.setEmail("sweetpotatodevelopment@gmail.com");
         defaultUser.setFirstName("Potato");
         defaultUser.setLastName("Development");
     }
 
-    @BeforeTest
+    @BeforeMethod
     public void setupTestData() {
         setupDefaultUser();
     }

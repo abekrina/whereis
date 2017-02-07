@@ -33,7 +33,7 @@ public class DefaultUserDao extends AbstractDao<User> implements UserDao {
     public void save(User user) throws UserWithEmailExists {
         if (getByEmail(user.getEmail()) == null) {
             Session currentSession = sessionFactory.getCurrentSession();
-            currentSession.save(user);
+            currentSession.persist(user);
         } else {
             throw new UserWithEmailExists(user.getEmail());
         }

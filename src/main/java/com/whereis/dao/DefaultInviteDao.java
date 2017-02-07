@@ -26,7 +26,7 @@ public class DefaultInviteDao extends  AbstractDao<Invite> implements InviteDao 
                 invite.setTimestamp(new Timestamp(Calendar.getInstance().getTime().getTime()));
             }
             Session currentSession = sessionFactory.getCurrentSession();
-            currentSession.save(invite);
+            currentSession.persist(invite);
         } else {
             throw new UserAlreadyInvited("Invite for email " + invite.getSentToEmail()
                     + " to group " + invite.getGroupId() + " already exists");

@@ -6,9 +6,13 @@ import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 @WebAppConfiguration
 public abstract class AbstractIntegrationTest extends AbstractTransactionalTestNGSpringContextTests {
@@ -33,5 +37,14 @@ public abstract class AbstractIntegrationTest extends AbstractTransactionalTestN
     public void initialize() {
         // Set configuration for logger
         ConfigurationFactory.setConfigurationFactory(new LogConfigurationFactory());
+    }
+
+    @AfterTest
+    public void cleanup() throws SQLException {
+        for (String tableName : tableNames) {
+            Connection connection = dataSource.getConnection();
+            Statement statement = connection.createStatement();
+            statement.execute("DELETE FROM " + tableName + " WHERE id >= 0;");
+        }
     }
 }

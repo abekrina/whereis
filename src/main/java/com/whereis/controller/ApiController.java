@@ -78,8 +78,8 @@ public class ApiController extends AbstractController {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
         UsersInGroup userInGroupPresence = new UsersInGroup();
-        userInGroupPresence.setUserId(currentUser.getId());
-        userInGroupPresence.setGroupId(targetGroup.getId());
+        userInGroupPresence.setUser(currentUser);
+        userInGroupPresence.setGroup(targetGroup);
         //TODO: move this to postgres
         userInGroupPresence.setJoinedAt(new Timestamp(System.currentTimeMillis()));
         try {

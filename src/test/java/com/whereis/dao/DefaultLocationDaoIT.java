@@ -22,9 +22,6 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
     @Autowired
     LocationDao locationDao;
 
-    @Autowired
-    UserDao userDao;
-
     private Location defaultLocation;
     private Location defaultLocation2;
 
@@ -37,18 +34,14 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
     }
 
     private void setupDefaultUser()   {
-        if (defaultUser == null) {
-            defaultUser = new User();
-        }
+        defaultUser = new User();
         defaultUser.setEmail("sweetpotatodevelopment@gmail.com");
         defaultUser.setFirstName("Potato");
         defaultUser.setLastName("Development");
     }
 
     private void setupDefaultLocation() {
-        if (defaultLocation == null) {
-            defaultLocation = new Location();
-        }
+        defaultLocation = new Location();
         defaultLocation.setUser(defaultUser);
         defaultLocation.setTimestamp(new Timestamp(1484767310));
         defaultLocation.setLatitude(111111);
@@ -56,9 +49,7 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
         defaultLocation.setIp("192.168.0.0");
         defaultLocation.setGroupIdentity("1i2d3e4n5t6i7t8y");
 
-        if (defaultLocation2 == null) {
-            defaultLocation2 = new Location();
-        }
+        defaultLocation2 = new Location();
         defaultLocation2.setUser(defaultUser);
         defaultLocation2.setTimestamp(new Timestamp(1584767374));
         defaultLocation2.setLatitude(111111);

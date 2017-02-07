@@ -7,6 +7,7 @@ import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.OrderBy;
 
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
@@ -32,13 +33,19 @@ public class User implements Serializable {
     protected String email;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, targetEntity = Location.class)
-    //@Filter(name = "lastLocation", condition = "MAX(locations.timestamp)")
-    // TODO: check collection type for hibernate
     @OrderBy(clause = "timestamp")
     protected List<Location> locations = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "users", cascade = CascadeType.PERSIST)
-    protected List<Group> groups = new ArrayList<>();
+   /* @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, targetEntity = UsersInGroup.class)
+    protected List<UsersInGroup> groups = new ArrayList<>();
+
+    public List<UsersInGroup> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<UsersInGroup> groups) {
+        this.groups = groups;
+    }*/
 
     public int getId() {
         return id;

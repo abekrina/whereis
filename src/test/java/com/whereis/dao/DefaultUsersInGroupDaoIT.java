@@ -52,8 +52,8 @@ public class DefaultUsersInGroupDaoIT extends AbstractIntegrationTest {
         if (defaultUsersInGroup == null) {
             defaultUsersInGroup = new UsersInGroup();
         }
-        defaultUsersInGroup.setGroupId(defaultGroup.getId());
-        defaultUsersInGroup.setUserId(defaultUser.getId());
+        defaultUsersInGroup.setGroup(defaultGroup);
+        defaultUsersInGroup.setUser(defaultUser);
         defaultUsersInGroup.setJoinedAt(new Timestamp(1231231231));
     }
 

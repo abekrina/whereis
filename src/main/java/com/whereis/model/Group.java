@@ -22,11 +22,8 @@ public class Group {
     @Column(nullable = false)
     protected String identity;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(name = "usersInGroups",
-               joinColumns = @JoinColumn(name = "userId"),
-               inverseJoinColumns = @JoinColumn(name = "groupId"))
-    protected List<User> users = new ArrayList<>();
+    //@OneToMany(mappedBy = "group", fetch = FetchType.EAGER, targetEntity = UsersInGroup.class)
+    //protected List<UsersInGroup> usersInGroups = new ArrayList<>();
 
     public int getId() {
         return id;

@@ -45,8 +45,8 @@ public class DefaultUsersInGroupsDao extends AbstractDao<UsersInGroup> implement
     @Override
     public void leave(Group group, User user) throws NoUserInGroup {
         UsersInGroup requestedUserInGroup = new UsersInGroup();
-        requestedUserInGroup.setUserId(user.getId());
-        requestedUserInGroup.setGroupId(group.getId());
+        requestedUserInGroup.setUser(user);
+        requestedUserInGroup.setGroup(group);
 
         UsersInGroup relationToDelete = findUserInGroup(requestedUserInGroup);
         if (relationToDelete == null) {
@@ -59,14 +59,15 @@ public class DefaultUsersInGroupsDao extends AbstractDao<UsersInGroup> implement
 
     // Returns null if not found
     @Override
+    // TODO: rebuild to make use of hibernate mappings
     public UsersInGroup findUserInGroup(UsersInGroup usersInGroup) {
         CriteriaBuilder builder = getCriteriaBuilder();
         @SuppressWarnings("unchecked")
         CriteriaQuery<UsersInGroup> criteriaQuery = createEntityCriteria();
         Root<UsersInGroup> usersInGroupRoot = criteriaQuery.from(UsersInGroup.class);
         criteriaQuery.select(usersInGroupRoot);
-        criteriaQuery.where(builder.and(builder.equal(usersInGroupRoot.get("user_id"), usersInGroup.getUserId())),
-                builder.equal(usersInGroupRoot.get("group_id"), usersInGroup.getGroupId()));
+        criteriaQuery.where(builder.and(builder.equal(usersInGroupRoot.get("user"), usersInGroup.getUser())),
+                builder.equal(usersInGroupRoot.get("group"), usersInGroup.getGroup()));
         UsersInGroup relation = null;
         try {
             relation = getSession().createQuery(criteriaQuery).getSingleResult();

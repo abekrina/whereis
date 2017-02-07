@@ -18,8 +18,6 @@ import java.util.List;
 @Transactional
 @Repository("locationDao")
 public class DefaultLocationDao extends AbstractDao<Location> implements LocationDao {
-    @Autowired
-    UserDao userDao;
 
     @Override
     public void save(Location location) {
@@ -50,7 +48,7 @@ public class DefaultLocationDao extends AbstractDao<Location> implements Locatio
 
         List<Location> locations = new ArrayList<>();
         for (UsersInGroup user : usersInGroup) {
-            locations.add(getLastLocationForUser(userDao.get(user.getUserId())));
+            locations.add(getLastLocationForUser(user.getUser()));
         }
         return locations;
     }

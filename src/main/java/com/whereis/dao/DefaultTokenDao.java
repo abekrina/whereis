@@ -11,7 +11,7 @@ public class DefaultTokenDao extends AbstractDao<Token> implements TokenDao {
     @Override
     public void save(Token token) {
         Session currentSession = sessionFactory.getCurrentSession();
-        currentSession.save(token);
+        currentSession.persist(token);
     }
 
     @Override

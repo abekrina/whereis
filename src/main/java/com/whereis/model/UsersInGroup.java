@@ -1,12 +1,14 @@
 package com.whereis.model;
 
 import com.sun.istack.internal.NotNull;
+import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Objects;
 
+@Immutable
 @Entity
 @Table(name = "usersInGroups")
 public class UsersInGroup {
@@ -15,33 +17,44 @@ public class UsersInGroup {
     protected int id;
 
     @NotNull
-    @Column(nullable = false)
-    protected int user_id;
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name = "userId", insertable = false, updatable = false)
+    protected User user;
 
     @NotNull
-    @Column(nullable = false)
-    protected int group_id;
+    @ManyToOne(targetEntity = Group.class)
+    @JoinColumn(name = "groupId", insertable = false, updatable = false)
+    protected Group group;
 
     protected Timestamp joined_at;
+
+    public UsersInGroup() {
+
+    }
+    public UsersInGroup(User user, Group group, Timestamp joined_at) {
+        this.user = user;
+        this.group = group;
+        this.joined_at = joined_at;
+    }
 
     public int getId() {
         return id;
     }
 
-    public int getUserId() {
-        return user_id;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(int user_id) {
-        this.user_id = user_id;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public int getGroupId() {
-        return group_id;
+    public Group getGroup() {
+        return group;
     }
 
-    public void setGroupId(int groupId) {
-        this.group_id = groupId;
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     public Timestamp getJoinedAt() {
@@ -55,8 +68,8 @@ public class UsersInGroup {
     @Override
     public boolean equals(Object usersInGroupObj) {
         UsersInGroup usersInGroup = (UsersInGroup) usersInGroupObj;
-        if (usersInGroup.getId() == id && usersInGroup.getUserId() == user_id
-                && usersInGroup.getGroupId() == group_id) {
+        if (usersInGroup.getId() == id && usersInGroup.getUser() == user
+                && usersInGroup.getGroup() == group) {
             return true;
         }
         return false;
@@ -64,11 +77,11 @@ public class UsersInGroup {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user_id, group_id);
+        return Objects.hash(id, user, group);
     }
 
     @Override
     public String toString() {
-        return "user_id: " + user_id + " group_id " + group_id;
+        return "user: " + user + " group: " + group;
     }
 }

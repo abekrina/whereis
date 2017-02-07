@@ -33,9 +33,7 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
     }
 
     private void setupDefaultInvite() {
-        if (defaultInvite == null) {
-            defaultInvite = new Invite();
-        }
+        defaultInvite = new Invite();
         defaultInvite.setTimestamp(new Timestamp(123435123));
         defaultInvite.setGroupId(defaultGroup.getId());
         defaultInvite.setSentBy(1);
@@ -43,18 +41,14 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
     }
 
     private void setupDefaultUser() {
-        if (defaultUser == null) {
-            defaultUser = new User();
-        }
+        defaultUser = new User();
         defaultUser.setEmail("sweetpotatodevelopment@gmail.com");
         defaultUser.setFirstName("Potato");
         defaultUser.setLastName("Development");
     }
 
     private void setupDefaultGroup() {
-        if (defaultGroup == null) {
-            defaultGroup = new Group();
-        }
+        defaultGroup = new Group();
         defaultGroup.setIdentity("12345");
         defaultGroup.setName("Default group");
     }
