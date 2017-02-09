@@ -1,4 +1,4 @@
-package com.whereis.exceptions;
+package com.whereis.exceptions.groups;
 
 public class GroupWithIdentityExists extends Exception {
     public GroupWithIdentityExists(String message){

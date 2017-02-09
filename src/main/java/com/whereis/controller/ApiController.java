@@ -1,13 +1,14 @@
 package com.whereis.controller;
 
-import com.whereis.exceptions.NoUserInGroup;
-import com.whereis.exceptions.UserAlreadyInGroup;
-import com.whereis.exceptions.UserAlreadyInvited;
+import com.whereis.exceptions.groups.NoUserInGroup;
+import com.whereis.exceptions.groups.UserAlreadyInGroup;
+import com.whereis.exceptions.invites.NoInviteForUserToGroup;
+import com.whereis.exceptions.invites.UserAlreadyInvited;
 import com.whereis.model.*;
 import com.whereis.service.GroupService;
 import com.whereis.service.InviteService;
 import com.whereis.service.LocationService;
-import com.whereis.service.UsersInGroupsService;
+import com.whereis.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.List;
 
 @RestController
@@ -32,7 +31,7 @@ public class ApiController extends AbstractController {
     InviteService inviteService;
 
     @Autowired
-    UsersInGroupsService usersInGroupsService;
+    UserService userService;
 
     @Autowired
     LocationService locationService;
@@ -42,8 +41,8 @@ public class ApiController extends AbstractController {
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity createGroup(@RequestBody Group group) {
         try {
-            // This method automatically adds current user in his new group
-            groupService.save(group, getCurrentUser());
+            groupService.save(group);
+            userService.joinGroup(group, getCurrentUser());
 
         } catch (Exception e) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
@@ -72,21 +71,16 @@ public class ApiController extends AbstractController {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
         User currentUser = getCurrentUser();
-        Invite inviteForUser = inviteService.getPendingInviteFor(currentUser, targetGroup);
-        if (inviteForUser == null) {
-            //TODO: message about no invite
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
-        }
-        UsersInGroup userInGroupPresence = new UsersInGroup();
-        userInGroupPresence.setUser(currentUser);
-        userInGroupPresence.setGroup(targetGroup);
-        //TODO: move this to postgres
-        userInGroupPresence.setJoinedAt(new Timestamp(System.currentTimeMillis()));
+
         try {
-            usersInGroupsService.save(userInGroupPresence);
-            inviteService.delete(inviteForUser);
+            userService.joinGroup(targetGroup, currentUser);
         } catch (UserAlreadyInGroup userAlreadyInGroup) {
-            logger.error("Trying to add user which alresdy in group " + userInGroupPresence.toString());
+            logger.error(userAlreadyInGroup.getMessage(), userAlreadyInGroup);
+            //TODO: message about trying to add dublicate user
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        } catch (NoInviteForUserToGroup noInviteForUserToGroup) {
+            //TODO: message about adding user without invite
+            logger.error(noInviteForUserToGroup.getMessage(), noInviteForUserToGroup);
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity(HttpStatus.OK);
@@ -96,9 +90,10 @@ public class ApiController extends AbstractController {
     public ResponseEntity leaveGroup(@PathVariable("identity") String identity) {
         User currentUser = getCurrentUser();
         try {
-            usersInGroupsService.leave(identity, currentUser);
+            userService.leaveGroup(groupService.getByIdentity(identity), currentUser);
         } catch (NoUserInGroup noUserInGroup) {
-            logger.error("No user " + currentUser.getEmail() + " in group " + identity, noUserInGroup);
+            //TODO: message about user is not in the group
+            logger.error(noUserInGroup.getMessage(), noUserInGroup);
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity(HttpStatus.OK);
@@ -108,7 +103,6 @@ public class ApiController extends AbstractController {
     public ResponseEntity saveUsersLocation(@PathVariable("identity") String identity,
                                        @RequestBody Location location,
                                        HttpServletRequest request) {
-        location.setTimestamp(new Timestamp(Calendar.getInstance().getTime().getTime()));
         if (request.getRemoteAddr() != null) {
             location.setIp(request.getRemoteAddr());
         }
@@ -120,11 +114,5 @@ public class ApiController extends AbstractController {
     @RequestMapping(value = "/{identity}/getlocations", method = RequestMethod.GET)
     public List<Location> getLocationOfGroupMembers(@PathVariable("identity") String identity) {
         return locationService.getLocationsOfGroupMembers(groupService.getByIdentity(identity), getCurrentUser());
-    }
-
-    private User getCurrentUser() {
-        SecurityContext context = (SecurityContext) httpSession.getAttribute("SPRING_SECURITY_CONTEXT");
-        Authentication auth = context.getAuthentication();
-        return (User) auth.getPrincipal();
     }
 }

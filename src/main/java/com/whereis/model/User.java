@@ -1,13 +1,11 @@
 package com.whereis.model;
 
 import com.sun.istack.internal.NotNull;
-import org.hibernate.Hibernate;
-import org.hibernate.annotations.Filter;
+import com.whereis.exceptions.groups.NoUserInGroup;
+import com.whereis.exceptions.groups.UserAlreadyInGroup;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.OrderBy;
 
-
-import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
@@ -32,20 +30,38 @@ public class User implements Serializable {
     @Column(nullable = false)
     protected String email;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, targetEntity = Location.class)
+
+    //TODO: change to Set
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, targetEntity = Location.class, cascade = CascadeType.ALL)
     @OrderBy(clause = "timestamp")
     protected List<Location> locations = new ArrayList<>();
 
-   /* @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, targetEntity = UsersInGroup.class)
-    protected List<UsersInGroup> groups = new ArrayList<>();
+    @OneToMany(mappedBy = "user", targetEntity = UsersInGroup.class)
+    protected Set<UsersInGroup> groups = new HashSet<>();
 
-    public List<UsersInGroup> getGroups() {
-        return groups;
+    public Set<Group> getGroups() {
+        Set<Group> groupsToReturn = new HashSet<>();
+        for (UsersInGroup group : groups) {
+            groupsToReturn.add(group.getGroup());
+        }
+        return Collections.unmodifiableSet(groupsToReturn);
     }
 
-    public void setGroups(List<UsersInGroup> groups) {
-        this.groups = groups;
-    }*/
+    public void addUserToGroup(Group group) throws UserAlreadyInGroup {
+        if (!groups.add(new UsersInGroup(this, group))) {
+            throw new UserAlreadyInGroup("User " + this + "already joined group " + group);
+        }
+    }
+
+    public void leave(Group group) throws NoUserInGroup {
+        if (!groups.remove(group)) {
+            throw new NoUserInGroup("There is no user " + this + " in group " + group);
+        }
+    }
+
+    public void saveUserLocation(Location location) {
+        locations.add(location);
+    }
 
     public int getId() {
         return id;
@@ -76,7 +92,7 @@ public class User implements Serializable {
     }
 
     public List<Location> getLocations() {
-        return locations;
+        return Collections.unmodifiableList(locations);
     }
 
     @Override

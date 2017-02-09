@@ -1,6 +1,6 @@
 package com.whereis.dao;
 
-import com.whereis.exceptions.UserAlreadyInvited;
+import com.whereis.exceptions.invites.UserAlreadyInvited;
 import com.whereis.model.Group;
 import com.whereis.model.Invite;
 import com.whereis.model.User;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.sql.Timestamp;
@@ -25,7 +25,7 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
     private User defaultUser;
     private Group defaultGroup;
 
-    @BeforeTest
+    @BeforeMethod
     public void setupTestData() {
         setupDefaultUser();
         setupDefaultGroup();

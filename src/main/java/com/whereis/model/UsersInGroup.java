@@ -1,6 +1,7 @@
 package com.whereis.model;
 
 import com.sun.istack.internal.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
@@ -26,15 +27,15 @@ public class UsersInGroup {
     @JoinColumn(name = "groupId", insertable = false, updatable = false)
     protected Group group;
 
+    @CreationTimestamp
     protected Timestamp joined_at;
 
     public UsersInGroup() {
 
     }
-    public UsersInGroup(User user, Group group, Timestamp joined_at) {
+    public UsersInGroup(User user, Group group) {
         this.user = user;
         this.group = group;
-        this.joined_at = joined_at;
     }
 
     public int getId() {

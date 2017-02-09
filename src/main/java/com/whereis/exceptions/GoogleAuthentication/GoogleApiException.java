@@ -1,4 +1,4 @@
-package com.whereis.exceptions;
+package com.whereis.exceptions.GoogleAuthentication;
 
 public class GoogleApiException extends Exception{
     public GoogleApiException() {

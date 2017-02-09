@@ -1,7 +1,7 @@
 package com.whereis.service;
 
 import com.whereis.dao.InviteDao;
-import com.whereis.exceptions.UserAlreadyInvited;
+import com.whereis.exceptions.invites.UserAlreadyInvited;
 import com.whereis.model.Group;
 import com.whereis.model.Invite;
 import com.whereis.model.User;

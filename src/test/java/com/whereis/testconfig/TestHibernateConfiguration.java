@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -44,19 +45,17 @@ public class TestHibernateConfiguration {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
-    @Bean
+/*    @Bean
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()
                 .generateUniqueName(true)
                 .setType(H2)
                 .setScriptEncoding("UTF-8")
                 .ignoreFailedDrops(true)
-                //.addScript("controller-it-setup/schema.sql")
-                //.addScripts("user_data.sql", "country_data.sql")
                 .build();
-    }
+    }*/
 
-/*  @Bean
+  @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(environment.getRequiredProperty("test.jdbc.driverClassName"));
@@ -65,7 +64,7 @@ public class TestHibernateConfiguration {
         dataSource.setPassword(environment.getRequiredProperty("test.jdbc.password"));
 
         return dataSource;
-    }*/
+    }
 
     @Bean
     public LocalSessionFactoryBean sessionFactory() {

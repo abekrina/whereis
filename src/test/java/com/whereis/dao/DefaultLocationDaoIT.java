@@ -1,6 +1,5 @@
 package com.whereis.dao;
 
-import com.whereis.exceptions.UserWithEmailExists;
 import com.whereis.model.Location;
 import com.whereis.model.User;
 import com.whereis.testconfig.TestHibernateConfiguration;
@@ -11,7 +10,6 @@ import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.sql.Timestamp;
@@ -21,6 +19,9 @@ import java.sql.Timestamp;
 public class DefaultLocationDaoIT extends AbstractIntegrationTest {
     @Autowired
     LocationDao locationDao;
+
+    @Autowired
+    UserDao userDao;
 
     private Location defaultLocation;
     private Location defaultLocation2;
@@ -43,7 +44,6 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
     private void setupDefaultLocation() {
         defaultLocation = new Location();
         defaultLocation.setUser(defaultUser);
-        defaultLocation.setTimestamp(new Timestamp(1484767310));
         defaultLocation.setLatitude(111111);
         defaultLocation.setLongitude(222222);
         defaultLocation.setIp("192.168.0.0");
@@ -51,7 +51,6 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
 
         defaultLocation2 = new Location();
         defaultLocation2.setUser(defaultUser);
-        defaultLocation2.setTimestamp(new Timestamp(1584767374));
         defaultLocation2.setLatitude(111111);
         defaultLocation2.setLongitude(222222);
         defaultLocation2.setIp("192.168.0.0");
@@ -66,22 +65,16 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
 
     @Test
     public void testGetLastLocationForUser() {
-        Timestamp newTimestamp = new Timestamp(1584767374);
-      /*  // Save location
-        locationDao.save(defaultLocation);
-
-        // Save location with next timestamp
-
-        defaultLocation.setTimestamp(newTimestamp);
-        locationDao.save(defaultLocation);*/
-
-        defaultUser.getLocations().add(defaultLocation);
-        defaultUser.getLocations().add(defaultLocation2);
+        // Save locations
+        userDao.saveUserLocation(defaultLocation, defaultUser);
+        userDao.saveUserLocation(defaultLocation2, defaultUser);
 
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
-//        Assert.assertEquals(locationDao.getLastLocationForUser(defaultUser), defaultLocation);
-        Assert.assertEquals(locationDao.getLastLocationForUser(defaultUser).getTimestamp(), newTimestamp);
+        //locationDao.get(defaultLocation.getId());
+        TestTransaction.start();
+        Assert.assertEquals(locationDao.getLastLocationForUser(defaultUser), defaultLocation2);
+        Assert.assertTrue(locationDao.getLastLocationForUser(defaultUser).getTimestamp().isAfter(locationDao.get(defaultLocation.getId()).getTimestamp()));
     }
 }

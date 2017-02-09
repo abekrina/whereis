@@ -10,13 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class DefaultTokenDao extends AbstractDao<Token> implements TokenDao {
     @Override
     public void save(Token token) {
-        Session currentSession = sessionFactory.getCurrentSession();
-        currentSession.persist(token);
+        getSession().persist(token);
     }
 
     @Override
     public void update(Token token) {
-        Session currentSession = sessionFactory.getCurrentSession();
-        currentSession.update(token);
+        getSession().update(token);
     }
 }

@@ -1,6 +1,6 @@
 package com.whereis.controller;
 
-import com.whereis.exceptions.UserWithEmailExists;
+import com.whereis.exceptions.users.UserWithEmailExists;
 import com.whereis.model.Location;
 import com.whereis.model.User;
 import com.whereis.service.LocationService;
@@ -8,8 +8,6 @@ import com.whereis.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.sql.Timestamp;
 
 //TODO: All methods here will be rewritten
 
@@ -59,7 +57,6 @@ public class TempController extends AbstractController {
         Location location = new Location();
         location.setLatitude(0.123);
         location.setLongitude(0.321);
-        location.setTimestamp(new Timestamp(1481877171));
         location.setIp("192.168.0.0");
 
         locationService.save(location);

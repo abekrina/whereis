@@ -1,4 +1,6 @@
-package com.whereis.exceptions;
+package com.whereis.exceptions.GoogleAuthentication;
+
+import com.whereis.exceptions.GoogleAuthentication.GoogleApiException;
 
 public class GoogleApiNotAccessibleException extends GoogleApiException {
     public GoogleApiNotAccessibleException() {

@@ -1,9 +1,9 @@
 package com.whereis.dao;
 
-import com.whereis.exceptions.GroupWithIdentityExists;
-import com.whereis.exceptions.NoSuchGroup;
-import com.whereis.exceptions.UserAlreadyInGroup;
-import com.whereis.exceptions.UserWithEmailExists;
+import com.whereis.exceptions.groups.GroupWithIdentityExists;
+import com.whereis.exceptions.groups.NoSuchGroup;
+import com.whereis.exceptions.groups.UserAlreadyInGroup;
+import com.whereis.exceptions.users.UserWithEmailExists;
 import com.whereis.model.Group;
 import com.whereis.model.User;
 import com.whereis.model.UsersInGroup;
@@ -14,13 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-
-import javax.sql.DataSource;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @ContextConfiguration(classes = {TestHibernateConfiguration.class, TestWebMvcConfiguration.class})

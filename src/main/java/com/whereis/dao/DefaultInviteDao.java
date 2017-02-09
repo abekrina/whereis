@@ -1,6 +1,6 @@
 package com.whereis.dao;
 
-import com.whereis.exceptions.UserAlreadyInvited;
+import com.whereis.exceptions.invites.UserAlreadyInvited;
 import com.whereis.model.Group;
 import com.whereis.model.Invite;
 import com.whereis.model.User;
@@ -12,8 +12,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.sql.Timestamp;
-import java.util.Calendar;
 
 @Transactional
 @Repository("inviteDao")
@@ -22,11 +20,7 @@ public class DefaultInviteDao extends  AbstractDao<Invite> implements InviteDao 
     @Override
     public void save(Invite invite) throws UserAlreadyInvited {
         if (getSameInvite(invite) == null) {
-            if (invite.getTimestamp() == null) {
-                invite.setTimestamp(new Timestamp(Calendar.getInstance().getTime().getTime()));
-            }
-            Session currentSession = sessionFactory.getCurrentSession();
-            currentSession.persist(invite);
+            getSession().persist(invite);
         } else {
             throw new UserAlreadyInvited("Invite for email " + invite.getSentToEmail()
                     + " to group " + invite.getGroupId() + " already exists");
@@ -36,8 +30,7 @@ public class DefaultInviteDao extends  AbstractDao<Invite> implements InviteDao 
     @Override
     public void update(Invite invite) {
         if (get(invite.getId()) != null) {
-            Session currentSession = sessionFactory.getCurrentSession();
-            currentSession.update(invite);
+            getSession().update(invite);
         }
     }
 

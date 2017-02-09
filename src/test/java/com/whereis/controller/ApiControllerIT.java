@@ -67,16 +67,12 @@ public class ApiControllerIT extends AbstractIntegrationTest {
     }
 
     private void setupDefaultUsers()   {
-        if (defaultUser1 == null) {
-            defaultUser1 = new User();
-        }
+        defaultUser1 = new User();
         defaultUser1.setEmail("sweetpotatodevelopment@gmail.com");
         defaultUser1.setFirstName("Potato");
         defaultUser1.setLastName("Development");
 
-        if (defaultUser2 == null) {
-            defaultUser2 = new User();
-        }
+        defaultUser2 = new User();
         defaultUser2.setEmail("abekrina@gmail.com");
         defaultUser2.setFirstName("Alena");
         defaultUser2.setLastName("Bekrina");

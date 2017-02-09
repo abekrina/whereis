@@ -1,6 +1,7 @@
 package com.whereis.service;
 
 import com.whereis.dao.LocationDao;
+import com.whereis.dao.UserDao;
 import com.whereis.dao.UsersInGroupsDao;
 import com.whereis.model.Group;
 import com.whereis.model.User;
@@ -19,7 +20,7 @@ public class DefaultLocationService implements LocationService {
     LocationDao locationDao;
 
     @Autowired
-    UsersInGroupsDao usersInGroupsDao;
+    UserDao usersDao;
 
     @Override
     public Location get(int id) {
@@ -48,7 +49,7 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public List<Location> getLocationsOfGroupMembers(Group group, User currentUser) {
-        if (usersInGroupsDao.findUserInGroup(group, currentUser) != null) {
+        if (usersDao.assertUserInGroup(group, currentUser)) {
             return locationDao.getLastLocationsForGroupMembers(group);
         }
         return new ArrayList<>();

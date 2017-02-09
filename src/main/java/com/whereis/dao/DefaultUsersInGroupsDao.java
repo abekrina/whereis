@@ -1,22 +1,11 @@
 package com.whereis.dao;
 
 import com.whereis.authentication.GoogleAuthenticationFilter;
-import com.whereis.exceptions.NoUserInGroup;
-import com.whereis.exceptions.UserAlreadyInGroup;
-import com.whereis.model.Group;
-import com.whereis.model.User;
 import com.whereis.model.UsersInGroup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.NoResultException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import java.sql.Timestamp;
 
 @Transactional
 @Repository("usersInGroupsDao")
@@ -24,7 +13,7 @@ public class DefaultUsersInGroupsDao extends AbstractDao<UsersInGroup> implement
 
     private static final Logger logger = LogManager.getLogger(GoogleAuthenticationFilter.class);
 
-    @Override
+/*    @Override
     public void save(UsersInGroup user) throws UserAlreadyInGroup {
         user.setJoinedAt(new Timestamp(System.currentTimeMillis()));
         if (findUserInGroup(user) != null) {
@@ -32,17 +21,9 @@ public class DefaultUsersInGroupsDao extends AbstractDao<UsersInGroup> implement
         }
         Session currentSession = sessionFactory.getCurrentSession();
         currentSession.save(user);
-    }
+    }*/
 
-    @Override
-    public void update(UsersInGroup user) {
-        if (get(user.getId()) != null) {
-            Session currentSession = sessionFactory.getCurrentSession();
-            currentSession.update(user);
-        }
-    }
-
-    @Override
+/*    @Override
     public void leave(Group group, User user) throws NoUserInGroup {
         UsersInGroup requestedUserInGroup = new UsersInGroup();
         requestedUserInGroup.setUser(user);
@@ -55,11 +36,10 @@ public class DefaultUsersInGroupsDao extends AbstractDao<UsersInGroup> implement
         } else {
             delete(relationToDelete.getClass(), relationToDelete.getId());
         }
-    }
+    }*/
 
     // Returns null if not found
-    @Override
-    // TODO: rebuild to make use of hibernate mappings
+/*    @Override
     public UsersInGroup findUserInGroup(UsersInGroup usersInGroup) {
         CriteriaBuilder builder = getCriteriaBuilder();
         @SuppressWarnings("unchecked")
@@ -93,5 +73,5 @@ public class DefaultUsersInGroupsDao extends AbstractDao<UsersInGroup> implement
         } catch (NoResultException e) {
             return null;
         }
-    }
+    }*/
 }

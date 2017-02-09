@@ -1,4 +1,4 @@
-package com.whereis.exceptions;
+package com.whereis.exceptions.users;
 
 public class UserNotFoundException extends Exception {
     public UserNotFoundException(){

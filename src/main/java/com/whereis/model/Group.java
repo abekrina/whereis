@@ -3,9 +3,7 @@ package com.whereis.model;
 import com.sun.istack.internal.NotNull;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "groups")
@@ -22,8 +20,20 @@ public class Group {
     @Column(nullable = false)
     protected String identity;
 
-    //@OneToMany(mappedBy = "group", fetch = FetchType.EAGER, targetEntity = UsersInGroup.class)
-    //protected List<UsersInGroup> usersInGroups = new ArrayList<>();
+    @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, targetEntity = UsersInGroup.class)
+    protected Set<UsersInGroup> users = new HashSet<>();
+
+    public Set<User> getUsersInGroup() {
+        Set<User> usersToReturn = new HashSet<>();
+        for (UsersInGroup user : users) {
+            usersToReturn.add(user.getUser());
+        }
+        return Collections.unmodifiableSet(usersToReturn);
+    }
+
+    public void addUserToGroup(User user) {
+        users.add(new UsersInGroup(user, this));
+    }
 
     public int getId() {
         return id;

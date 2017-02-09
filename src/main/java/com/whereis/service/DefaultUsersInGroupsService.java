@@ -2,10 +2,6 @@ package com.whereis.service;
 
 import com.whereis.dao.GroupDao;
 import com.whereis.dao.UsersInGroupsDao;
-import com.whereis.exceptions.NoUserInGroup;
-import com.whereis.exceptions.UserAlreadyInGroup;
-import com.whereis.model.Group;
-import com.whereis.model.User;
 import com.whereis.model.UsersInGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +19,7 @@ public class DefaultUsersInGroupsService implements UsersInGroupsService {
         return usersInGroupsDao.get(id);
     }
 
-    @Override
+    /*@Override
     public void save(UsersInGroup userInGroup) throws UserAlreadyInGroup {
         usersInGroupsDao.save(userInGroup);
     }
@@ -32,13 +28,13 @@ public class DefaultUsersInGroupsService implements UsersInGroupsService {
     public void update(UsersInGroup userInGroup) {
         usersInGroupsDao.update(userInGroup);
     }
-
+*/
     @Override
     public boolean delete(UsersInGroup userInGroup) {
         return usersInGroupsDao.delete(userInGroup.getClass(), userInGroup.getId());
     }
 
-    @Override
+    /*@Override
     public void leave(String groupIdentity, User user) throws NoUserInGroup {
         Group groupToLeave = groupDao.getByIdentity(groupIdentity);
         usersInGroupsDao.leave(groupToLeave, user);
@@ -55,5 +51,5 @@ public class DefaultUsersInGroupsService implements UsersInGroupsService {
         usersInGroup.setUser(user);
         usersInGroup.setGroup(group);
         save(usersInGroup);
-    }
+    }*/
 }
