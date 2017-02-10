@@ -30,6 +30,7 @@ public class DefaultLocationDao extends AbstractDao<Location> implements Locatio
         }
     }
 
+    // TODO: reimplement taking into account hibernate mapping
     @Override
     public List<Location> getLastLocationsForGroupMembers(Group group) {
         Set<User> usersInGroup = group.getUsersInGroup();

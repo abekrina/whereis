@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.whereis.authentication.GoogleAuthentication;
 import com.whereis.dao.AbstractIntegrationTest;
 import com.whereis.dao.LocationDao;
+import com.whereis.model.Group;
 import com.whereis.model.Location;
 import com.whereis.model.User;
 import com.whereis.testconfig.TestHibernateConfiguration;
@@ -57,6 +58,8 @@ public class ApiControllerIT extends AbstractIntegrationTest {
 
     private User defaultUser2;
 
+    private Group defaultGroup;
+
     @BeforeMethod
     public void setup() throws SQLException {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
@@ -64,6 +67,7 @@ public class ApiControllerIT extends AbstractIntegrationTest {
                 .build();
 
         setupDefaultUsers();
+        setupDefaultGroup();
     }
 
     private void setupDefaultUsers()   {
@@ -76,6 +80,12 @@ public class ApiControllerIT extends AbstractIntegrationTest {
         defaultUser2.setEmail("abekrina@gmail.com");
         defaultUser2.setFirstName("Alena");
         defaultUser2.setLastName("Bekrina");
+    }
+
+    private void setupDefaultGroup() {
+        defaultGroup = new Group();
+        defaultGroup.setIdentity("12345");
+        defaultGroup.setName("Default Group");
     }
 
     @AfterTest
@@ -129,7 +139,7 @@ public class ApiControllerIT extends AbstractIntegrationTest {
         expectedLocation.setUser(defaultUser1);
         expectedLocation.setLatitude(37.345345);
         expectedLocation.setLongitude(-121.34535);
-        expectedLocation.setGroupIdentity("i1d2e3n4t5i6t7y8");
+        expectedLocation.setGroup(defaultGroup);
         expectedLocation.setIp("127.0.0.1");
 
         GoogleAuthentication authentication = ControllerTestHelper.getTestAuthentication(1,
@@ -142,14 +152,14 @@ public class ApiControllerIT extends AbstractIntegrationTest {
 
         // Send query with test data
         mockMvc.perform(MockMvcRequestBuilders.put("/group/{identity}/savemylocation",
-                expectedLocation.getGroupIdentity()).with(authentication(authentication)).contentType(MediaType.APPLICATION_JSON)
+                expectedLocation.getGroup()).with(authentication(authentication)).contentType(MediaType.APPLICATION_JSON)
                 .content(location.toString()))
                 .andExpect(status().isOk());
 
         // Get result of query from database
         Location actualLocation = locationDao.getLastLocationForUser(defaultUser1);
 
-        Assert.assertEquals(actualLocation.getGroupIdentity(), expectedLocation.getGroupIdentity());
+        Assert.assertEquals(actualLocation.getGroup(), expectedLocation.getGroup());
         Assert.assertEquals(actualLocation.getIp(), expectedLocation.getIp());
         Assert.assertEquals(actualLocation.getLatitude(), expectedLocation.getLatitude());
         Assert.assertEquals(actualLocation.getLongitude(), expectedLocation.getLongitude());
@@ -169,7 +179,7 @@ public class ApiControllerIT extends AbstractIntegrationTest {
         expectedLocation.setUser(defaultUser2);
         expectedLocation.setLatitude(37.345345);
         expectedLocation.setLongitude(-121.34535);
-        expectedLocation.setGroupIdentity("i1d2e3n4t5i6t7y8");
+        expectedLocation.setGroup(defaultGroup);
         expectedLocation.setIp("127.0.0.1");
 
         GoogleAuthentication authentication = ControllerTestHelper.getTestAuthentication(1,

@@ -1,6 +1,7 @@
 package com.whereis.dao;
 
 import com.whereis.exceptions.users.UserWithEmailExists;
+import com.whereis.model.Group;
 import com.whereis.model.Location;
 import com.whereis.model.User;
 import com.whereis.testconfig.TestHibernateConfiguration;
@@ -35,10 +36,12 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
     private Location defaultLocation2;
 
     private User defaultUser;
+    private Group defaultGroup;
 
     @BeforeMethod
     public void setupTestData() {
         setupDefaultUser();
+        setupDefaultGroup();
         setupDefaultLocation();
     }
 
@@ -49,20 +52,26 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
         defaultUser.setLastName("Development");
     }
 
+    private void setupDefaultGroup() {
+        defaultGroup = new Group();
+        defaultGroup.setIdentity("12345");
+        defaultGroup.setName("Default Group");
+    }
+
     private void setupDefaultLocation() {
         defaultLocation = new Location();
         defaultLocation.setUser(defaultUser);
         defaultLocation.setLatitude(111111);
         defaultLocation.setLongitude(222222);
         defaultLocation.setIp("192.168.0.0");
-        defaultLocation.setGroupIdentity("1i2d3e4n5t6i7t8y");
+        defaultLocation.setGroup(defaultGroup);
 
         defaultLocation2 = new Location();
         defaultLocation2.setUser(defaultUser);
         defaultLocation2.setLatitude(222222);
         defaultLocation2.setLongitude(222222);
         defaultLocation2.setIp("192.168.0.0");
-        defaultLocation2.setGroupIdentity("1i2d3e4n5t6i7t8y");
+        defaultLocation2.setGroup(defaultGroup);
     }
 
     @Test

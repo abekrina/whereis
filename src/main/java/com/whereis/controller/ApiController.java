@@ -106,7 +106,7 @@ public class ApiController extends AbstractController {
         if (request.getRemoteAddr() != null) {
             location.setIp(request.getRemoteAddr());
         }
-        location.setGroupIdentity(identity);
+        location.setGroup(groupService.getByIdentity(identity));
         locationService.save(location);
         return new ResponseEntity(HttpStatus.OK);
     }
