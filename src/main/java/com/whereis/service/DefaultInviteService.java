@@ -46,7 +46,12 @@ public class DefaultInviteService implements InviteService {
         return false;
     }
 
-    // Returns null if no invites for user and group
+    /**
+     * Find invite for user to group if exists
+     * @param user user to search invite for
+     * @param group group to search invite for
+     * @return invite for user to group or null if not found
+     */
     @Override
     public Invite getPendingInviteFor(User user, Group group) {
         Invite pendingInvite = new Invite();
