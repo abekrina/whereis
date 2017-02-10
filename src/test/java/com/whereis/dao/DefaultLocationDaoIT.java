@@ -1,27 +1,20 @@
 package com.whereis.dao;
 
-import com.whereis.exceptions.users.UserWithEmailExists;
+import com.whereis.exceptions.users.UserWithEmailExistsException;
 import com.whereis.model.Group;
 import com.whereis.model.Location;
 import com.whereis.model.User;
 import com.whereis.testconfig.TestHibernateConfiguration;
 import com.whereis.testconfig.TestWebMvcConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.sql.Timestamp;
-
-import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 
 @ContextConfiguration(classes = {TestHibernateConfiguration.class, TestWebMvcConfiguration.class})
 @WebAppConfiguration
@@ -65,7 +58,6 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
         defaultLocation.setLongitude(222222);
         defaultLocation.setIp("192.168.0.0");
         defaultLocation.setGroup(defaultGroup);
-        defaultLocation.setTimestamp(new Timestamp(1549780846));
 
         defaultLocation2 = new Location();
         defaultLocation2.setUser(defaultUser);
@@ -73,7 +65,6 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
         defaultLocation2.setLongitude(222222);
         defaultLocation2.setIp("192.168.0.0");
         defaultLocation2.setGroup(defaultGroup);
-        defaultLocation.setTimestamp(new Timestamp(1449780846));
     }
 
     @Test
@@ -83,7 +74,7 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGetLastLocationForUser() throws UserWithEmailExists {
+    public void testGetLastLocationForUser() throws UserWithEmailExistsException {
         userDao.save(defaultUser);
         // Save locations
         userDao.saveUserLocation(defaultLocation, defaultUser);

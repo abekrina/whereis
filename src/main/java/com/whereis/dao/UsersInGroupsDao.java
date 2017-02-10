@@ -12,9 +12,9 @@ public interface UsersInGroupsDao {
     /**
      *  Methods specific for every implementation of this interface
      */
-/*    void save(UsersInGroup user) throws UserAlreadyInGroup;
+/*    void save(UsersInGroup user) throws UserAlreadyInGroupException;
     void update(UsersInGroup user);
-    void leave(Group group, User user) throws NoUserInGroup;
+    void leave(Group group, User user) throws NoUserInGroupException;
 
     UsersInGroup findUserInGroup(UsersInGroup usersInGroup);
 

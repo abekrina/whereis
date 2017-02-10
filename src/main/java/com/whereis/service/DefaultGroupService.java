@@ -2,11 +2,9 @@ package com.whereis.service;
 
 import com.whereis.dao.DefaultGroupDao;
 import com.whereis.dao.GroupDao;
-import com.whereis.exceptions.groups.GroupWithIdentityExists;
-import com.whereis.exceptions.groups.NoSuchGroup;
-import com.whereis.exceptions.groups.UserAlreadyInGroup;
+import com.whereis.exceptions.groups.GroupWithIdentityExistsException;
+import com.whereis.exceptions.groups.NoSuchGroupException;
 import com.whereis.model.Group;
-import com.whereis.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +34,18 @@ public class DefaultGroupService implements GroupService {
         group.setIdentity(token);
         try {
             dao.save(group);
-        } catch (GroupWithIdentityExists groupWithIdentityExists) {
+        } catch (GroupWithIdentityExistsException groupWithIdentityExistsException) {
             logger.error("Error during creation of group " + group.toString() + " identity exists");
-            throw new DataIntegrityViolationException("Error during creation of group " + group.toString(), groupWithIdentityExists);
+            throw new DataIntegrityViolationException("Error during creation of group " + group.toString(), groupWithIdentityExistsException);
         }
     }
 
     @Override
-    public void update(Group group) throws NoSuchGroup {
+    public void update(Group group) throws NoSuchGroupException {
         if (get(group.getId()) != null) {
             dao.update(group);
         } else {
-            throw new NoSuchGroup(group.toString());
+            throw new NoSuchGroupException(group.toString());
         }
 
     }

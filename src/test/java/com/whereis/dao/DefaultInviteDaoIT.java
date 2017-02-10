@@ -1,8 +1,8 @@
 package com.whereis.dao;
 
-import com.whereis.exceptions.groups.GroupWithIdentityExists;
-import com.whereis.exceptions.invites.UserAlreadyInvited;
-import com.whereis.exceptions.users.UserWithEmailExists;
+import com.whereis.exceptions.groups.GroupWithIdentityExistsException;
+import com.whereis.exceptions.invites.UserAlreadyInvitedException;
+import com.whereis.exceptions.users.UserWithEmailExistsException;
 import com.whereis.model.Group;
 import com.whereis.model.Invite;
 import com.whereis.model.User;
@@ -68,15 +68,15 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testSaveInvite() throws UserAlreadyInvited, GroupWithIdentityExists, UserWithEmailExists {
+    public void testSaveInvite() throws UserAlreadyInvitedException, GroupWithIdentityExistsException, UserWithEmailExistsException {
         userDao.save(defaultUser);
         groupDao.save(defaultGroup);
         inviteDao.save(defaultInvite);
         Assert.assertEquals(inviteDao.get(defaultInvite.getId()), defaultInvite);
     }
 
-    @Test(expectedExceptions = UserAlreadyInvited.class)
-    public void testSaveDuplicateInvite() throws UserAlreadyInvited, GroupWithIdentityExists, UserWithEmailExists {
+    @Test(expectedExceptions = UserAlreadyInvitedException.class)
+    public void testSaveDuplicateInvite() throws UserAlreadyInvitedException, GroupWithIdentityExistsException, UserWithEmailExistsException {
         userDao.save(defaultUser);
         groupDao.save(defaultGroup);
         inviteDao.save(defaultInvite);
@@ -85,7 +85,7 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGetSameInvite() throws UserAlreadyInvited, GroupWithIdentityExists, UserWithEmailExists {
+    public void testGetSameInvite() throws UserAlreadyInvitedException, GroupWithIdentityExistsException, UserWithEmailExistsException {
         userDao.save(defaultUser);
         groupDao.save(defaultGroup);
         inviteDao.save(defaultInvite);
@@ -99,14 +99,14 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGetSameInviteIfNotExists() throws GroupWithIdentityExists, UserWithEmailExists {
+    public void testGetSameInviteIfNotExists() throws GroupWithIdentityExistsException, UserWithEmailExistsException {
         userDao.save(defaultUser);
         groupDao.save(defaultGroup);
         Assert.assertNull(inviteDao.getSameInvite(defaultInvite));
     }
 
     @Test
-    public void testGetPendingInvite() throws UserAlreadyInvited, GroupWithIdentityExists, UserWithEmailExists {
+    public void testGetPendingInvite() throws UserAlreadyInvitedException, GroupWithIdentityExistsException, UserWithEmailExistsException {
         userDao.save(defaultUser);
         groupDao.save(defaultGroup);
         inviteDao.save(defaultInvite);
@@ -114,7 +114,7 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGetPendingInviteIfNotExists() throws GroupWithIdentityExists, UserWithEmailExists {
+    public void testGetPendingInviteIfNotExists() throws GroupWithIdentityExistsException, UserWithEmailExistsException {
         userDao.save(defaultUser);
         groupDao.save(defaultGroup);
         Assert.assertNull(inviteDao.getPendingInviteFor(defaultUser, defaultGroup));

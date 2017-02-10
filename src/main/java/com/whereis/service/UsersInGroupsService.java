@@ -4,12 +4,12 @@ import com.whereis.model.UsersInGroup;
 
 public interface UsersInGroupsService {
     UsersInGroup get(int id);
-/*    void save(UsersInGroup user) throws UserAlreadyInGroup;
+/*    void save(UsersInGroup user) throws UserAlreadyInGroupException;
     void update(UsersInGroup user);*/
     boolean delete(UsersInGroup user);
-/*    void leave(String groupIdentity, User user) throws NoUserInGroup;
+/*    void leave(String groupIdentity, User user) throws NoUserInGroupException;
 
     UsersInGroup findUserInGroup(Group group, User user);
 
-    void joinGroup(Group group, User user) throws UserAlreadyInGroup;*/
+    void joinGroup(Group group, User user) throws UserAlreadyInGroupException;*/
 }

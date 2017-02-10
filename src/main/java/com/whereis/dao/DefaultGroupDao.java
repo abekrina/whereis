@@ -1,11 +1,10 @@
 package com.whereis.dao;
 
-import com.whereis.exceptions.groups.GroupWithIdentityExists;
-import com.whereis.exceptions.groups.NoSuchGroup;
+import com.whereis.exceptions.groups.GroupWithIdentityExistsException;
+import com.whereis.exceptions.groups.NoSuchGroupException;
 import com.whereis.model.Group;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,21 +19,21 @@ public class DefaultGroupDao extends AbstractDao<Group> implements GroupDao {
     private static final Logger logger = LogManager.getLogger(DefaultGroupDao.class);
 
     @Override
-    public void save(Group group) throws GroupWithIdentityExists {
+    public void save(Group group) throws GroupWithIdentityExistsException {
         if (getByIdentity(group.getIdentity()) == null) {
             getSession().persist(group);
         } else {
-            throw new GroupWithIdentityExists(group.toString());
+            throw new GroupWithIdentityExistsException(group.toString());
         }
 
     }
 
     @Override
-    public void update(Group group) throws NoSuchGroup {
+    public void update(Group group) throws NoSuchGroupException {
         if (get(group.getId()) != null) {
             getSession().update(group);
         } else {
-            throw new NoSuchGroup(group.toString());
+            throw new NoSuchGroupException(group.toString());
         }
     }
 

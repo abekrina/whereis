@@ -1,10 +1,9 @@
 package com.whereis.dao;
 
-import com.whereis.exceptions.invites.UserAlreadyInvited;
+import com.whereis.exceptions.invites.UserAlreadyInvitedException;
 import com.whereis.model.Group;
 import com.whereis.model.Invite;
 import com.whereis.model.User;
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +17,11 @@ import javax.persistence.criteria.Root;
 public class DefaultInviteDao extends  AbstractDao<Invite> implements InviteDao {
 
     @Override
-    public void save(Invite invite) throws UserAlreadyInvited {
+    public void save(Invite invite) throws UserAlreadyInvitedException {
         if (getSameInvite(invite) == null) {
             getSession().persist(invite);
         } else {
-            throw new UserAlreadyInvited("Invite for user " + invite.getSentToUser()
+            throw new UserAlreadyInvitedException("Invite for user " + invite.getSentToUser()
                     + " to group " + invite.getGroup() + " already exists");
         }
     }

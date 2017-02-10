@@ -1,10 +1,10 @@
 package com.whereis.dao;
 
-import com.whereis.exceptions.groups.GroupWithIdentityExists;
-import com.whereis.exceptions.groups.NoUserInGroup;
-import com.whereis.exceptions.groups.UserAlreadyInGroup;
-import com.whereis.exceptions.users.NoSuchUser;
-import com.whereis.exceptions.users.UserWithEmailExists;
+import com.whereis.exceptions.groups.GroupWithIdentityExistsException;
+import com.whereis.exceptions.groups.NoUserInGroupException;
+import com.whereis.exceptions.groups.UserAlreadyInGroupException;
+import com.whereis.exceptions.users.NoSuchUserException;
+import com.whereis.exceptions.users.UserWithEmailExistsException;
 import com.whereis.model.Group;
 import com.whereis.model.User;
 import com.whereis.testconfig.TestHibernateConfiguration;
@@ -54,13 +54,13 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testSaveUser() throws UserWithEmailExists {
+    public void testSaveUser() throws UserWithEmailExistsException {
         userDao.save(defaultUser);
         Assert.assertEquals(userDao.get(defaultUser.getId()), defaultUser);
     }
 
-    @Test(expectedExceptions = UserWithEmailExists.class)
-    public void testUserNotSavedIfSameEmailExists() throws UserWithEmailExists {
+    @Test(expectedExceptions = UserWithEmailExistsException.class)
+    public void testUserNotSavedIfSameEmailExists() throws UserWithEmailExistsException {
         userDao.save(defaultUser);
 
         User userWithSameEmail = new User();
@@ -72,7 +72,7 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testUpdateUser() throws NoSuchUser, UserWithEmailExists {
+    public void testUpdateUser() throws NoSuchUserException, UserWithEmailExistsException {
         userDao.save(defaultUser);
 
         defaultUser.setFirstName("Alena");
@@ -85,20 +85,20 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
         Assert.assertEquals(userDao.get(defaultUser.getId()).getEmail(), "abekrina@gmail.com");
     }
 
-    @Test(expectedExceptions = NoSuchUser.class)
-    public void testUpdateNonExistingUser() throws NoSuchUser {
+    @Test(expectedExceptions = NoSuchUserException.class)
+    public void testUpdateNonExistingUser() throws NoSuchUserException {
         // Expect exception in this case
         userDao.update(defaultUser);
     }
 
     @Test
-    public void testGetUserByEmail() throws UserWithEmailExists {
+    public void testGetUserByEmail() throws UserWithEmailExistsException {
         userDao.save(defaultUser);
         Assert.assertEquals(userDao.getByEmail(defaultUser.getEmail()), defaultUser);
     }
 
     @Test
-    public void testDeleteUser() throws UserWithEmailExists {
+    public void testDeleteUser() throws UserWithEmailExistsException {
         userDao.save(defaultUser);
         Assert.assertEquals(userDao.get(defaultUser.getId()), defaultUser);
         userDao.delete(defaultUser.getClass(), defaultUser.getId());
@@ -106,7 +106,7 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testLeaveGroup() throws NoUserInGroup, UserAlreadyInGroup, UserWithEmailExists, GroupWithIdentityExists {
+    public void testLeaveGroup() throws NoUserInGroupException, UserAlreadyInGroupException, UserWithEmailExistsException, GroupWithIdentityExistsException {
         userDao.save(defaultUser);
         groupDao.save(defaultGroup);
         int id = defaultUser.getId();
@@ -124,8 +124,8 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
         Assert.assertFalse(userDao.assertUserInGroup(defaultGroup, defaultUser));
     }
 
-    @Test(expectedExceptions = NoUserInGroup.class)
-    public void testLeaveUserNotGroupMember() throws NoUserInGroup {
+    @Test(expectedExceptions = NoUserInGroupException.class)
+    public void testLeaveUserNotGroupMember() throws NoUserInGroupException {
         // Try to delete row about user in group
         userDao.leaveGroup(defaultGroup, defaultUser);
     }
@@ -134,7 +134,7 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
     //TODO: think should I change this to check result not by my code? If not, how should I test "join group"?
     //TODO: for now join group test is ommited, add it when decide what to do
     @Test
-    public void testJoinAndGetGroupsForUser() throws UserAlreadyInGroup {
+    public void testJoinAndGetGroupsForUser() throws UserAlreadyInGroupException {
         // Add user to group
         userDao.joinGroup(defaultGroup, defaultUser);
         // Set expected result
@@ -151,8 +151,8 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
         Assert.assertEquals(userDao.getGroupsForUser(defaultUser), new HashSet<Group>());
     }
 
-    @Test(expectedExceptions = UserAlreadyInGroup.class)
-    public void testSaveRelationAlreadyExisting() throws UserAlreadyInGroup {
+    @Test(expectedExceptions = UserAlreadyInGroupException.class)
+    public void testSaveRelationAlreadyExisting() throws UserAlreadyInGroupException {
         // Add user to group
         userDao.joinGroup(defaultGroup, defaultUser);
 

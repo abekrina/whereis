@@ -14,17 +14,17 @@ public class DefaultUsersInGroupsDao extends AbstractDao<UsersInGroup> implement
     private static final Logger logger = LogManager.getLogger(GoogleAuthenticationFilter.class);
 
 /*    @Override
-    public void save(UsersInGroup user) throws UserAlreadyInGroup {
+    public void save(UsersInGroup user) throws UserAlreadyInGroupException {
         user.setJoinedAt(new Timestamp(System.currentTimeMillis()));
         if (findUserInGroup(user) != null) {
-            throw new UserAlreadyInGroup("User is present in group: ");
+            throw new UserAlreadyInGroupException("User is present in group: ");
         }
         Session currentSession = sessionFactory.getCurrentSession();
         currentSession.save(user);
     }*/
 
 /*    @Override
-    public void leave(Group group, User user) throws NoUserInGroup {
+    public void leave(Group group, User user) throws NoUserInGroupException {
         UsersInGroup requestedUserInGroup = new UsersInGroup();
         requestedUserInGroup.setUser(user);
         requestedUserInGroup.setGroup(group);
@@ -32,7 +32,7 @@ public class DefaultUsersInGroupsDao extends AbstractDao<UsersInGroup> implement
         UsersInGroup relationToDelete = findUserInGroup(requestedUserInGroup);
         if (relationToDelete == null) {
             logger.error("Group identity:" + group.getIdentity() + " name:" + group.getName());
-            throw new NoUserInGroup(user.toString());
+            throw new NoUserInGroupException(user.toString());
         } else {
             delete(relationToDelete.getClass(), relationToDelete.getId());
         }

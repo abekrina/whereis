@@ -20,7 +20,7 @@ public class DefaultUsersInGroupsService implements UsersInGroupsService {
     }
 
     /*@Override
-    public void save(UsersInGroup userInGroup) throws UserAlreadyInGroup {
+    public void save(UsersInGroup userInGroup) throws UserAlreadyInGroupException {
         usersInGroupsDao.save(userInGroup);
     }
 
@@ -35,7 +35,7 @@ public class DefaultUsersInGroupsService implements UsersInGroupsService {
     }
 
     /*@Override
-    public void leave(String groupIdentity, User user) throws NoUserInGroup {
+    public void leave(String groupIdentity, User user) throws NoUserInGroupException {
         Group groupToLeave = groupDao.getByIdentity(groupIdentity);
         usersInGroupsDao.leave(groupToLeave, user);
     }
@@ -46,7 +46,7 @@ public class DefaultUsersInGroupsService implements UsersInGroupsService {
     }
 
     @Override
-    public void joinGroup(Group group, User user) throws UserAlreadyInGroup {
+    public void joinGroup(Group group, User user) throws UserAlreadyInGroupException {
         UsersInGroup usersInGroup = new UsersInGroup();
         usersInGroup.setUser(user);
         usersInGroup.setGroup(group);

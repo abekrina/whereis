@@ -1,8 +1,8 @@
 package com.whereis.model;
 
 import com.sun.istack.internal.NotNull;
-import com.whereis.exceptions.groups.NoUserInGroup;
-import com.whereis.exceptions.groups.UserAlreadyInGroup;
+import com.whereis.exceptions.groups.NoUserInGroupException;
+import com.whereis.exceptions.groups.UserAlreadyInGroupException;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.OrderBy;
 
@@ -52,20 +52,19 @@ public class User implements Serializable {
     }
     //TODO: return boolean, move exception upper (service)
     //TODO: rename exceptions with ...Exception
-    public void joinGroup(Group group) throws UserAlreadyInGroup {
+    public void joinGroup(Group group) throws UserAlreadyInGroupException {
         if (!groups.add(new UsersInGroup(this, group))) {
-            throw new UserAlreadyInGroup("User " + this + "already joined group " + group);
+            throw new UserAlreadyInGroupException("User " + this + "already joined group " + group);
         }
     }
 
     //TODO: return boolean, move exception upper (service) (check presence)
-    public void leave(Group group) throws NoUserInGroup {
+    public void leave(Group group) throws NoUserInGroupException {
         if (!groups.remove(new UsersInGroup(this, group))) {
-            throw new NoUserInGroup("There is no user " + this + " in group " + group);
+            throw new NoUserInGroupException("There is no user " + this + " in group " + group);
         }
     }
-    // TODO: discuss
-    // здесь при изменении объекта hibernate сохраняет в базу всё сам. точно это нужно в сервис переносить?
+
     public void saveUserLocation(Location location) {
         locations.add(location);
     }

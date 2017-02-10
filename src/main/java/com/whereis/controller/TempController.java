@@ -1,6 +1,6 @@
 package com.whereis.controller;
 
-import com.whereis.exceptions.users.UserWithEmailExists;
+import com.whereis.exceptions.users.UserWithEmailExistsException;
 import com.whereis.model.Location;
 import com.whereis.model.User;
 import com.whereis.service.LocationService;
@@ -28,8 +28,8 @@ public class TempController extends AbstractController {
         user.setEmail("larmyztab@gmail.com");
         try {
             userService.save(user);
-        } catch (UserWithEmailExists userWithEmailExists) {
-            userWithEmailExists.printStackTrace();
+        } catch (UserWithEmailExistsException userWithEmailExistsException) {
+            userWithEmailExistsException.printStackTrace();
             return "user exists";
         }
 

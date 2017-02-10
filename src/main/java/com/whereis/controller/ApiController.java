@@ -1,9 +1,9 @@
 package com.whereis.controller;
 
-import com.whereis.exceptions.groups.NoUserInGroup;
-import com.whereis.exceptions.groups.UserAlreadyInGroup;
-import com.whereis.exceptions.invites.NoInviteForUserToGroup;
-import com.whereis.exceptions.invites.UserAlreadyInvited;
+import com.whereis.exceptions.groups.NoUserInGroupException;
+import com.whereis.exceptions.groups.UserAlreadyInGroupException;
+import com.whereis.exceptions.invites.NoInviteForUserToGroupException;
+import com.whereis.exceptions.invites.UserAlreadyInvitedException;
 import com.whereis.model.*;
 import com.whereis.service.GroupService;
 import com.whereis.service.InviteService;
@@ -14,8 +14,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,7 +53,7 @@ public class ApiController extends AbstractController {
         invite.setGroup(groupService.getByIdentity(identity));
         try {
             inviteService.save(invite);
-        } catch (UserAlreadyInvited userAlreadyInvited) {
+        } catch (UserAlreadyInvitedException userAlreadyInvitedException) {
             // TODO: make response object and custom exceptions
             // send message that user already invited
             return new ResponseEntity(HttpStatus.I_AM_A_TEAPOT);
@@ -74,13 +72,13 @@ public class ApiController extends AbstractController {
 
         try {
             userService.joinGroup(targetGroup, currentUser);
-        } catch (UserAlreadyInGroup userAlreadyInGroup) {
-            logger.error(userAlreadyInGroup.getMessage(), userAlreadyInGroup);
+        } catch (UserAlreadyInGroupException userAlreadyInGroupException) {
+            logger.error(userAlreadyInGroupException.getMessage(), userAlreadyInGroupException);
             //TODO: message about trying to add dublicate user
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
-        } catch (NoInviteForUserToGroup noInviteForUserToGroup) {
+        } catch (NoInviteForUserToGroupException noInviteForUserToGroupException) {
             //TODO: message about adding user without invite
-            logger.error(noInviteForUserToGroup.getMessage(), noInviteForUserToGroup);
+            logger.error(noInviteForUserToGroupException.getMessage(), noInviteForUserToGroupException);
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity(HttpStatus.OK);
@@ -91,9 +89,9 @@ public class ApiController extends AbstractController {
         User currentUser = getCurrentUser();
         try {
             userService.leaveGroup(groupService.getByIdentity(identity), currentUser);
-        } catch (NoUserInGroup noUserInGroup) {
+        } catch (NoUserInGroupException noUserInGroupException) {
             //TODO: message about user is not in the group
-            logger.error(noUserInGroup.getMessage(), noUserInGroup);
+            logger.error(noUserInGroupException.getMessage(), noUserInGroupException);
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity(HttpStatus.OK);

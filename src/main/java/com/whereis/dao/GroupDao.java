@@ -1,7 +1,7 @@
 package com.whereis.dao;
 
-import com.whereis.exceptions.groups.GroupWithIdentityExists;
-import com.whereis.exceptions.groups.NoSuchGroup;
+import com.whereis.exceptions.groups.GroupWithIdentityExistsException;
+import com.whereis.exceptions.groups.NoSuchGroupException;
 import com.whereis.model.Group;
 
 public interface GroupDao {
@@ -15,7 +15,7 @@ public interface GroupDao {
     /**
      *  Methods specific for every implementation of this interface
      */
-    void save(Group group) throws GroupWithIdentityExists;
-    void update(Group group) throws NoSuchGroup;
+    void save(Group group) throws GroupWithIdentityExistsException;
+    void update(Group group) throws NoSuchGroupException;
     Group getByIdentity(String identity);
 }

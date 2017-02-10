@@ -1,10 +1,10 @@
 package com.whereis.dao;
 
 import com.whereis.authentication.GoogleAuthenticationFilter;
-import com.whereis.exceptions.users.NoSuchUser;
-import com.whereis.exceptions.groups.NoUserInGroup;
-import com.whereis.exceptions.groups.UserAlreadyInGroup;
-import com.whereis.exceptions.users.UserWithEmailExists;
+import com.whereis.exceptions.groups.UserAlreadyInGroupException;
+import com.whereis.exceptions.users.NoSuchUserException;
+import com.whereis.exceptions.groups.NoUserInGroupException;
+import com.whereis.exceptions.users.UserWithEmailExistsException;
 import com.whereis.model.Group;
 import com.whereis.model.Location;
 import com.whereis.model.User;
@@ -28,20 +28,20 @@ public class DefaultUserDao extends AbstractDao<User> implements UserDao {
     private static final Logger logger = LogManager.getLogger(GoogleAuthenticationFilter.class);
 
     @Override
-    public void save(User user) throws UserWithEmailExists {
+    public void save(User user) throws UserWithEmailExistsException {
         if (getByEmail(user.getEmail()) == null) {
             getSession().persist(user);
         } else {
-            throw new UserWithEmailExists(user.getEmail());
+            throw new UserWithEmailExistsException(user.getEmail());
         }
     }
 
     @Override
-    public void update(User user) throws NoSuchUser {
+    public void update(User user) throws NoSuchUserException {
         if (get(user.getId()) != null) {
             getSession().update(user);
         } else {
-            throw new NoSuchUser(user.toString());
+            throw new NoSuchUserException(user.toString());
         }
     }
 
@@ -67,12 +67,12 @@ public class DefaultUserDao extends AbstractDao<User> implements UserDao {
     }
 
     @Override
-    public void leaveGroup(Group group, User user) throws NoUserInGroup {
+    public void leaveGroup(Group group, User user) throws NoUserInGroupException {
         user.leave(group);
     }
 
     @Override
-    public void joinGroup(Group group, User user) throws UserAlreadyInGroup {
+    public void joinGroup(Group group, User user) throws UserAlreadyInGroupException {
         user.joinGroup(group);
     }
 

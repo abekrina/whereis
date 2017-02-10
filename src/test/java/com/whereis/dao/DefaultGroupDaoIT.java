@@ -1,9 +1,9 @@
 package com.whereis.dao;
 
-import com.whereis.exceptions.groups.GroupWithIdentityExists;
-import com.whereis.exceptions.groups.NoSuchGroup;
-import com.whereis.exceptions.groups.UserAlreadyInGroup;
-import com.whereis.exceptions.users.UserWithEmailExists;
+import com.whereis.exceptions.groups.GroupWithIdentityExistsException;
+import com.whereis.exceptions.groups.NoSuchGroupException;
+import com.whereis.exceptions.groups.UserAlreadyInGroupException;
+import com.whereis.exceptions.users.UserWithEmailExistsException;
 import com.whereis.model.Group;
 import com.whereis.model.User;
 import com.whereis.model.UsersInGroup;
@@ -37,7 +37,7 @@ public class DefaultGroupDaoIT extends AbstractIntegrationTest {
     private UsersInGroup defaultUserToGroup;
 
     @BeforeMethod
-    public void setupTestData() throws UserWithEmailExists, UserAlreadyInGroup {
+    public void setupTestData() throws UserWithEmailExistsException, UserAlreadyInGroupException {
         setupDefaultGroup();
         setupDefaultOwnerUser();
     }
@@ -48,7 +48,7 @@ public class DefaultGroupDaoIT extends AbstractIntegrationTest {
         defaultGroup.setName("Default Group");
     }
 
-    private void setupDefaultOwnerUser() throws UserWithEmailExists {
+    private void setupDefaultOwnerUser() throws UserWithEmailExistsException {
         defaultOwnerUser = new User();
         defaultOwnerUser.setEmail("sweetpotatodevelopment@gmail.com");
         defaultOwnerUser.setFirstName("Potato");
@@ -58,13 +58,13 @@ public class DefaultGroupDaoIT extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testSaveGroup() throws GroupWithIdentityExists {
+    public void testSaveGroup() throws GroupWithIdentityExistsException {
         groupDao.save(defaultGroup);
         Assert.assertEquals(groupDao.getByIdentity(defaultGroup.getIdentity()), defaultGroup);
     }
 
-    @Test(expectedExceptions = GroupWithIdentityExists.class)
-    public void testGroupNotSavedIfIdentityExists() throws GroupWithIdentityExists {
+    @Test(expectedExceptions = GroupWithIdentityExistsException.class)
+    public void testGroupNotSavedIfIdentityExists() throws GroupWithIdentityExistsException {
         groupDao.save(defaultGroup);
         Assert.assertEquals(groupDao.getByIdentity(defaultGroup.getIdentity()), defaultGroup);
 
@@ -76,7 +76,7 @@ public class DefaultGroupDaoIT extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testUpdateGroup() throws GroupWithIdentityExists, NoSuchGroup {
+    public void testUpdateGroup() throws GroupWithIdentityExistsException, NoSuchGroupException {
         groupDao.save(defaultGroup);
         Assert.assertEquals(groupDao.getByIdentity(defaultGroup.getIdentity()), defaultGroup);
 
@@ -86,13 +86,13 @@ public class DefaultGroupDaoIT extends AbstractIntegrationTest {
         Assert.assertEquals(groupDao.getByIdentity(defaultGroup.getIdentity()).getName(), "Name changed");
     }
 
-    @Test(expectedExceptions = NoSuchGroup.class)
-    public void testUpdateNonExistingUser() throws NoSuchGroup {
+    @Test(expectedExceptions = NoSuchGroupException.class)
+    public void testUpdateNonExistingUser() throws NoSuchGroupException {
         groupDao.update(defaultGroup);
     }
 
     @Test
-    public void testGetGroupByIdentity() throws GroupWithIdentityExists {
+    public void testGetGroupByIdentity() throws GroupWithIdentityExistsException {
         groupDao.save(defaultGroup);
         Assert.assertEquals(groupDao.getByIdentity(defaultGroup.getIdentity()), defaultGroup);
     }

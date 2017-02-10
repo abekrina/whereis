@@ -4,11 +4,11 @@ import com.google.api.services.plus.Plus;
 import com.google.api.services.plus.model.Person;
 import com.whereis.authentication.GoogleAuthenticationFilter;
 import com.whereis.dao.UserDao;
-import com.whereis.exceptions.invites.NoInviteForUserToGroup;
-import com.whereis.exceptions.users.NoSuchUser;
-import com.whereis.exceptions.groups.NoUserInGroup;
-import com.whereis.exceptions.groups.UserAlreadyInGroup;
-import com.whereis.exceptions.users.UserWithEmailExists;
+import com.whereis.exceptions.groups.NoUserInGroupException;
+import com.whereis.exceptions.invites.NoInviteForUserToGroupException;
+import com.whereis.exceptions.users.NoSuchUserException;
+import com.whereis.exceptions.groups.UserAlreadyInGroupException;
+import com.whereis.exceptions.users.UserWithEmailExistsException;
 import com.whereis.model.Group;
 import com.whereis.model.Invite;
 import com.whereis.model.User;
@@ -38,12 +38,12 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public void save(User user) throws UserWithEmailExists {
+    public void save(User user) throws UserWithEmailExistsException {
         dao.save(user);
     }
 
     @Override
-    public void update(User user) throws NoSuchUser {
+    public void update(User user) throws NoSuchUserException {
         dao.update(user);
     }
 
@@ -78,24 +78,24 @@ public class DefaultUserService implements UserService {
         newUser.setEmail(userEmail);
         try {
             save(newUser);
-        } catch (UserWithEmailExists userWithEmailExists) {
-            logger.error("Attempting to register user this email which already exists ", userWithEmailExists);
-            throw new IOException("Attempting to register user this email which already exists ", userWithEmailExists);
+        } catch (UserWithEmailExistsException userWithEmailExistsException) {
+            logger.error("Attempting to register user this email which already exists ", userWithEmailExistsException);
+            throw new IOException("Attempting to register user this email which already exists ", userWithEmailExistsException);
         }
         return newUser;
     }
 
     @Override
-    public void leaveGroup(Group group, User user) throws NoUserInGroup {
+    public void leaveGroup(Group group, User user) throws NoUserInGroupException {
         dao.leaveGroup(group, user);
     }
 
     @Override
-    public void joinGroup(Group group, User user) throws UserAlreadyInGroup, NoInviteForUserToGroup {
+    public void joinGroup(Group group, User user) throws UserAlreadyInGroupException, NoInviteForUserToGroupException {
         //TODO: make boolean method for checking invites
         Invite inviteForUser = inviteService.getPendingInviteFor(user, group);
         if (inviteForUser == null) {
-            throw new NoInviteForUserToGroup("There is no invite for user " + user + " to group " + group);
+            throw new NoInviteForUserToGroupException("There is no invite for user " + user + " to group " + group);
         }
         dao.joinGroup(group, user);
         inviteService.delete(inviteForUser);
