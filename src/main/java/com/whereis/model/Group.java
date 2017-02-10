@@ -8,6 +8,7 @@ import java.util.*;
 @Entity
 @Table(name = "groups")
 public class Group {
+    //TODO: try to move id to identity
     @Id
     @GeneratedValue
     protected int id;

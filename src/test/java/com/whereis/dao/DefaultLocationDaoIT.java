@@ -65,6 +65,7 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
         defaultLocation.setLongitude(222222);
         defaultLocation.setIp("192.168.0.0");
         defaultLocation.setGroup(defaultGroup);
+        defaultLocation.setTimestamp(new Timestamp(1549780846));
 
         defaultLocation2 = new Location();
         defaultLocation2.setUser(defaultUser);
@@ -72,6 +73,7 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
         defaultLocation2.setLongitude(222222);
         defaultLocation2.setIp("192.168.0.0");
         defaultLocation2.setGroup(defaultGroup);
+        defaultLocation.setTimestamp(new Timestamp(1449780846));
     }
 
     @Test

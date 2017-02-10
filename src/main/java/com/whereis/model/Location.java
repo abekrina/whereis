@@ -23,7 +23,7 @@ public class Location {
     @Column(name = "timestamp")
     @Type(type = "java.sql.Timestamp")
     @Temporal(value = TemporalType.TIMESTAMP)
-    @CreationTimestamp
+    //@CreationTimestamp
     protected Timestamp timestamp;
 
     @NotNull
@@ -67,6 +67,10 @@ public class Location {
 
     public Timestamp getTimestamp() {
         return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 
     public double getLatitude() {

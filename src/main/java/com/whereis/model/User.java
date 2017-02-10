@@ -30,8 +30,6 @@ public class User implements Serializable {
     @Column(nullable = false)
     protected String email;
 
-
-    //TODO: change to Set
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @OrderBy(clause = "timestamp")
     protected List<Location> locations = new ArrayList<>();
@@ -52,13 +50,15 @@ public class User implements Serializable {
         }
         return Collections.unmodifiableSet(groupsToReturn);
     }
-
+    //TODO: return boolean, move exception upper (service)
+    //TODO: rename exceptions with ...Exception
     public void joinGroup(Group group) throws UserAlreadyInGroup {
         if (!groups.add(new UsersInGroup(this, group))) {
             throw new UserAlreadyInGroup("User " + this + "already joined group " + group);
         }
     }
 
+    //TODO: return boolean, move exception upper (service) (check presence)
     public void leave(Group group) throws NoUserInGroup {
         if (!groups.remove(new UsersInGroup(this, group))) {
             throw new NoUserInGroup("There is no user " + this + " in group " + group);

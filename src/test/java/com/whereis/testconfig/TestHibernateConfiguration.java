@@ -45,7 +45,7 @@ public class TestHibernateConfiguration {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
-    @Bean
+/*  @Bean
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()
                 .generateUniqueName(true)
@@ -53,9 +53,9 @@ public class TestHibernateConfiguration {
                 .setScriptEncoding("UTF-8")
                 .ignoreFailedDrops(true)
                 .build();
-    }
+    }*/
 
- /* @Bean
+  @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(environment.getRequiredProperty("test.jdbc.driverClassName"));
@@ -64,7 +64,7 @@ public class TestHibernateConfiguration {
         dataSource.setPassword(environment.getRequiredProperty("test.jdbc.password"));
 
         return dataSource;
-    }*/
+    }
 
     @Bean
     public LocalSessionFactoryBean sessionFactory() {

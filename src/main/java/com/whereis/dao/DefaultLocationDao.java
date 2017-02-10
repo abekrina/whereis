@@ -22,11 +22,11 @@ public class DefaultLocationDao extends AbstractDao<Location> implements Locatio
 
     @Override
     public Location getLastLocationForUser(User user) {
-        try {
-            List<Location> locations = user.getLocations();
-            return locations.get(locations.size() - 1);
-        } catch (IndexOutOfBoundsException e) {
+        List<Location> locations = user.getLocations();
+        if (locations.isEmpty()) {
             return null;
+        } else {
+            return locations.get(locations.size() - 1);
         }
     }
 

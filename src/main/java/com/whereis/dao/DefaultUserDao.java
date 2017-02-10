@@ -76,6 +76,8 @@ public class DefaultUserDao extends AbstractDao<User> implements UserDao {
         user.joinGroup(group);
     }
 
+    //TODO: move to service
+    // TODO: rename to checkUserInGroup
     @Override
     public boolean assertUserInGroup(Group group, User user) {
         return user.getGroups().contains(group);
@@ -86,6 +88,7 @@ public class DefaultUserDao extends AbstractDao<User> implements UserDao {
         return user.getGroups();
     }
 
+    //TODO: move to service
     @Override
     public void saveUserLocation(Location location, User user) {
         user.saveUserLocation(location);

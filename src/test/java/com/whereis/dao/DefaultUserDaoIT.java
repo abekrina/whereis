@@ -134,7 +134,7 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
     //TODO: think should I change this to check result not by my code? If not, how should I test "join group"?
     //TODO: for now join group test is ommited, add it when decide what to do
     @Test
-    public void testGetGroupsForUser() throws UserAlreadyInGroup {
+    public void testJoinAndGetGroupsForUser() throws UserAlreadyInGroup {
         // Add user to group
         userDao.joinGroup(defaultGroup, defaultUser);
         // Set expected result
