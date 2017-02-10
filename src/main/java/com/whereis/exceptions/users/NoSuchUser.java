@@ -1,4 +1,4 @@
-package com.whereis.exceptions;
+package com.whereis.exceptions.users;
 
 public class NoSuchUser extends Exception {
     public NoSuchUser(String message){

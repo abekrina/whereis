@@ -1,6 +1,8 @@
 package com.whereis.model;
 
 
+import com.sun.istack.internal.NotNull;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
@@ -8,37 +10,37 @@ import java.sql.Timestamp;
 @Table(name = "tokens")
 public class Token {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue
+    protected int id;
 
-    private int user_id;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    protected User user;
 
-    private String access_token;
+    protected String access_token;
 
-    private String refresh_token;
+    protected String refresh_token;
 
-    private String token_type;
+    protected String token_type;
 
-    private int expires_in;
+    @NotNull
+    @Column(nullable = false)
+    protected int expires_in;
 
-    private Timestamp issued;
+    protected Timestamp issued;
 
-    private String scope;
+    protected String scope;
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public User getUser() {
+        return user;
     }
 
-    public int getUserId() {
-        return user_id;
-    }
-
-    public void setUserId(int userId) {
-        this.user_id = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getAccessToken() {

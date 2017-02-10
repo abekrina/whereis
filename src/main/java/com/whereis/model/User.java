@@ -1,30 +1,77 @@
 package com.whereis.model;
 
+import com.sun.istack.internal.NotNull;
+import com.whereis.exceptions.groups.NoUserInGroup;
+import com.whereis.exceptions.groups.UserAlreadyInGroup;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.OrderBy;
+
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
+@FilterDef(name = "lastLocation")
 @Table(name = "users")
 public class User implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue
+    protected int id;
 
-    private String first_name;
+    @NotNull
+    @Column(nullable = false)
+    protected String first_name;
 
-    private String last_name;
+    @NotNull
+    @Column(nullable = false)
+    protected String last_name;
 
-    private String email;
+    @NotNull
+    @Column(nullable = false)
+    protected String email;
+
+
+    //TODO: change to Set
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OrderBy(clause = "timestamp")
+    protected List<Location> locations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    protected Set<UsersInGroup> groups = new HashSet<>();
+
+    @OneToMany(mappedBy = "sent_by_user", cascade = CascadeType.ALL)
+    protected Set<Invite> sent_invites = new HashSet<>();
+
+    @OneToMany(mappedBy = "sent_to_user")
+    protected Set<Invite> got_invites = new HashSet<>();
+
+    public Set<Group> getGroups() {
+        Set<Group> groupsToReturn = new HashSet<>();
+        for (UsersInGroup group : groups) {
+            groupsToReturn.add(group.getGroup());
+        }
+        return Collections.unmodifiableSet(groupsToReturn);
+    }
+
+    public void joinGroup(Group group) throws UserAlreadyInGroup {
+        if (!groups.add(new UsersInGroup(this, group))) {
+            throw new UserAlreadyInGroup("User " + this + "already joined group " + group);
+        }
+    }
+
+    public void leave(Group group) throws NoUserInGroup {
+        if (!groups.remove(new UsersInGroup(this, group))) {
+            throw new NoUserInGroup("There is no user " + this + " in group " + group);
+        }
+    }
+    // TODO: discuss
+    // здесь при изменении объекта hibernate сохраняет в базу всё сам. точно это нужно в сервис переносить?
+    public void saveUserLocation(Location location) {
+        locations.add(location);
+    }
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getEmail() {
@@ -49,6 +96,10 @@ public class User implements Serializable {
 
     public void setLastName(String last_name) {
         this.last_name = last_name;
+    }
+
+    public List<Location> getLocations() {
+        return Collections.unmodifiableList(locations);
     }
 
     @Override

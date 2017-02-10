@@ -1,4 +1,4 @@
-package com.whereis.exceptions;
+package com.whereis.exceptions.groups;
 
 public class NoUserInGroup extends Exception {
     public NoUserInGroup(String message){

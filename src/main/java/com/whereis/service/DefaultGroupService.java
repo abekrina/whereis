@@ -2,8 +2,9 @@ package com.whereis.service;
 
 import com.whereis.dao.DefaultGroupDao;
 import com.whereis.dao.GroupDao;
-import com.whereis.exceptions.GroupWithIdentityExists;
-import com.whereis.exceptions.NoSuchGroup;
+import com.whereis.exceptions.groups.GroupWithIdentityExists;
+import com.whereis.exceptions.groups.NoSuchGroup;
+import com.whereis.exceptions.groups.UserAlreadyInGroup;
 import com.whereis.model.Group;
 import com.whereis.model.User;
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +20,6 @@ import java.security.SecureRandom;
 @Transactional
 public class DefaultGroupService implements GroupService {
     private static final Logger logger = LogManager.getLogger(DefaultGroupDao.class);
-
     @Autowired
     GroupDao dao;
 
@@ -34,7 +34,6 @@ public class DefaultGroupService implements GroupService {
         //TODO: Make identity shorter and document its size
         String token = new BigInteger(130, 2, random).toString(32);
         group.setIdentity(token);
-
         try {
             dao.save(group);
         } catch (GroupWithIdentityExists groupWithIdentityExists) {
@@ -54,8 +53,8 @@ public class DefaultGroupService implements GroupService {
     }
 
     @Override
-    public void delete(Group group) {
-        dao.delete(group);
+    public boolean delete(Group group) {
+        return dao.delete(group.getClass(), group.getId());
     }
 
     @Override

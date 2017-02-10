@@ -56,24 +56,22 @@ public abstract class AbstractDao<T> {
         return entityManager.getCriteriaBuilder();
     }
 
-    //TODO: uncomment if needed else delete
-    public void persist(T entity) {
-        getSession().persist(entity);
-    }
-
-
     /**
      *   Next methods are common for all DAO's
      */
 
-    //TODO: Fix get
     public T get(int id) {
         T t = getSession().get(persistentClass, id);
-       // T t = entityManager.find(persistentClass, id);
         return t;
     }
 
-    public void delete(T entity) {
-        getSession().delete(entity);
+    @Transactional
+    public boolean delete(Class<? extends T> type, int id) {
+        T persistentInstance = getSession().load(type, id);
+        if (persistentInstance != null) {
+            getSession().delete(persistentInstance);
+            return true;
+        }
+        return false;
     }
 }

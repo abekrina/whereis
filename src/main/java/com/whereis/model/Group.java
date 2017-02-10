@@ -1,26 +1,48 @@
 package com.whereis.model;
 
+import com.sun.istack.internal.NotNull;
+
 import javax.persistence.*;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "groups")
 public class Group {
     @Id
-    //TODO: заменить  id на identity
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue
+    protected int id;
 
-    private String name;
+    @NotNull
+    @Column(nullable = false)
+    protected String name;
 
-    private String identity;
+    @NotNull
+    @Column(nullable = false)
+    protected String identity;
+
+    @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, targetEntity = UsersInGroup.class)
+    protected Set<UsersInGroup> users = new HashSet<>();
+
+    @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, targetEntity = Location.class)
+    protected Set<Location> locations = new HashSet<>();
+
+    @OneToMany(mappedBy = "group", targetEntity = Invite.class)
+    protected Set<Invite> invites = new HashSet<>();
+
+    public Set<User> getUsersInGroup() {
+        Set<User> usersToReturn = new HashSet<>();
+        for (UsersInGroup user : users) {
+            usersToReturn.add(user.getUser());
+        }
+        return Collections.unmodifiableSet(usersToReturn);
+    }
+
+    public void addUserToGroup(User user) {
+        users.add(new UsersInGroup(user, this));
+    }
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -64,5 +86,10 @@ public class Group {
         return otherGroup.getId() == id
                 && Objects.equals(otherGroup.getIdentity(),identity)
                 && Objects.equals(otherGroup.getName(), name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, identity, name);
     }
 }

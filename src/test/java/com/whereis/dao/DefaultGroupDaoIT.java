@@ -1,60 +1,75 @@
 package com.whereis.dao;
 
-import com.whereis.exceptions.GroupWithIdentityExists;
-import com.whereis.exceptions.NoSuchGroup;
+import com.whereis.exceptions.groups.GroupWithIdentityExists;
+import com.whereis.exceptions.groups.NoSuchGroup;
+import com.whereis.exceptions.groups.UserAlreadyInGroup;
+import com.whereis.exceptions.users.UserWithEmailExists;
 import com.whereis.model.Group;
+import com.whereis.model.User;
+import com.whereis.model.UsersInGroup;
 import com.whereis.testconfig.TestHibernateConfiguration;
 import com.whereis.testconfig.TestWebMvcConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import javax.sql.DataSource;
 
 
 @ContextConfiguration(classes = {TestHibernateConfiguration.class, TestWebMvcConfiguration.class})
 @WebAppConfiguration
-public class DefaultGroupDaoIT extends AbstractIntTestForDao {
-    @Autowired
-    DataSource dataSource;
+public class DefaultGroupDaoIT extends AbstractIntegrationTest {
 
     @Autowired
     GroupDao groupDao;
 
-    Group defaultGroup;
+    @Autowired
+    UserDao userDao;
 
-    @Override
-    void setupTestData() {
+    @Autowired
+    UsersInGroupsDao usersInGroupsDao;
+
+    private Group defaultGroup;
+
+    private User defaultOwnerUser;
+
+    private UsersInGroup defaultUserToGroup;
+
+    @BeforeMethod
+    public void setupTestData() throws UserWithEmailExists, UserAlreadyInGroup {
         setupDefaultGroup();
-        MAIN_TABLE = "groups";
-        MAIN_SEQUENCE = "groups_id_seq";
+        setupDefaultOwnerUser();
     }
 
     private void setupDefaultGroup() {
-        if (defaultGroup == null) {
-            defaultGroup = new Group();
-        }
-        defaultGroup.setId(1);
+        defaultGroup = new Group();
         defaultGroup.setIdentity("12345");
-        defaultGroup.setName("Default group");
+        defaultGroup.setName("Default Group");
+    }
+
+    private void setupDefaultOwnerUser() throws UserWithEmailExists {
+        defaultOwnerUser = new User();
+        defaultOwnerUser.setEmail("sweetpotatodevelopment@gmail.com");
+        defaultOwnerUser.setFirstName("Potato");
+        defaultOwnerUser.setLastName("Development");
+        //defaultOwnerUser.getGroups().add(new UsersInGroup(defaultOwnerUser, defaultGroup, new Timestamp(123123123)));
+        userDao.save(defaultOwnerUser);
     }
 
     @Test
     public void testSaveGroup() throws GroupWithIdentityExists {
         groupDao.save(defaultGroup);
-        Assert.assertEquals(groupDao.get(1), defaultGroup);
+        Assert.assertEquals(groupDao.getByIdentity(defaultGroup.getIdentity()), defaultGroup);
     }
 
     @Test(expectedExceptions = GroupWithIdentityExists.class)
     public void testGroupNotSavedIfIdentityExists() throws GroupWithIdentityExists {
         groupDao.save(defaultGroup);
-        Assert.assertEquals(groupDao.get(1), defaultGroup);
+        Assert.assertEquals(groupDao.getByIdentity(defaultGroup.getIdentity()), defaultGroup);
 
         Group anotherGroup = new Group();
         anotherGroup.setIdentity(defaultGroup.getIdentity());
-        anotherGroup.setId(2);
         anotherGroup.setName("Another group");
 
         groupDao.save(anotherGroup);
@@ -63,14 +78,12 @@ public class DefaultGroupDaoIT extends AbstractIntTestForDao {
     @Test
     public void testUpdateGroup() throws GroupWithIdentityExists, NoSuchGroup {
         groupDao.save(defaultGroup);
-        Assert.assertEquals(groupDao.get(1), defaultGroup);
+        Assert.assertEquals(groupDao.getByIdentity(defaultGroup.getIdentity()), defaultGroup);
 
         defaultGroup.setName("Name changed");
-        defaultGroup.setIdentity("12345");
 
         groupDao.update(defaultGroup);
-        Assert.assertEquals(groupDao.get(1).getName(), "Name changed");
-        Assert.assertEquals(groupDao.get(1).getIdentity(), "12345");
+        Assert.assertEquals(groupDao.getByIdentity(defaultGroup.getIdentity()).getName(), "Name changed");
     }
 
     @Test(expectedExceptions = NoSuchGroup.class)

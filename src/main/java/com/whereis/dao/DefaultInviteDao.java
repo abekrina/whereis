@@ -1,6 +1,6 @@
 package com.whereis.dao;
 
-import com.whereis.exceptions.UserAlreadyInvited;
+import com.whereis.exceptions.invites.UserAlreadyInvited;
 import com.whereis.model.Group;
 import com.whereis.model.Invite;
 import com.whereis.model.User;
@@ -12,8 +12,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.sql.Timestamp;
-import java.util.Calendar;
 
 @Transactional
 @Repository("inviteDao")
@@ -22,22 +20,17 @@ public class DefaultInviteDao extends  AbstractDao<Invite> implements InviteDao 
     @Override
     public void save(Invite invite) throws UserAlreadyInvited {
         if (getSameInvite(invite) == null) {
-            if (invite.getTimestamp() == null) {
-                invite.setTimestamp(new Timestamp(Calendar.getInstance().getTime().getTime()));
-            }
-            Session currentSession = sessionFactory.getCurrentSession();
-            currentSession.save(invite);
+            getSession().persist(invite);
         } else {
-            throw new UserAlreadyInvited("Invite for email " + invite.getSentToEmail()
-                    + " to group " + invite.getGroupId() + " already exists");
+            throw new UserAlreadyInvited("Invite for user " + invite.getSentToUser()
+                    + " to group " + invite.getGroup() + " already exists");
         }
     }
 
     @Override
     public void update(Invite invite) {
         if (get(invite.getId()) != null) {
-            Session currentSession = sessionFactory.getCurrentSession();
-            currentSession.update(invite);
+            getSession().update(invite);
         }
     }
 
@@ -48,8 +41,8 @@ public class DefaultInviteDao extends  AbstractDao<Invite> implements InviteDao 
         CriteriaQuery<Invite> criteriaQuery = createEntityCriteria();
         Root<Invite> inviteRoot = criteriaQuery.from(Invite.class);
         criteriaQuery.select(inviteRoot);
-        criteriaQuery.where(builder.and(builder.equal(inviteRoot.get("sent_to_email"), invite.getSentToEmail())),
-                builder.equal(inviteRoot.get("group_id"), invite.getGroupId()));
+        criteriaQuery.where(builder.and(builder.equal(inviteRoot.get("sent_to_user"), invite.getSentToUser())),
+                builder.equal(inviteRoot.get("group"), invite.getGroup()));
         try {
             return getSession().createQuery(criteriaQuery).getSingleResult();
         } catch (NoResultException e) {
@@ -62,8 +55,8 @@ public class DefaultInviteDao extends  AbstractDao<Invite> implements InviteDao 
     @Override
     public Invite getPendingInviteFor(User user, Group group) {
         Invite pendingInvite = new Invite();
-        pendingInvite.setGroupId(group.getId());
-        pendingInvite.setSentToEmail(user.getEmail());
+        pendingInvite.setGroup(group);
+        pendingInvite.setSentToUser(user);
 
         return getSameInvite(pendingInvite);
     }

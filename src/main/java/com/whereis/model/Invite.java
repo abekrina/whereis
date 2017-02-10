@@ -1,38 +1,45 @@
 package com.whereis.model;
 
+import com.sun.istack.internal.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Immutable;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Immutable
 @Table(name = "invites")
 public class Invite {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue
+    protected int id;
 
-    private int sent_by;
+    @ManyToOne
+    @JoinColumn(name = "sent_by_user")
+    protected User sent_by_user;
 
-    private String sent_to_email;
+    @ManyToOne
+    @JoinColumn(name = "sent_to_user")
+    protected User sent_to_user;
 
-    //@Temporal(TemporalType.TIMESTAMP)
-    private Timestamp timestamp;
+    @CreationTimestamp
+    protected Timestamp timestamp;
 
-    private int group_id;
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    protected Group group;
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public User getSentByUser() {
+        return sent_by_user;
     }
 
-    public int getSentBy() {
-        return sent_by;
-    }
-
-    public void setSentBy(int sent_by) {
-        this.sent_by = sent_by;
+    public void setSentByUser(User sent_by_user) {
+        this.sent_by_user = sent_by_user;
     }
 
     public Timestamp getTimestamp() {
@@ -43,19 +50,19 @@ public class Invite {
         this.timestamp = timestamp;
     }
 
-    public String getSentToEmail() {
-        return sent_to_email;
+    public User getSentToUser() {
+        return sent_to_user;
     }
 
-    public void setSentToEmail(String sent_to_email) {
-        this.sent_to_email = sent_to_email;
+    public void setSentToUser(User sent_to_user) {
+        this.sent_to_user = sent_to_user;
     }
 
-    public int getGroupId() {
-        return group_id;
+    public Group getGroup() {
+        return group;
     }
 
-    public void setGroupId(int group_id) {
-        this.group_id = group_id;
+    public void setGroup(Group group) {
+        this.group = group;
     }
 }

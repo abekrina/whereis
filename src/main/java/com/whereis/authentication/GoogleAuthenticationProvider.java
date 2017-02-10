@@ -10,7 +10,6 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.plus.Plus;
-import com.whereis.exceptions.GoogleApiException;
 import com.whereis.model.User;
 import com.whereis.service.UserService;
 
@@ -66,8 +65,7 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
         GoogleAuthentication tokenAuth = (GoogleAuthentication) auth;
 
         // Check if user is already connected
-        //TODO:  учесть то что токен экспайрится
-        if (tokenAuth.getCredentials() != null) {
+        if (tokenAuth.getGoogleToken() != null) {
             tokenAuth.setAuthenticated(true);
             return tokenAuth;
         }

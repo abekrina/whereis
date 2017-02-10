@@ -1,7 +1,7 @@
 package com.whereis.service;
 
 import com.whereis.dao.InviteDao;
-import com.whereis.exceptions.UserAlreadyInvited;
+import com.whereis.exceptions.invites.UserAlreadyInvited;
 import com.whereis.model.Group;
 import com.whereis.model.Invite;
 import com.whereis.model.User;
@@ -29,8 +29,8 @@ public class DefaultInviteService implements InviteService {
     }
 
     @Override
-    public void delete(Invite invite) {
-        dao.delete(invite);
+    public boolean delete(Invite invite) {
+        return dao.delete(invite.getClass(), invite.getId());
     }
 
     @Override

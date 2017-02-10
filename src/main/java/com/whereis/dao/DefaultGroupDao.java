@@ -1,11 +1,8 @@
 package com.whereis.dao;
 
-import com.whereis.authentication.GoogleAuthenticationFilter;
-import com.whereis.exceptions.GroupWithIdentityExists;
-import com.whereis.exceptions.NoSuchGroup;
+import com.whereis.exceptions.groups.GroupWithIdentityExists;
+import com.whereis.exceptions.groups.NoSuchGroup;
 import com.whereis.model.Group;
-import com.whereis.model.Invite;
-import com.whereis.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
@@ -25,8 +22,7 @@ public class DefaultGroupDao extends AbstractDao<Group> implements GroupDao {
     @Override
     public void save(Group group) throws GroupWithIdentityExists {
         if (getByIdentity(group.getIdentity()) == null) {
-            Session currentSession = sessionFactory.getCurrentSession();
-            currentSession.save(group);
+            getSession().persist(group);
         } else {
             throw new GroupWithIdentityExists(group.toString());
         }
@@ -36,8 +32,7 @@ public class DefaultGroupDao extends AbstractDao<Group> implements GroupDao {
     @Override
     public void update(Group group) throws NoSuchGroup {
         if (get(group.getId()) != null) {
-            Session currentSession = sessionFactory.getCurrentSession();
-            currentSession.update(group);
+            getSession().update(group);
         } else {
             throw new NoSuchGroup(group.toString());
         }
