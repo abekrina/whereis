@@ -25,10 +25,9 @@ public class Invite {
     @CreationTimestamp
     protected Timestamp timestamp;
 
-    @NotNull
-    @Column(nullable = false)
-    //TODO: map by hibernate
-    protected int group_id;
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    protected Group group;
 
     public int getId() {
         return id;
@@ -58,11 +57,11 @@ public class Invite {
         this.sent_to_email = sent_to_email;
     }
 
-    public int getGroupId() {
-        return group_id;
+    public Group getGroup() {
+        return group;
     }
 
-    public void setGroupId(int group_id) {
-        this.group_id = group_id;
+    public void setGroup(Group group) {
+        this.group = group;
     }
 }

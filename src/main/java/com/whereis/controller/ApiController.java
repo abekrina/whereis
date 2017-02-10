@@ -52,7 +52,7 @@ public class ApiController extends AbstractController {
 
     @RequestMapping(value = "/{identity}/invite", method = RequestMethod.POST)
     public ResponseEntity inviteUser(@PathVariable("identity") String identity, @RequestBody Invite invite) {
-        invite.setGroupId(groupService.getByIdentity(identity).getId());
+        invite.setGroup(groupService.getByIdentity(identity));
         try {
             inviteService.save(invite);
         } catch (UserAlreadyInvited userAlreadyInvited) {

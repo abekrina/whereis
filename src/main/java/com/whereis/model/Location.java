@@ -35,10 +35,6 @@ public class Location {
     protected double longitude;
 
     protected String ip;
-/*    // Change to hibernate mapping
-    @NotNull
-    @Column(nullable = false)
-    protected String group_identity;*/
 
     @NotNull
     @ManyToOne()

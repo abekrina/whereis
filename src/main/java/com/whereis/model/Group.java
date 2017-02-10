@@ -26,6 +26,9 @@ public class Group {
     @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, targetEntity = Location.class)
     protected Set<Location> locations = new HashSet<>();
 
+    @OneToMany(mappedBy = "group", targetEntity = Invite.class)
+    protected Set<Invite> invites = new HashSet<>();
+
     public Set<User> getUsersInGroup() {
         Set<User> usersToReturn = new HashSet<>();
         for (UsersInGroup user : users) {
