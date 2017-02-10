@@ -7,9 +7,11 @@ import com.whereis.exceptions.groups.NoUserInGroupException;
 import com.whereis.exceptions.groups.UserAlreadyInGroupException;
 import com.whereis.exceptions.users.UserWithEmailExistsException;
 import com.whereis.model.Group;
+import com.whereis.model.Location;
 import com.whereis.model.User;
 
 import java.io.IOException;
+import java.util.Set;
 
 public interface UserService {
     User get(int id);
@@ -24,5 +26,9 @@ public interface UserService {
 
     void joinGroup(Group group, User user) throws UserAlreadyInGroupException, NoInviteForUserToGroupException;
 
-    void assertUserInGroup(Group group, User user);
+    boolean checkUserInGroup(Group group, User user);
+
+    Set<Group> getGroupsForUser(User user);
+
+    void saveUserLocation(Location location, User user);
 }

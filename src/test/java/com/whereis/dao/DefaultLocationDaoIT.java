@@ -73,7 +73,8 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
         Assert.assertEquals(locationDao.get(defaultLocation.getId()), defaultLocation);
     }
 
-    @Test
+    // TODO: Move to service test
+/*    @Test
     public void testGetLastLocationForUser() throws UserWithEmailExistsException {
         userDao.save(defaultUser);
         // Save locations
@@ -86,5 +87,5 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
 
         Assert.assertEquals(locationDao.getLastLocationForUser(defaultUser), defaultLocation2);
         Assert.assertTrue(locationDao.getLastLocationForUser(defaultUser).getTimestamp().after(locationDao.get(defaultLocation.getId()).getTimestamp()));
-    }
+    }*/
 }

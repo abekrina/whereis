@@ -48,15 +48,4 @@ public class DefaultInviteDao extends  AbstractDao<Invite> implements InviteDao 
             return null;
         }
     }
-
-
-    // Returns null if no invites for user and group
-    @Override
-    public Invite getPendingInviteFor(User user, Group group) {
-        Invite pendingInvite = new Invite();
-        pendingInvite.setGroup(group);
-        pendingInvite.setSentToUser(user);
-
-        return getSameInvite(pendingInvite);
-    }
 }

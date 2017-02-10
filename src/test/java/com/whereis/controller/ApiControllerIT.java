@@ -7,6 +7,7 @@ import com.whereis.dao.LocationDao;
 import com.whereis.model.Group;
 import com.whereis.model.Location;
 import com.whereis.model.User;
+import com.whereis.service.LocationService;
 import com.whereis.testconfig.TestHibernateConfiguration;
 import com.whereis.testconfig.TestWebMvcConfiguration;
 import com.whereis.util.ControllerTestHelper;
@@ -53,6 +54,9 @@ public class ApiControllerIT extends AbstractIntegrationTest {
 
     @Autowired
     LocationDao locationDao;
+
+    @Autowired
+    LocationService locationService;
 
     private User defaultUser1;
 
@@ -157,7 +161,7 @@ public class ApiControllerIT extends AbstractIntegrationTest {
                 .andExpect(status().isOk());
 
         // Get result of query from database
-        Location actualLocation = locationDao.getLastLocationForUser(defaultUser1);
+        Location actualLocation = locationService.getLastLocationForUser(defaultUser1);
 
         Assert.assertEquals(actualLocation.getGroup(), expectedLocation.getGroup());
         Assert.assertEquals(actualLocation.getIp(), expectedLocation.getIp());

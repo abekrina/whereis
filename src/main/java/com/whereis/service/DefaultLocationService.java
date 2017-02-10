@@ -12,12 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service("userLocationService")
 @Transactional
 public class DefaultLocationService implements LocationService {
     @Autowired
     LocationDao locationDao;
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     UserDao usersDao;
@@ -44,13 +48,23 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public Location getLastLocationForUser(User user) {
-        return locationDao.getLastLocationForUser(user);
+        List<Location> locations = user.getLocations();
+        if (locations.isEmpty()) {
+            return null;
+        } else {
+            return locations.get(locations.size() - 1);
+        }
     }
 
     @Override
-    public List<Location> getLocationsOfGroupMembers(Group group, User currentUser) {
-        if (usersDao.assertUserInGroup(group, currentUser)) {
-            return locationDao.getLastLocationsForGroupMembers(group);
+    public List<Location> getLastLocationsForGroupMembers(Group group, User currentUser) {
+        if (userService.checkUserInGroup(group, currentUser)) {
+            Set<User> usersInGroup = group.getUsersInGroup();
+            List<Location> locations = new ArrayList<>();
+            for (User user : usersInGroup) {
+                locations.add(getLastLocationForUser(user));
+            }
+            return locations;
         }
         return new ArrayList<>();
     }

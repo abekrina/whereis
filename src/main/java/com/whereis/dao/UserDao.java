@@ -24,14 +24,4 @@ public interface UserDao {
     void update(User user) throws NoSuchUserException;
     User getByEmail(String email);
     void deleteByEmail(String email);
-
-    void leaveGroup(Group group, User user) throws NoUserInGroupException;
-
-    void joinGroup(Group group, User user) throws UserAlreadyInGroupException;
-
-    boolean assertUserInGroup(Group group, User user);
-
-    Set<Group> getGroupsForUser(User user);
-
-    void saveUserLocation(Location location, User user);
 }

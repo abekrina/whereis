@@ -18,5 +18,4 @@ public interface InviteDao {
     void save(Invite invite) throws UserAlreadyInvitedException;
     void update(Invite invite);
     Invite getSameInvite(Invite invite);
-    Invite getPendingInviteFor(User user, Group group);
 }

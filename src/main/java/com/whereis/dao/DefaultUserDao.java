@@ -65,32 +65,4 @@ public class DefaultUserDao extends AbstractDao<User> implements UserDao {
         User user = getByEmail(email);
         delete(user.getClass(), user.getId());
     }
-
-    @Override
-    public void leaveGroup(Group group, User user) throws NoUserInGroupException {
-        user.leave(group);
-    }
-
-    @Override
-    public void joinGroup(Group group, User user) throws UserAlreadyInGroupException {
-        user.joinGroup(group);
-    }
-
-    //TODO: move to service
-    // TODO: rename to checkUserInGroup
-    @Override
-    public boolean assertUserInGroup(Group group, User user) {
-        return user.getGroups().contains(group);
-    }
-
-    @Override
-    public Set<Group> getGroupsForUser(User user) {
-        return user.getGroups();
-    }
-
-    //TODO: move to service
-    @Override
-    public void saveUserLocation(Location location, User user) {
-        user.saveUserLocation(location);
-    }
 }

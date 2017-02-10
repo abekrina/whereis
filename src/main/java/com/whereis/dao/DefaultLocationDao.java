@@ -19,25 +19,4 @@ public class DefaultLocationDao extends AbstractDao<Location> implements Locatio
     public void save(Location location) {
         getSession().persist(location);
     }
-
-    @Override
-    public Location getLastLocationForUser(User user) {
-        List<Location> locations = user.getLocations();
-        if (locations.isEmpty()) {
-            return null;
-        } else {
-            return locations.get(locations.size() - 1);
-        }
-    }
-
-    // TODO: reimplement taking into account hibernate mapping
-    @Override
-    public List<Location> getLastLocationsForGroupMembers(Group group) {
-        Set<User> usersInGroup = group.getUsersInGroup();
-        List<Location> locations = new ArrayList<>();
-        for (User user : usersInGroup) {
-            locations.add(getLastLocationForUser(user));
-        }
-        return locations;
-    }
 }

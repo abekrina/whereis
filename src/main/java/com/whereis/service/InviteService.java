@@ -12,4 +12,6 @@ public interface InviteService {
     boolean delete(Invite invite);
     Invite getSameInvite(Invite invite);
     Invite getPendingInviteFor(User user, Group group);
+
+    boolean haveInvitesForUser(User user, Group group);
 }

@@ -39,8 +39,20 @@ public class DefaultInviteService implements InviteService {
     }
 
     @Override
-    public Invite getPendingInviteFor(User user, Group group) {
-        return dao.getPendingInviteFor(user, group);
+    public boolean haveInvitesForUser(User user, Group group){
+        if (getPendingInviteFor(user, group) != null) {
+            return true;
+        }
+        return false;
     }
 
+    // Returns null if no invites for user and group
+    @Override
+    public Invite getPendingInviteFor(User user, Group group) {
+        Invite pendingInvite = new Invite();
+        pendingInvite.setGroup(group);
+        pendingInvite.setSentToUser(user);
+
+        return getSameInvite(pendingInvite);
+    }
 }

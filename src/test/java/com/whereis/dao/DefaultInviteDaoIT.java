@@ -105,7 +105,8 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
         Assert.assertNull(inviteDao.getSameInvite(defaultInvite));
     }
 
-    @Test
+    // TODO: Move to service test
+    /*@Test
     public void testGetPendingInvite() throws UserAlreadyInvitedException, GroupWithIdentityExistsException, UserWithEmailExistsException {
         userDao.save(defaultUser);
         groupDao.save(defaultGroup);
@@ -118,5 +119,5 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
         userDao.save(defaultUser);
         groupDao.save(defaultGroup);
         Assert.assertNull(inviteDao.getPendingInviteFor(defaultUser, defaultGroup));
-    }
+    }*/
 }

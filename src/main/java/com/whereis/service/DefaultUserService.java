@@ -11,6 +11,7 @@ import com.whereis.exceptions.groups.UserAlreadyInGroupException;
 import com.whereis.exceptions.users.UserWithEmailExistsException;
 import com.whereis.model.Group;
 import com.whereis.model.Invite;
+import com.whereis.model.Location;
 import com.whereis.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Service("userService")
 @Transactional
@@ -86,23 +88,37 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
+    public boolean checkUserInGroup(Group group, User user) {
+        return user.getGroups().contains(group);
+    }
+
+    @Override
+    public Set<Group> getGroupsForUser(User user) {
+        return user.getGroups();
+    }
+
+    @Override
+    public void saveUserLocation(Location location, User user) {
+        user.saveUserLocation(location);
+    }
+
+    @Override
     public void leaveGroup(Group group, User user) throws NoUserInGroupException {
-        dao.leaveGroup(group, user);
+        if (!user.leave(group)){
+            throw new NoUserInGroupException("There is no user " + this + " in group " + group);
+        }
+
     }
 
     @Override
     public void joinGroup(Group group, User user) throws UserAlreadyInGroupException, NoInviteForUserToGroupException {
-        //TODO: make boolean method for checking invites
         Invite inviteForUser = inviteService.getPendingInviteFor(user, group);
         if (inviteForUser == null) {
             throw new NoInviteForUserToGroupException("There is no invite for user " + user + " to group " + group);
         }
-        dao.joinGroup(group, user);
-        inviteService.delete(inviteForUser);
-    }
-
-    @Override
-    public void assertUserInGroup(Group group, User user) {
-        dao.assertUserInGroup(group, user);
+        if (!user.joinGroup(group)){
+            inviteService.delete(inviteForUser);
+            throw new UserAlreadyInGroupException("User " + this + "already joined group " + group);
+        }
     }
 }

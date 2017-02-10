@@ -17,7 +17,4 @@ public interface LocationDao {
      *  Methods specific for every implementation of this interface
      */
     void save(Location location);
-    Location getLastLocationForUser(User user);
-
-    List<Location> getLastLocationsForGroupMembers(Group group);
 }

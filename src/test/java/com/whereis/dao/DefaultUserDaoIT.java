@@ -104,8 +104,8 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
         userDao.delete(defaultUser.getClass(), defaultUser.getId());
         Assert.assertNull(userDao.get(defaultUser.getId()));
     }
-
-    @Test
+//TODO: move to service test
+/*    @Test
     public void testLeaveGroup() throws NoUserInGroupException, UserAlreadyInGroupException, UserWithEmailExistsException, GroupWithIdentityExistsException {
         userDao.save(defaultUser);
         groupDao.save(defaultGroup);
@@ -158,5 +158,5 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
 
         // Add same user one more time
         userDao.joinGroup(defaultGroup, defaultUser);
-    }
+    }*/
 }

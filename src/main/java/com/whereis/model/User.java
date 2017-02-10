@@ -1,7 +1,6 @@
 package com.whereis.model;
 
 import com.sun.istack.internal.NotNull;
-import com.whereis.exceptions.groups.NoUserInGroupException;
 import com.whereis.exceptions.groups.UserAlreadyInGroupException;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.OrderBy;
@@ -43,32 +42,6 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "sent_to_user")
     protected Set<Invite> got_invites = new HashSet<>();
 
-    public Set<Group> getGroups() {
-        Set<Group> groupsToReturn = new HashSet<>();
-        for (UsersInGroup group : groups) {
-            groupsToReturn.add(group.getGroup());
-        }
-        return Collections.unmodifiableSet(groupsToReturn);
-    }
-    //TODO: return boolean, move exception upper (service)
-    //TODO: rename exceptions with ...Exception
-    public void joinGroup(Group group) throws UserAlreadyInGroupException {
-        if (!groups.add(new UsersInGroup(this, group))) {
-            throw new UserAlreadyInGroupException("User " + this + "already joined group " + group);
-        }
-    }
-
-    //TODO: return boolean, move exception upper (service) (check presence)
-    public void leave(Group group) throws NoUserInGroupException {
-        if (!groups.remove(new UsersInGroup(this, group))) {
-            throw new NoUserInGroupException("There is no user " + this + " in group " + group);
-        }
-    }
-
-    public void saveUserLocation(Location location) {
-        locations.add(location);
-    }
-
     public int getId() {
         return id;
     }
@@ -99,6 +72,36 @@ public class User implements Serializable {
 
     public List<Location> getLocations() {
         return Collections.unmodifiableList(locations);
+    }
+
+    public Set<Group> getGroups() {
+        Set<Group> groupsToReturn = new HashSet<>();
+        for (UsersInGroup group : groups) {
+            groupsToReturn.add(group.getGroup());
+        }
+        return Collections.unmodifiableSet(groupsToReturn);
+    }
+
+    /**
+     * Joins user to group
+     * @param group target group to join to
+     * @return <tt>true</tt> if user did not already join the group
+     */
+    public boolean joinGroup(Group group) throws UserAlreadyInGroupException {
+        return groups.add(new UsersInGroup(this, group));
+    }
+
+    /**
+     * Delete user from group
+     * @param group to leave
+     * @return <tt>true</tt> if user was in the group
+     */
+    public boolean leave(Group group) {
+        return groups.remove(new UsersInGroup(this, group));
+    }
+
+    public void saveUserLocation(Location location) {
+        locations.add(location);
     }
 
     @Override

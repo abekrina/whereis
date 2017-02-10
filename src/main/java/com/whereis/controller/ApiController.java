@@ -111,6 +111,6 @@ public class ApiController extends AbstractController {
 
     @RequestMapping(value = "/{identity}/getlocations", method = RequestMethod.GET)
     public List<Location> getLocationOfGroupMembers(@PathVariable("identity") String identity) {
-        return locationService.getLocationsOfGroupMembers(groupService.getByIdentity(identity), getCurrentUser());
+        return locationService.getLastLocationsForGroupMembers(groupService.getByIdentity(identity), getCurrentUser());
     }
 }

@@ -12,5 +12,5 @@ public interface LocationService {
     void update(Location location);
     boolean delete(Location location);
     Location getLastLocationForUser(User user);
-    List<Location> getLocationsOfGroupMembers(Group group, User currentUser);
+    List<Location> getLastLocationsForGroupMembers(Group group, User currentUser);
 }
