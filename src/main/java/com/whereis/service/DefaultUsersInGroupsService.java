@@ -46,7 +46,7 @@ public class DefaultUsersInGroupsService implements UsersInGroupsService {
     }
 
     @Override
-    public void addUserToGroup(Group group, User user) throws UserAlreadyInGroup {
+    public void joinGroup(Group group, User user) throws UserAlreadyInGroup {
         UsersInGroup usersInGroup = new UsersInGroup();
         usersInGroup.setUser(user);
         usersInGroup.setGroup(group);

@@ -1,16 +1,12 @@
 package com.whereis.model;
 
 import com.sun.istack.internal.NotNull;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
 
 @Immutable
 @Entity
@@ -20,16 +16,15 @@ public class Location {
     @GeneratedValue
     protected int id;
 
-    //TODO: override equals and hashcode
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     protected User user;
 
-    @Column(name = "timestamp", updatable = false)
-    @Type(type = "java.time.LocalDateTime")
+    @Column(name = "timestamp")
+    @Type(type = "java.sql.Timestamp")
     @Temporal(value = TemporalType.TIMESTAMP)
     @CreationTimestamp
-    protected LocalDateTime timestamp;
+    protected Timestamp timestamp;
 
     @NotNull
     @Column(nullable = false)
@@ -40,22 +35,25 @@ public class Location {
     protected double longitude;
 
     protected String ip;
-    // Change to hibernate mapping
+/*    // Change to hibernate mapping
     @NotNull
     @Column(nullable = false)
-    protected String group_identity;
+    protected String group_identity;*/
 
-    public Location() {
+    @NotNull
+    @ManyToOne()
+    @JoinColumn(name = "group_id")
+    protected Group group;
 
-    }
+    public Location() {}
 
-    public Location(double latitude, double longitude, String ip, String group_identity, User user) {
+    public Location(double latitude, double longitude, String ip, Group group, User user) {
         this.latitude = latitude;
         this.longitude = longitude;
         if (ip != null && ip != "") {
             this.ip = ip;
         }
-        this.group_identity = group_identity;
+        this.group = group;
         this.user = user;
     }
 
@@ -71,12 +69,8 @@ public class Location {
         this.user = user;
     }
 
-    public LocalDateTime getTimestamp() {
+    public Timestamp getTimestamp() {
         return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
     }
 
     public double getLatitude() {
@@ -103,12 +97,29 @@ public class Location {
         this.ip = ip;
     }
 
-    public String getGroupIdentity() {
-        return group_identity;
+    public Group getGroup() {
+        return group;
     }
 
-    public void setGroupIdentity(String group_identity) {
-        this.group_identity = group_identity;
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    @Override
+    public boolean equals(Object anotherLocation) {
+        if (anotherLocation == this) {
+            return true;
+        }
+        if (!(anotherLocation instanceof Location)) {
+            return false;
+        }
+        return ((Location) anotherLocation).getId() == id
+                && ((Location) anotherLocation).getTimestamp().equals(timestamp)
+                && ((Location) anotherLocation).getLatitude() == latitude
+                && ((Location) anotherLocation).getLongitude() == longitude
+                && ((Location) anotherLocation).getGroup().equals(group)
+                && ((Location) anotherLocation).getUser().equals(user)
+                && ((Location) anotherLocation).getIp().equals(ip);
     }
 
 }

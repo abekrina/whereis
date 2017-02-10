@@ -11,7 +11,6 @@ import com.whereis.model.User;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.Session;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,7 +73,7 @@ public class DefaultUserDao extends AbstractDao<User> implements UserDao {
 
     @Override
     public void joinGroup(Group group, User user) throws UserAlreadyInGroup {
-        user.addUserToGroup(group);
+        user.joinGroup(group);
     }
 
     @Override

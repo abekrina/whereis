@@ -5,7 +5,9 @@ import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 
@@ -39,12 +41,22 @@ public abstract class AbstractIntegrationTest extends AbstractTransactionalTestN
         ConfigurationFactory.setConfigurationFactory(new LogConfigurationFactory());
     }
 
-    @AfterTest
+    @AfterMethod
     public void cleanup() throws SQLException {
         for (String tableName : tableNames) {
+            if (TestTransaction.isActive()) {
+                TestTransaction.end();
+                TestTransaction.start();
+            }
             Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-            statement.execute("DELETE FROM " + tableName + " WHERE id >= 0;");
+            // if Postgresql:
+            //statement.execute("TRUNCATE TABLE " + tableName + " CASCADE;");
+
+            // if h2:
+            statement.execute("SET REFERENTIAL_INTEGRITY FALSE;");
+            statement.execute("TRUNCATE TABLE " + tableName + ";");
+            statement.execute("SET REFERENTIAL_INTEGRITY TRUE;");
         }
     }
 }

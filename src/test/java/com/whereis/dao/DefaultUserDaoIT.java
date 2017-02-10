@@ -1,5 +1,6 @@
 package com.whereis.dao;
 
+import com.whereis.exceptions.groups.GroupWithIdentityExists;
 import com.whereis.exceptions.groups.NoUserInGroup;
 import com.whereis.exceptions.groups.UserAlreadyInGroup;
 import com.whereis.exceptions.users.NoSuchUser;
@@ -10,6 +11,7 @@ import com.whereis.testconfig.TestHibernateConfiguration;
 import com.whereis.testconfig.TestWebMvcConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -24,6 +26,9 @@ import java.util.Set;
 public class DefaultUserDaoIT extends AbstractIntegrationTest {
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private GroupDao groupDao;
 
     private User defaultUser;
 
@@ -101,10 +106,18 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testLeaveGroup() throws NoUserInGroup, UserAlreadyInGroup {
+    public void testLeaveGroup() throws NoUserInGroup, UserAlreadyInGroup, UserWithEmailExists, GroupWithIdentityExists {
+        userDao.save(defaultUser);
+        groupDao.save(defaultGroup);
+        int id = defaultUser.getId();
         userDao.joinGroup(defaultGroup, defaultUser);
         // Data is written to table, default user is in default group
         Assert.assertTrue(userDao.assertUserInGroup(defaultGroup, defaultUser));
+
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+
+        id = defaultUser.getId();
         // Default user leave group
         userDao.leaveGroup(defaultGroup, defaultUser);
         // Default user not in the group
@@ -135,7 +148,7 @@ public class DefaultUserDaoIT extends AbstractIntegrationTest {
 
     @Test
     public void testFindAbsentRelationInDB() {
-        Assert.assertNull(userDao.getGroupsForUser(defaultUser));
+        Assert.assertEquals(userDao.getGroupsForUser(defaultUser), new HashSet<Group>());
     }
 
     @Test(expectedExceptions = UserAlreadyInGroup.class)

@@ -11,5 +11,5 @@ public interface UsersInGroupsService {
 
     UsersInGroup findUserInGroup(Group group, User user);
 
-    void addUserToGroup(Group group, User user) throws UserAlreadyInGroup;*/
+    void joinGroup(Group group, User user) throws UserAlreadyInGroup;*/
 }

@@ -23,6 +23,9 @@ public class Group {
     @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, targetEntity = UsersInGroup.class)
     protected Set<UsersInGroup> users = new HashSet<>();
 
+    @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, targetEntity = Location.class)
+    protected Set<Location> locations = new HashSet<>();
+
     public Set<User> getUsersInGroup() {
         Set<User> usersToReturn = new HashSet<>();
         for (UsersInGroup user : users) {
@@ -80,5 +83,10 @@ public class Group {
         return otherGroup.getId() == id
                 && Objects.equals(otherGroup.getIdentity(),identity)
                 && Objects.equals(otherGroup.getName(), name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, identity, name);
     }
 }

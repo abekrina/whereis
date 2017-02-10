@@ -47,18 +47,19 @@ public class User implements Serializable {
         return Collections.unmodifiableSet(groupsToReturn);
     }
 
-    public void addUserToGroup(Group group) throws UserAlreadyInGroup {
+    public void joinGroup(Group group) throws UserAlreadyInGroup {
         if (!groups.add(new UsersInGroup(this, group))) {
             throw new UserAlreadyInGroup("User " + this + "already joined group " + group);
         }
     }
 
     public void leave(Group group) throws NoUserInGroup {
-        if (!groups.remove(group)) {
+        if (!groups.remove(new UsersInGroup(this, group))) {
             throw new NoUserInGroup("There is no user " + this + " in group " + group);
         }
     }
-
+    // TODO: discuss
+    // здесь при изменении объекта hibernate сохраняет в базу всё сам. точно это нужно в сервис переносить?
     public void saveUserLocation(Location location) {
         locations.add(location);
     }
