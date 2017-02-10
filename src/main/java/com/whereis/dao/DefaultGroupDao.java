@@ -30,11 +30,19 @@ public class DefaultGroupDao extends AbstractDao<Group> implements GroupDao {
 
     @Override
     public void update(Group group) throws NoSuchGroupException {
-        if (get(group.getId()) != null) {
+        /*if (get(group.getId()) != null) {
             getSession().update(group);
         } else {
             throw new NoSuchGroupException(group.toString());
-        }
+        }*/
+
+            getSession().update(group);
+
+    }
+
+    @Override
+    public void delete(Group group) {
+        getSession().delete(group);
     }
 
     @Override

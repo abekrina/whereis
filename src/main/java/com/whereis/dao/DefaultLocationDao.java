@@ -19,4 +19,7 @@ public class DefaultLocationDao extends AbstractDao<Location> implements Locatio
     public void save(Location location) {
         getSession().persist(location);
     }
+
+    @Override
+    public void refresh(Location location) { getSession().refresh(location);}
 }

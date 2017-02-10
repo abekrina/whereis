@@ -17,4 +17,6 @@ public interface LocationDao {
      *  Methods specific for every implementation of this interface
      */
     void save(Location location);
+
+    void refresh(Location location);
 }

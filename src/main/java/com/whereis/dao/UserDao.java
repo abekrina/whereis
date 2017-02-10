@@ -24,4 +24,6 @@ public interface UserDao {
     void update(User user) throws NoSuchUserException;
     User getByEmail(String email);
     void deleteByEmail(String email);
+
+    void refresh(User user);
 }

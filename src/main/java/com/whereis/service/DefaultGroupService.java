@@ -42,17 +42,14 @@ public class DefaultGroupService implements GroupService {
 
     @Override
     public void update(Group group) throws NoSuchGroupException {
-        if (get(group.getId()) != null) {
-            dao.update(group);
-        } else {
-            throw new NoSuchGroupException(group.toString());
-        }
-
+        dao.update(group);
     }
 
     @Override
     public boolean delete(Group group) {
-        return dao.delete(group.getClass(), group.getId());
+        //return dao.delete(group.getClass(), group.getId());
+        dao.delete(group);
+        return true;
     }
 
     @Override

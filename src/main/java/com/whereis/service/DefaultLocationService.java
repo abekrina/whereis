@@ -48,6 +48,7 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public Location getLastLocationForUser(User user) {
+        usersDao.refresh(user);
         List<Location> locations = user.getLocations();
         if (locations.isEmpty()) {
             return null;

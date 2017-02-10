@@ -7,6 +7,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 @Immutable
 @Entity
@@ -46,7 +47,7 @@ public class Location {
     public Location(double latitude, double longitude, String ip, Group group, User user) {
         this.latitude = latitude;
         this.longitude = longitude;
-        if (ip != null && ip != "") {
+        if (ip != null && !ip.equals("")) {
             this.ip = ip;
         }
         this.group = group;
@@ -109,13 +110,14 @@ public class Location {
         if (!(anotherLocation instanceof Location)) {
             return false;
         }
-        return ((Location) anotherLocation).getId() == id
-                && ((Location) anotherLocation).getTimestamp().equals(timestamp)
-                && ((Location) anotherLocation).getLatitude() == latitude
-                && ((Location) anotherLocation).getLongitude() == longitude
-                && ((Location) anotherLocation).getGroup().equals(group)
-                && ((Location) anotherLocation).getUser().equals(user)
-                && ((Location) anotherLocation).getIp().equals(ip);
+        Location otherLocation = (Location) anotherLocation;
+        return Objects.equals(otherLocation.getId(), id)
+                && Objects.equals(otherLocation.getTimestamp(), timestamp)
+                && Objects.equals(otherLocation.getLatitude(), latitude)
+                && Objects.equals(otherLocation.getLongitude(), longitude)
+                && Objects.equals(otherLocation.getGroup(), group)
+                && Objects.equals(otherLocation.getUser(), user)
+                && Objects.equals(otherLocation.getIp(), ip);
     }
 
 }

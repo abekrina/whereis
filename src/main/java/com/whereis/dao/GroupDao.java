@@ -17,5 +17,8 @@ public interface GroupDao {
      */
     void save(Group group) throws GroupWithIdentityExistsException;
     void update(Group group) throws NoSuchGroupException;
+
+    void delete(Group group);
+
     Group getByIdentity(String identity);
 }

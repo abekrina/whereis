@@ -65,4 +65,9 @@ public class DefaultUserDao extends AbstractDao<User> implements UserDao {
         User user = getByEmail(email);
         delete(user.getClass(), user.getId());
     }
+
+    @Override
+    public void refresh(User user) {
+        getSession().refresh(user);
+    }
 }

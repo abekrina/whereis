@@ -9,9 +9,9 @@ import java.util.*;
 @Table(name = "groups")
 public class Group {
     //TODO: try to move id to identity
-    @Id
+/*    @Id
     @GeneratedValue
-    protected int id;
+    protected int id;*/
 
     @NotNull
     @Column(nullable = false)
@@ -19,6 +19,7 @@ public class Group {
 
     @NotNull
     @Column(nullable = false)
+    @Id
     protected String identity;
 
     @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, targetEntity = UsersInGroup.class)
@@ -42,9 +43,9 @@ public class Group {
         users.add(new UsersInGroup(user, this));
     }
 
-    public int getId() {
+/*    public int getId() {
         return id;
-    }
+    }*/
 
     public String getName() {
         return name;
@@ -66,7 +67,7 @@ public class Group {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(" id: ");
-        builder.append(id);
+        //builder.append(id);
         builder.append(" name: ");
         builder.append(name);
         builder.append(" identity: ");
@@ -84,13 +85,14 @@ public class Group {
             return false;
         }
         Group otherGroup = (Group) anotherGroup;
-        return otherGroup.getId() == id
-                && Objects.equals(otherGroup.getIdentity(),identity)
+        return /*otherGroup.getId() == id
+                &&*/ Objects.equals(otherGroup.getIdentity(),identity)
                 && Objects.equals(otherGroup.getName(), name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, identity, name);
+        //return Objects.hash(id, identity, name);
+        return Objects.hash(identity, name);
     }
 }
