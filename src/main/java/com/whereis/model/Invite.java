@@ -15,12 +15,13 @@ public class Invite {
     @GeneratedValue
     protected int id;
 
-    protected int sent_by;
+    @ManyToOne
+    @JoinColumn(name = "sent_by_user")
+    protected User sent_by_user;
 
-    @NotNull
-    @Column(nullable = false)
-    //TODO: map by hibernate
-    protected String sent_to_email;
+    @ManyToOne
+    @JoinColumn(name = "sent_to_user")
+    protected User sent_to_user;
 
     @CreationTimestamp
     protected Timestamp timestamp;
@@ -33,12 +34,12 @@ public class Invite {
         return id;
     }
 
-    public int getSentBy() {
-        return sent_by;
+    public User getSentByUser() {
+        return sent_by_user;
     }
 
-    public void setSentBy(int sent_by) {
-        this.sent_by = sent_by;
+    public void setSentByUser(User sent_by_user) {
+        this.sent_by_user = sent_by_user;
     }
 
     public Timestamp getTimestamp() {
@@ -49,12 +50,12 @@ public class Invite {
         this.timestamp = timestamp;
     }
 
-    public String getSentToEmail() {
-        return sent_to_email;
+    public User getSentToUser() {
+        return sent_to_user;
     }
 
-    public void setSentToEmail(String sent_to_email) {
-        this.sent_to_email = sent_to_email;
+    public void setSentToUser(User sent_to_user) {
+        this.sent_to_user = sent_to_user;
     }
 
     public Group getGroup() {

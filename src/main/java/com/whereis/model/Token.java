@@ -13,9 +13,9 @@ public class Token {
     @GeneratedValue
     protected int id;
 
-    @NotNull
-    @Column(nullable = false)
-    protected int user_id;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    protected User user;
 
     protected String access_token;
 
@@ -35,12 +35,12 @@ public class Token {
         return id;
     }
 
-    public int getUserId() {
-        return user_id;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(int userId) {
-        this.user_id = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getAccessToken() {

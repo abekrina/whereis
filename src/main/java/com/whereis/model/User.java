@@ -32,12 +32,18 @@ public class User implements Serializable {
 
 
     //TODO: change to Set
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, targetEntity = Location.class, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @OrderBy(clause = "timestamp")
     protected List<Location> locations = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", targetEntity = UsersInGroup.class)
+    @OneToMany(mappedBy = "user")
     protected Set<UsersInGroup> groups = new HashSet<>();
+
+    @OneToMany(mappedBy = "sent_by_user", cascade = CascadeType.ALL)
+    protected Set<Invite> sent_invites = new HashSet<>();
+
+    @OneToMany(mappedBy = "sent_to_user")
+    protected Set<Invite> got_invites = new HashSet<>();
 
     public Set<Group> getGroups() {
         Set<Group> groupsToReturn = new HashSet<>();

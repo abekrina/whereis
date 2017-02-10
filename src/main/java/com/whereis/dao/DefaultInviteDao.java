@@ -22,7 +22,7 @@ public class DefaultInviteDao extends  AbstractDao<Invite> implements InviteDao 
         if (getSameInvite(invite) == null) {
             getSession().persist(invite);
         } else {
-            throw new UserAlreadyInvited("Invite for email " + invite.getSentToEmail()
+            throw new UserAlreadyInvited("Invite for user " + invite.getSentToUser()
                     + " to group " + invite.getGroup() + " already exists");
         }
     }
@@ -41,7 +41,7 @@ public class DefaultInviteDao extends  AbstractDao<Invite> implements InviteDao 
         CriteriaQuery<Invite> criteriaQuery = createEntityCriteria();
         Root<Invite> inviteRoot = criteriaQuery.from(Invite.class);
         criteriaQuery.select(inviteRoot);
-        criteriaQuery.where(builder.and(builder.equal(inviteRoot.get("sent_to_email"), invite.getSentToEmail())),
+        criteriaQuery.where(builder.and(builder.equal(inviteRoot.get("sent_to_user"), invite.getSentToUser())),
                 builder.equal(inviteRoot.get("group"), invite.getGroup()));
         try {
             return getSession().createQuery(criteriaQuery).getSingleResult();
@@ -56,7 +56,7 @@ public class DefaultInviteDao extends  AbstractDao<Invite> implements InviteDao 
     public Invite getPendingInviteFor(User user, Group group) {
         Invite pendingInvite = new Invite();
         pendingInvite.setGroup(group);
-        pendingInvite.setSentToEmail(user.getEmail());
+        pendingInvite.setSentToUser(user);
 
         return getSameInvite(pendingInvite);
     }
