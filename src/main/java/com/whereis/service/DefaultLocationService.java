@@ -1,16 +1,18 @@
 package com.whereis.service;
 
 import com.whereis.dao.LocationDao;
-import com.whereis.dao.UsersInGroupsDao;
+import com.whereis.dao.UserDao;
 import com.whereis.model.Group;
 import com.whereis.model.User;
 import com.whereis.model.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service("userLocationService")
 @Transactional
@@ -19,11 +21,14 @@ public class DefaultLocationService implements LocationService {
     LocationDao locationDao;
 
     @Autowired
-    UsersInGroupsDao usersInGroupsDao;
+    UserService userService;
+
+    @Autowired
+    UserDao usersDao;
 
     @Override
     public Location get(int id) {
-        return null;
+        return locationDao.get(id);
     }
 
     @Override
@@ -32,8 +37,8 @@ public class DefaultLocationService implements LocationService {
     }
 
     @Override
-    public void update(Location location) {
-
+    public void refresh(Location location) {
+        locationDao.refresh(location);
     }
 
     @Override
@@ -43,13 +48,26 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public Location getLastLocationForUser(User user) {
-        return locationDao.getLastLocationForUser(user.getId());
+        List<Location> locations = user.getLocations();
+        if (locations.isEmpty()) {
+            return null;
+        } else {
+            return locations.get(locations.size() - 1);
+        }
     }
 
     @Override
-    public List<Location> getLocationsOfGroupMembers(Group group, User currentUser) {
-        if (usersInGroupsDao.findUserInGroup(group, currentUser) != null) {
-            return locationDao.getLastLocationsForGroupMembers(group);
+    public List<Location> getLastLocationsForGroupMembers(Group group, User currentUser) {
+        if (userService.checkUserInGroup(group, currentUser)) {
+            Set<User> usersInGroup = group.getUsersInGroup();
+            List<Location> locations = new ArrayList<>();
+            for (User user : usersInGroup) {
+                Location location = getLastLocationForUser(user);
+                if (location != null) {
+                    locations.add(getLastLocationForUser(user));
+                }
+            }
+            return locations;
         }
         return new ArrayList<>();
     }

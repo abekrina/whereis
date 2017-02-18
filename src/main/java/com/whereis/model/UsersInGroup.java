@@ -1,42 +1,61 @@
 package com.whereis.model;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Immutable;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Objects;
 
+@Immutable
 @Entity
-//TODO:change to users_in_group
 @Table(name = "usersInGroups")
 public class UsersInGroup {
     @Id
     @GeneratedValue
     protected int id;
 
-    protected int user_id;
+    @NotNull
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name = "userId", insertable = false, updatable = false)
+    protected User user;
 
-    protected int group_id;
+    @NotNull
+    @ManyToOne(targetEntity = Group.class)
+    @JoinColumn(name = "groupId", insertable = false, updatable = false)
+    protected Group group;
 
+    @CreationTimestamp
     protected Timestamp joined_at;
+
+    public UsersInGroup() {
+
+    }
+    public UsersInGroup(User user, Group group) {
+        this.user = user;
+        this.group = group;
+    }
 
     public int getId() {
         return id;
     }
 
-    public int getUserId() {
-        return user_id;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(int user_id) {
-        this.user_id = user_id;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public int getGroupId() {
-        return group_id;
+    public Group getGroup() {
+        return group;
     }
 
-    public void setGroupId(int groupId) {
-        this.group_id = groupId;
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     public Timestamp getJoinedAt() {
@@ -49,21 +68,26 @@ public class UsersInGroup {
 
     @Override
     public boolean equals(Object usersInGroupObj) {
-        UsersInGroup usersInGroup = (UsersInGroup) usersInGroupObj;
-        if (usersInGroup.getId() == id && usersInGroup.getUserId() == user_id
-                && usersInGroup.getGroupId() == group_id) {
+        if (usersInGroupObj == this) {
             return true;
         }
-        return false;
+        if (!(usersInGroupObj instanceof UsersInGroup)) {
+            return  false;
+        }
+        UsersInGroup usersInGroup = (UsersInGroup) usersInGroupObj;
+        return Objects.equals(usersInGroup.getId(), id) &&
+                Objects.equals(usersInGroup.getGroup(), group) &&
+                Objects.equals(usersInGroup.getJoinedAt(), joined_at) &&
+                Objects.equals(usersInGroup.getUser(), user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user_id, group_id);
+        return Objects.hash(id, user, group);
     }
 
     @Override
     public String toString() {
-        return "user_id: " + user_id + " group_id " + group_id;
+        return "user: " + user + " group: " + group;
     }
 }

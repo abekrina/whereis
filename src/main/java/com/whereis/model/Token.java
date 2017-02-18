@@ -1,7 +1,7 @@
 package com.whereis.model;
 
-
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
 @Entity
@@ -11,7 +11,9 @@ public class Token {
     @GeneratedValue
     protected int id;
 
-    protected int user_id;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    protected User user;
 
     protected String access_token;
 
@@ -19,6 +21,8 @@ public class Token {
 
     protected String token_type;
 
+    @NotNull
+    @Column(nullable = false)
     protected int expires_in;
 
     protected Timestamp issued;
@@ -29,12 +33,12 @@ public class Token {
         return id;
     }
 
-    public int getUserId() {
-        return user_id;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(int userId) {
-        this.user_id = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getAccessToken() {

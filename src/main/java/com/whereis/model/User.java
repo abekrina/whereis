@@ -1,23 +1,50 @@
 package com.whereis.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.whereis.exceptions.groups.UserAlreadyInGroupException;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.OrderBy;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
+@FilterDef(name = "lastLocation")
 @Table(name = "users")
 public class User implements Serializable {
     @Id
     @GeneratedValue
     protected int id;
 
-    protected String first_name;
+    @NotNull
+    @Column(nullable = false)
+    protected String firstName;
 
-    protected String last_name;
+    @NotNull
+    @Column(nullable = false)
+    protected String lastName;
 
+    @NotNull
+    @Column(nullable = false)
     protected String email;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OrderBy(clause = "timestamp")
+    @JsonManagedReference
+    protected List<Location> locations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    protected Set<UsersInGroup> groups = new HashSet<>();
+
+    @OneToMany(mappedBy = "sentByUser", cascade = CascadeType.ALL)
+    protected Set<Invite> sentByUser = new HashSet<>();
+
+    @OneToMany(mappedBy = "sentToUser", cascade = CascadeType.ALL)
+    protected Set<Invite> sentToUser = new HashSet<>();
 
     public int getId() {
         return id;
@@ -32,19 +59,62 @@ public class User implements Serializable {
     }
 
     public String getFirstName() {
-        return first_name;
+        return firstName;
     }
 
     public void setFirstName(String first_name) {
-        this.first_name = first_name;
+        this.firstName = first_name;
     }
 
     public String getLastName() {
-        return last_name;
+        return lastName;
     }
 
     public void setLastName(String last_name) {
-        this.last_name = last_name;
+        this.lastName = last_name;
+    }
+
+    @JsonIgnore
+    public List<Location> getLocations() {
+        return Collections.unmodifiableList(locations);
+    }
+    @JsonIgnore
+    public Set<Group> getGroups() {
+        Set<Group> groupsToReturn = new HashSet<>();
+        for (UsersInGroup group : groups) {
+            groupsToReturn.add(group.getGroup());
+        }
+        return Collections.unmodifiableSet(groupsToReturn);
+    }
+
+    public Set<Invite> getUserInvites() {
+        return Collections.unmodifiableSet(sentToUser);
+    }
+
+    public boolean addInviteForUser(Invite invite) {
+        return sentToUser.add(invite);
+    }
+
+    /**
+     * Joins user to group
+     * @param group target group to join to
+     * @return <tt>true</tt> if user did not already join the group
+     */
+    public boolean joinGroup(Group group) throws UserAlreadyInGroupException {
+        return groups.add(new UsersInGroup(this, group));
+    }
+
+    /**
+     * Delete user from group
+     * @param group to leave
+     * @return <tt>true</tt> if user was in the group
+     */
+    public boolean leave(Group group) {
+        return groups.remove(new UsersInGroup(this, group));
+    }
+
+    public boolean saveUserLocation(Location location) {
+        return locations.add(location);
     }
 
     @Override
@@ -56,13 +126,13 @@ public class User implements Serializable {
         User otherUser = (User) user;
         return otherUser.getId() == id
                 && Objects.equals(otherUser.getEmail(), email)
-                && Objects.equals(otherUser.getFirstName(), first_name)
-                && Objects.equals(otherUser.getLastName(), last_name);
+                && Objects.equals(otherUser.getFirstName(), firstName)
+                && Objects.equals(otherUser.getLastName(), lastName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, first_name, last_name);
+        return Objects.hash(id, email, firstName, lastName);
     }
 
     @Override
@@ -73,9 +143,9 @@ public class User implements Serializable {
         builder.append(" email: ");
         builder.append(email);
         builder.append(" first name: ");
-        builder.append(first_name);
+        builder.append(firstName);
         builder.append(" last name: ");
-        builder.append(last_name);
+        builder.append(lastName);
         return builder.toString();
     }
 }

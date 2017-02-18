@@ -1,10 +1,8 @@
 package com.whereis.dao;
 
-import com.whereis.exceptions.GroupWithIdentityExists;
-import com.whereis.exceptions.NoSuchGroup;
+import com.whereis.exceptions.groups.GroupWithIdentityExistsException;
+import com.whereis.exceptions.groups.NoSuchGroupException;
 import com.whereis.model.Group;
-import com.whereis.model.Invite;
-import com.whereis.model.User;
 
 public interface GroupDao {
     /**
@@ -17,7 +15,10 @@ public interface GroupDao {
     /**
      *  Methods specific for every implementation of this interface
      */
-    void save(Group group) throws GroupWithIdentityExists;
-    void update(Group group) throws NoSuchGroup;
+    void save(Group group) throws GroupWithIdentityExistsException;
+    void update(Group group) throws NoSuchGroupException;
+
+    void refresh(Group group);
+
     Group getByIdentity(String identity);
 }

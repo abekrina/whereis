@@ -1,11 +1,14 @@
 package com.whereis.dao;
 
-import com.whereis.exceptions.NoSuchUser;
-import com.whereis.exceptions.UserWithEmailExists;
+import com.whereis.exceptions.groups.UserAlreadyInGroupException;
+import com.whereis.exceptions.users.NoSuchUserException;
+import com.whereis.exceptions.groups.NoUserInGroupException;
+import com.whereis.exceptions.users.UserWithEmailExistsException;
+import com.whereis.model.Group;
+import com.whereis.model.Location;
 import com.whereis.model.User;
-import org.hibernate.Session;
 
-import javax.persistence.EntityManager;
+import java.util.Set;
 
 
 public interface UserDao {
@@ -14,12 +17,16 @@ public interface UserDao {
      */
     User get(int id);
     boolean delete(Class <? extends User> type, int id);
-    Session getSession();
     /**
      *  Methods specific for every implementation of this interface
      */
-    void save(User user) throws UserWithEmailExists;
-    void update(User user) throws NoSuchUser;
+    void save(User user) throws UserWithEmailExistsException;
+    void update(User user) throws NoSuchUserException;
+
+    void merge(User user);
+
+    void refresh(User user);
+
     User getByEmail(String email);
     void deleteByEmail(String email);
 }

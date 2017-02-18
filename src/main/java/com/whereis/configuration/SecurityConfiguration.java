@@ -30,7 +30,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
         .and()
                 .csrf()
-                //TODO: Enable this!
+                //TODO: Enable this
                 .disable();
     }
 
@@ -46,7 +46,5 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new GoogleAuthenticationFilter();
     }
 }
-
-
 
 //TODO: выяснить можно ли разделить пользователей по ролям чтобы хендлить админство в группе

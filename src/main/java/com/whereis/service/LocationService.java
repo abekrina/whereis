@@ -9,8 +9,8 @@ import java.util.List;
 public interface LocationService {
     Location get(int id);
     void save(Location location);
-    void update(Location location);
+    void refresh(Location location);
     boolean delete(Location location);
     Location getLastLocationForUser(User user);
-    List<Location> getLocationsOfGroupMembers(Group group, User currentUser);
+    List<Location> getLastLocationsForGroupMembers(Group group, User currentUser);
 }

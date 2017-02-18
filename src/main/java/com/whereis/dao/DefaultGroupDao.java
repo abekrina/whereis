@@ -1,14 +1,10 @@
 package com.whereis.dao;
 
-import com.whereis.authentication.GoogleAuthenticationFilter;
-import com.whereis.exceptions.GroupWithIdentityExists;
-import com.whereis.exceptions.NoSuchGroup;
+import com.whereis.exceptions.groups.GroupWithIdentityExistsException;
+import com.whereis.exceptions.groups.NoSuchGroupException;
 import com.whereis.model.Group;
-import com.whereis.model.Invite;
-import com.whereis.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +12,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 
 @Transactional
 @Repository("groupDao")
@@ -23,24 +21,35 @@ public class DefaultGroupDao extends AbstractDao<Group> implements GroupDao {
     private static final Logger logger = LogManager.getLogger(DefaultGroupDao.class);
 
     @Override
-    public void save(Group group) throws GroupWithIdentityExists {
+    public void save(Group group) throws GroupWithIdentityExistsException {
+        if (group.getIdentity() == null) {
+            SecureRandom random = new SecureRandom();
+            //TODO: Make identity shorter and document its size
+            String token = new BigInteger(130, 2, random).toString(32);
+            group.setIdentity(token);
+            getSession().persist(group);
+            return;
+        }
         if (getByIdentity(group.getIdentity()) == null) {
-            Session currentSession = sessionFactory.getCurrentSession();
-            currentSession.persist(group);
+            getSession().persist(group);
         } else {
-            throw new GroupWithIdentityExists(group.toString());
+            throw new GroupWithIdentityExistsException(group.toString());
         }
 
     }
 
     @Override
-    public void update(Group group) throws NoSuchGroup {
+    public void update(Group group) throws NoSuchGroupException {
         if (get(group.getId()) != null) {
-            Session currentSession = sessionFactory.getCurrentSession();
-            currentSession.update(group);
+            getSession().update(group);
         } else {
-            throw new NoSuchGroup(group.toString());
+            throw new NoSuchGroupException(group.toString());
         }
+    }
+
+    @Override
+    public void refresh(Group group) {
+        getSession().refresh(group);
     }
 
     @Override

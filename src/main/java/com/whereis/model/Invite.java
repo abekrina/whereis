@@ -1,9 +1,11 @@
 package com.whereis.model;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Immutable;
-
+import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 @Entity
 @Immutable
@@ -13,24 +15,41 @@ public class Invite {
     @GeneratedValue
     protected int id;
 
-    protected int sent_by;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "sentByUser")
+    protected User sentByUser;
 
-    protected String sent_to_email;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "sentToUser")
+    protected User sentToUser;
 
+    @Column(name = "timestamp")
+    @Type(type = "java.sql.Timestamp")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    @CreationTimestamp
     protected Timestamp timestamp;
 
-    protected int group_id;
+    @ManyToOne
+    @JoinColumn(name = "groupId")
+    protected Group group;
+
+    public Invite() {}
+
+    public Invite(User sentToUser, Group group) {
+        this.sentToUser = sentToUser;
+        this.group = group;
+    }
 
     public int getId() {
         return id;
     }
 
-    public int getSentBy() {
-        return sent_by;
+    public User getSentByUser() {
+        return sentByUser;
     }
 
-    public void setSentBy(int sent_by) {
-        this.sent_by = sent_by;
+    public void setSentByUser(User sentByUser) {
+        this.sentByUser = sentByUser;
     }
 
     public Timestamp getTimestamp() {
@@ -41,19 +60,40 @@ public class Invite {
         this.timestamp = timestamp;
     }
 
-    public String getSentToEmail() {
-        return sent_to_email;
+    public User getSentToUser() {
+        return sentToUser;
     }
 
-    public void setSentToEmail(String sent_to_email) {
-        this.sent_to_email = sent_to_email;
+    public void setSentToUser(User sentToUser) {
+        this.sentToUser = sentToUser;
     }
 
-    public int getGroupId() {
-        return group_id;
+    public Group getGroup() {
+        return group;
     }
 
-    public void setGroupId(int group_id) {
-        this.group_id = group_id;
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+        if (!(object instanceof Invite)) {
+            return false;
+        }
+        Invite otherInvite = (Invite) object;
+        return Objects.equals(otherInvite.getId(), id) &&
+                Objects.equals(otherInvite.getGroup(), group) &&
+                Objects.equals(otherInvite.getSentByUser(), sentByUser) &&
+                Objects.equals(otherInvite.getSentToUser(), sentToUser) &&
+                Objects.equals(otherInvite.getTimestamp(), timestamp);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, group, sentByUser, sentToUser, timestamp);
     }
 }

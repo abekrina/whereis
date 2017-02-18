@@ -1,7 +1,12 @@
 package com.whereis.model;
 
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
-import java.util.Objects;
+import javax.validation.constraints.NotNull;
+import java.util.*;
 
 @Entity
 @Table(name = "groups")
@@ -10,9 +15,22 @@ public class Group {
     @GeneratedValue
     protected int id;
 
+    @NotNull
+    @Column(nullable = false)
     protected String name;
 
+    @NotNull
+    @Column(nullable = false)
     protected String identity;
+
+    @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, targetEntity = UsersInGroup.class)
+    protected Set<UsersInGroup> users = new HashSet<>();
+
+    @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, targetEntity = Location.class)
+    protected Set<Location> locations = new HashSet<>();
+
+    @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    protected Set<Invite> invites = new HashSet<>();
 
     public int getId() {
         return id;
@@ -33,12 +51,28 @@ public class Group {
     public void setIdentity(String identity) {
         this.identity = identity;
     }
+    @JsonIgnore
+    public Set<User> getUsersInGroup() {
+        Set<User> usersToReturn = new HashSet<>();
+        for (UsersInGroup user : users) {
+            usersToReturn.add(user.getUser());
+        }
+        return Collections.unmodifiableSet(usersToReturn);
+    }
+
+    public void addUserToGroup(User user) {
+        users.add(new UsersInGroup(user, this));
+    }
+
+    public Set<Invite> getInvites() {
+        return Collections.unmodifiableSet(invites);
+    }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(" id: ");
-        builder.append(id);
+        //builder.append(id);
         builder.append(" name: ");
         builder.append(name);
         builder.append(" identity: ");
@@ -59,5 +93,10 @@ public class Group {
         return otherGroup.getId() == id
                 && Objects.equals(otherGroup.getIdentity(),identity)
                 && Objects.equals(otherGroup.getName(), name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, identity, name);
     }
 }

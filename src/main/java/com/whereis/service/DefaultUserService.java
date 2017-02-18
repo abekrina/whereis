@@ -4,15 +4,24 @@ import com.google.api.services.plus.Plus;
 import com.google.api.services.plus.model.Person;
 import com.whereis.authentication.GoogleAuthenticationFilter;
 import com.whereis.dao.UserDao;
-import com.whereis.exceptions.*;
+import com.whereis.exceptions.groups.NoUserInGroupException;
+import com.whereis.exceptions.invites.NoInviteForUserToGroupException;
+import com.whereis.exceptions.users.NoSuchUserException;
+import com.whereis.exceptions.groups.UserAlreadyInGroupException;
+import com.whereis.exceptions.users.UserWithEmailExistsException;
+import com.whereis.model.Group;
+import com.whereis.model.Invite;
+import com.whereis.model.Location;
 import com.whereis.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Service("userService")
 @Transactional
@@ -23,18 +32,24 @@ public class DefaultUserService implements UserService {
     @Autowired
     public UserDao dao;
 
+    @Autowired
+    LocationService locationService;
+
+    @Autowired
+    public InviteService inviteService;
+
     @Override
     public User get(int id) {
         return dao.get(id);
     }
 
     @Override
-    public void save(User user) throws UserWithEmailExists {
+    public void save(User user) throws UserWithEmailExistsException {
         dao.save(user);
     }
 
     @Override
-    public void update(User user) throws NoSuchUser {
+    public void update(User user) throws NoSuchUserException {
         dao.update(user);
     }
 
@@ -69,10 +84,55 @@ public class DefaultUserService implements UserService {
         newUser.setEmail(userEmail);
         try {
             save(newUser);
-        } catch (UserWithEmailExists userWithEmailExists) {
-            logger.error("Attempting to register user this email which already exists ", userWithEmailExists);
-            throw new IOException("Attempting to register user this email which already exists ", userWithEmailExists);
+        } catch (UserWithEmailExistsException userWithEmailExistsException) {
+            logger.error("Attempting to register user this email which already exists ", userWithEmailExistsException);
+            throw new IOException("Attempting to register user this email which already exists ", userWithEmailExistsException);
         }
         return newUser;
+    }
+
+    @Override
+    public boolean checkUserInGroup(Group group, User user) {
+        return user.getGroups().contains(group);
+    }
+
+    @Override
+    public Set<Group> getGroupsForUser(User user) {
+        return user.getGroups();
+    }
+
+    @Override
+    public void saveUserLocation(Location location) {
+        // TODO: check if all this is needed
+        locationService.save(location);
+        location.getUser().saveUserLocation(location);
+        dao.merge(location.getUser());
+        try {
+            dao.update(location.getUser());
+        } catch (NoSuchUserException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void leaveGroup(Group group, User user) throws NoUserInGroupException {
+        if (!user.leave(group)){
+            throw new NoUserInGroupException("There is no user " + this + " in group " + group);
+        }
+
+    }
+
+    @Override
+    public void joinGroup(Group group, User user) throws UserAlreadyInGroupException, NoInviteForUserToGroupException {
+        Invite inviteForUser = inviteService.getPendingInviteFor(user, group);
+        if (inviteForUser == null) {
+            throw new NoInviteForUserToGroupException("There is no invite for user " + user + " to group " + group);
+        }
+        if (!user.joinGroup(group)){
+            inviteService.delete(inviteForUser);
+            throw new UserAlreadyInGroupException("User " + this + "already joined group " + group);
+        } else {
+            group.addUserToGroup(user);
+        }
     }
 }

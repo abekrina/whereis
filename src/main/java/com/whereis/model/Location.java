@@ -1,10 +1,18 @@
 package com.whereis.model;
 
-import org.hibernate.validator.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+import java.util.Objects;
 
+@Immutable
 @Entity
 @Table(name = "locations")
 public class Location {
@@ -12,36 +20,59 @@ public class Location {
     @GeneratedValue
     protected int id;
 
-    protected int user_id;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    @JsonBackReference
+    protected User user;
 
+    @Column(name = "timestamp")
+    @Type(type = "java.sql.Timestamp")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    @CreationTimestamp
     protected Timestamp timestamp;
 
+    @NotNull
+    @Column(nullable = false)
     protected double latitude;
 
+    @NotNull
+    @Column(nullable = false)
     protected double longitude;
 
     protected String ip;
 
-    protected String group_identity;
+    @NotNull
+    @ManyToOne()
+    @JoinColumn(name = "group_id")
+    protected Group group;
+
+    public Location() {}
+
+    public Location(double latitude, double longitude, String ip, Group group, User user) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        if (ip != null && ip != "") {
+            this.ip = ip;
+        }
+        this.group = group;
+        this.user = user;
+    }
 
     public int getId() {
         return id;
     }
 
-    public int getUserId() {
-        return user_id;
+    @JsonIgnore
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(int userId) {
-        this.user_id = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Timestamp getTimestamp() {
         return timestamp;
-    }
-
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
     }
 
     public double getLatitude() {
@@ -68,13 +99,34 @@ public class Location {
         this.ip = ip;
     }
 
-
-    public String getGroupIdentity() {
-        return group_identity;
+    public Group getGroup() {
+        return group;
     }
 
-    public void setGroupIdentity(String group_identity) {
-        this.group_identity = group_identity;
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    @Override
+    public boolean equals(Object anotherLocation) {
+        if (anotherLocation == this) {
+            return true;
+        }
+        if (!(anotherLocation instanceof Location)) {
+            return false;
+        }
+        return ((Location) anotherLocation).getId() == id
+                && ((Location) anotherLocation).getTimestamp().equals(timestamp)
+                && ((Location) anotherLocation).getLatitude() == latitude
+                && ((Location) anotherLocation).getLongitude() == longitude
+                && ((Location) anotherLocation).getGroup().equals(group)
+                && ((Location) anotherLocation).getUser().equals(user)
+                && ((Location) anotherLocation).getIp().equals(ip);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, timestamp, latitude, longitude, group, user, ip);
     }
 
 }

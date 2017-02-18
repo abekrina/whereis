@@ -1,17 +1,26 @@
 package com.whereis.service;
 
 import com.whereis.dao.InviteDao;
-import com.whereis.exceptions.UserAlreadyInvited;
+import com.whereis.dao.UserDao;
+import com.whereis.exceptions.invites.UserAlreadyInvitedException;
+import com.whereis.exceptions.users.NoSuchUserException;
 import com.whereis.model.Group;
 import com.whereis.model.Invite;
 import com.whereis.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import java.util.Map;
+import java.util.Set;
+
 @Service
 public class DefaultInviteService implements InviteService {
     @Autowired
     private InviteDao dao;
+
+    @Autowired
+    private UserDao userDao;
 
     @Override
     public Invite get(int id) {
@@ -19,7 +28,7 @@ public class DefaultInviteService implements InviteService {
     }
 
     @Override
-    public void save(Invite invite) throws UserAlreadyInvited {
+    public void save(Invite invite) throws UserAlreadyInvitedException {
         dao.save(invite);
     }
 
@@ -34,13 +43,40 @@ public class DefaultInviteService implements InviteService {
     }
 
     @Override
-    public Invite getSameInvite(Invite invite) {
-        return dao.getSameInvite(invite);
+    public boolean haveInvitesForUser(User user, Group group){
+        if (getPendingInviteFor(user, group) != null) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Find invite for user to group if exists
+     * @param user user to search invite for
+     * @param group group to search invite for
+     * @return invite for user to group or null if not found
+     */
+    @Override
+    public Invite getPendingInviteFor(User user, Group group) {
+            Set<Invite> inviteSet = user.getUserInvites();
+            for (Invite invite : inviteSet) {
+                if (invite.getGroup().equals(group)) {
+                    return invite;
+                }
+            }
+        return null;
     }
 
     @Override
-    public Invite getPendingInviteFor(User user, Group group) {
-        return dao.getPendingInviteFor(user, group);
+    public void saveInviteForUser(Invite invite) throws UserAlreadyInvitedException {
+        // TODO: discuss | можно ли так сохранять объекты с помощью дао внутри методов сервиса?
+        save(invite);
+        invite.getSentToUser().addInviteForUser(invite);
+        userDao.merge(invite.getSentToUser());
+        try {
+            userDao.update(invite.getSentToUser());
+        } catch (NoSuchUserException e) {
+            e.printStackTrace();
+        }
     }
-
 }
