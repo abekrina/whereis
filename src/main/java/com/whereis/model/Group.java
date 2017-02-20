@@ -72,7 +72,7 @@ public class Group {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(" id: ");
-        //builder.append(id);
+        builder.append(id);
         builder.append(" name: ");
         builder.append(name);
         builder.append(" identity: ");

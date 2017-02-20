@@ -35,10 +35,9 @@ public class GoogleAuthenticationFilter implements Filter {
             } catch (IOException exception) {
                 logger.info("Request body is empty, there is no security code in it");
             }
-            if (!params.isEmpty() && params.containsKey("unique_visitor_code")) {
-                String unique_visitor_code = params.get("unique_visitor_code")[0];
+            if (!params.isEmpty()) {
                 if (code != null) {
-                    Authentication auth = new GoogleAuthentication(code, unique_visitor_code);
+                    Authentication auth = new GoogleAuthentication(code);
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             }

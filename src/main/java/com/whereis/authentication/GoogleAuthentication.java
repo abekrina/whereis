@@ -10,15 +10,14 @@ import java.util.Collection;
 
 public class GoogleAuthentication implements Authentication {
     private String code;
-    private String unique_visitor_code;
     private GoogleTokenResponse googleToken;
     private boolean isAuthenticated = false;
     private User principal;
 
-    public GoogleAuthentication(String code, String unique_visitor_code) {
+    public GoogleAuthentication(String code) {
         this.code = code;
-        this.unique_visitor_code = unique_visitor_code;
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return new ArrayList<GrantedAuthority>(0);
@@ -58,7 +57,7 @@ public class GoogleAuthentication implements Authentication {
     }
     @Override
     public String getName() {
-        return unique_visitor_code;
+        return principal.getFirstName() + " " + principal.getLastName();
     }
 
     public String getCode() {

@@ -27,11 +27,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatcher("/api/*")
                 .authenticationProvider(tokenAuthenticationProvider)
                 .authorizeRequests()
-                .anyRequest().authenticated()
-        .and()
+                .anyRequest().authenticated();
+/*        .and()
                 .csrf()
                 //TODO: Enable this
-                .disable();
+                .disable();*/
     }
 
     @Override

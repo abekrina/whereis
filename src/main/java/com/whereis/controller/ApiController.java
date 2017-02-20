@@ -15,6 +15,7 @@ import com.whereis.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -88,8 +89,12 @@ public class ApiController extends AbstractController {
             //userService.save(defaultUser1);
             //userService.save(defaultUser2);
             groupService.save(defaultGroup);
-        } catch (GroupWithIdentityExistsException e) {
-            e.printStackTrace();
+        } catch (GroupWithIdentityExistsException e ) {
+            //e.printStackTrace();
+            logger.debug("catched");
+        } catch (DataIntegrityViolationException ex) {
+            logger.debug("catched");
+
         }
 
         Invite example = new Invite();
