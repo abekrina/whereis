@@ -3,6 +3,7 @@ package com.whereis.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -24,12 +25,15 @@ public class Group {
     protected String identity;
 
     @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, targetEntity = UsersInGroup.class)
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected Set<UsersInGroup> users = new HashSet<>();
 
     @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, targetEntity = Location.class)
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected Set<Location> locations = new HashSet<>();
 
     @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonIgnore
     protected Set<Invite> invites = new HashSet<>();
 
     public int getId() {
@@ -60,12 +64,18 @@ public class Group {
         return Collections.unmodifiableSet(usersToReturn);
     }
 
-    public void addUserToGroup(User user) {
-        users.add(new UsersInGroup(user, this));
+    public void addUserToGroup(UsersInGroup usersInGroup) {
+        users.add(usersInGroup);
     }
 
     public Set<Invite> getInvites() {
         return Collections.unmodifiableSet(invites);
+    }
+
+    public boolean addInviteToGroup(Invite invite) {return invites.add(invite);}
+
+    public boolean addLocationOfUser(Location location) {
+        return locations.add(location);
     }
 
     @Override

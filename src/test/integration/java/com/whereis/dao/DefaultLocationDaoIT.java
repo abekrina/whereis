@@ -2,6 +2,7 @@ package com.whereis.dao;
 
 import com.whereis.AbstractIntegrationTest;
 import com.whereis.exceptions.groups.GroupWithIdentityExistsException;
+import com.whereis.exceptions.users.UserWithEmailExistsException;
 import com.whereis.model.Group;
 import com.whereis.model.Location;
 import com.whereis.model.User;
@@ -62,7 +63,8 @@ public class DefaultLocationDaoIT extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testSaveLocation() throws GroupWithIdentityExistsException {
+    public void testSaveLocation() throws Exception {
+        userDao.save(defaultUser);
         groupDao.save(defaultGroup);
         locationDao.save(defaultLocation);
 

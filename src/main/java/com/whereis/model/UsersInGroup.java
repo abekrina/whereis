@@ -1,5 +1,6 @@
 package com.whereis.model;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Immutable;
 
@@ -28,7 +29,7 @@ public class UsersInGroup {
     protected Group group;
 
     @CreationTimestamp
-    protected Timestamp joined_at;
+    protected Timestamp joinedAt;
 
     public UsersInGroup() {
 
@@ -59,11 +60,11 @@ public class UsersInGroup {
     }
 
     public Timestamp getJoinedAt() {
-        return joined_at;
+        return joinedAt;
     }
 
     public void setJoinedAt(Timestamp joined) {
-        this.joined_at = joined;
+        this.joinedAt = joined;
     }
 
     @Override
@@ -77,7 +78,7 @@ public class UsersInGroup {
         UsersInGroup usersInGroup = (UsersInGroup) usersInGroupObj;
         return Objects.equals(usersInGroup.getId(), id) &&
                 Objects.equals(usersInGroup.getGroup(), group) &&
-                Objects.equals(usersInGroup.getJoinedAt(), joined_at) &&
+                Objects.equals(usersInGroup.getJoinedAt(), joinedAt) &&
                 Objects.equals(usersInGroup.getUser(), user);
     }
 

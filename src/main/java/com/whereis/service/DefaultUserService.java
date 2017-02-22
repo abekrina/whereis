@@ -3,19 +3,17 @@ package com.whereis.service;
 import com.google.api.services.plus.Plus;
 import com.google.api.services.plus.model.Person;
 import com.whereis.authentication.GoogleAuthenticationFilter;
+import com.whereis.dao.GroupDao;
 import com.whereis.dao.UserDao;
+import com.whereis.dao.UsersInGroupsDao;
 import com.whereis.exceptions.groups.NoUserInGroupException;
 import com.whereis.exceptions.invites.NoInviteForUserToGroupException;
 import com.whereis.exceptions.users.NoSuchUserException;
 import com.whereis.exceptions.groups.UserAlreadyInGroupException;
 import com.whereis.exceptions.users.UserWithEmailExistsException;
-import com.whereis.model.Group;
-import com.whereis.model.Invite;
-import com.whereis.model.Location;
-import com.whereis.model.User;
+import com.whereis.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +29,12 @@ public class DefaultUserService implements UserService {
 
     @Autowired
     public UserDao dao;
+
+    @Autowired
+    public GroupDao groupDao;
+
+    @Autowired
+    public UsersInGroupsDao usersInGroupsDao;
 
     @Autowired
     LocationService locationService;
@@ -106,18 +110,16 @@ public class DefaultUserService implements UserService {
         // TODO: check if all this is needed
         locationService.save(location);
         location.getUser().saveUserLocation(location);
-        dao.merge(location.getUser());
-        try {
-            dao.update(location.getUser());
-        } catch (NoSuchUserException e) {
-            e.printStackTrace();
-        }
+        location.getGroup().addLocationOfUser(location);
+        //dao.merge(location.getUser());
+//        locationService.refresh(location);
+//        locationService.save(location);
     }
 
     @Override
     public void leaveGroup(Group group, User user) throws NoUserInGroupException {
         if (!user.leave(group)){
-            throw new NoUserInGroupException("There is no user " + this + " in group " + group);
+            throw new NoUserInGroupException("There is no user " + user + " in group " + group);
         }
 
     }
@@ -125,14 +127,19 @@ public class DefaultUserService implements UserService {
     @Override
     public void joinGroup(Group group, User user) throws UserAlreadyInGroupException, NoInviteForUserToGroupException {
         Invite inviteForUser = inviteService.getPendingInviteFor(user, group);
+        UsersInGroup usersInGroup = new UsersInGroup(user, group);
         if (inviteForUser == null) {
             throw new NoInviteForUserToGroupException("There is no invite for user " + user + " to group " + group);
         }
-        if (!user.joinGroup(group)){
+        if (!user.joinGroup(usersInGroup)){
             inviteService.delete(inviteForUser);
             throw new UserAlreadyInGroupException("User " + this + "already joined group " + group);
         } else {
-            group.addUserToGroup(user);
+            //usersInGroupsDao.save(usersInGroup);
+            group.addUserToGroup(usersInGroup);
+            groupDao.merge(group);
+            boolean check = user.deleteInviteForUser(inviteForUser);
+            dao.merge(user);
         }
     }
 }

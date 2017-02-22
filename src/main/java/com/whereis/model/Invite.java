@@ -1,9 +1,11 @@
 package com.whereis.model;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
+
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -15,12 +17,14 @@ public class Invite {
     @GeneratedValue
     protected int id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @Cascade(CascadeType.ALL)
     @JoinColumn(name = "sentByUser")
     protected User sentByUser;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "sentToUser")
+    @Cascade(CascadeType.ALL)
     protected User sentToUser;
 
     @Column(name = "timestamp")
@@ -35,9 +39,10 @@ public class Invite {
 
     public Invite() {}
 
-    public Invite(User sentToUser, Group group) {
+    public Invite(User sentToUser, Group group, User sentByUser) {
         this.sentToUser = sentToUser;
         this.group = group;
+        this.sentByUser = sentByUser;
     }
 
     public int getId() {
@@ -86,14 +91,34 @@ public class Invite {
         }
         Invite otherInvite = (Invite) object;
         return Objects.equals(otherInvite.getId(), id) &&
-                Objects.equals(otherInvite.getGroup(), group) &&
-                Objects.equals(otherInvite.getSentByUser(), sentByUser) &&
-                Objects.equals(otherInvite.getSentToUser(), sentToUser) &&
-                Objects.equals(otherInvite.getTimestamp(), timestamp);
+                Objects.equals(otherInvite.getGroup().getName(), group.getName()) &&
+                Objects.equals(otherInvite.getSentByUser().getFirstName() + otherInvite.getSentByUser().getLastName() +
+                                otherInvite.getSentByUser().getId(),
+                        sentByUser.getFirstName() + sentByUser.getLastName() + sentByUser.getId()) &&
+                Objects.equals(otherInvite.getSentToUser().getFirstName() + otherInvite.getSentToUser().getLastName() +
+                                otherInvite.getSentToUser().getId(),
+                        sentToUser.getFirstName() + sentToUser.getLastName() + sentToUser.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, group, sentByUser, sentToUser, timestamp);
+        return Objects.hash(id, group.getName(), sentByUser.getFirstName() + sentByUser.getLastName() +
+                sentByUser.getId(), sentToUser.getFirstName() + sentToUser.getLastName() + sentToUser.getId());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(" id: ");
+        builder.append(id);
+        builder.append(" group: ");
+        builder.append(group);
+        builder.append(" sentByUser: ");
+        builder.append(sentByUser);
+        builder.append(" sentToUser: ");
+        builder.append(sentToUser);
+        builder.append(" timestamp: ");
+        builder.append(timestamp);
+        return builder.toString();
     }
 }

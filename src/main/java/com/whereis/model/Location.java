@@ -3,11 +3,12 @@ package com.whereis.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -20,9 +21,10 @@ public class Location {
     @GeneratedValue
     protected int id;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     @JsonBackReference
+    //@Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected User user;
 
     @Column(name = "timestamp")
@@ -44,6 +46,7 @@ public class Location {
     @NotNull
     @ManyToOne()
     @JoinColumn(name = "group_id")
+    //@Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected Group group;
 
     public Location() {}
@@ -127,6 +130,26 @@ public class Location {
     @Override
     public int hashCode() {
         return Objects.hash(id, timestamp, latitude, longitude, group, user, ip);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(" id: ");
+        builder.append(id);
+        builder.append(" timestamp: ");
+        builder.append(timestamp);
+        builder.append(" latitude: ");
+        builder.append(latitude);
+        builder.append(" longitude: ");
+        builder.append(longitude);
+        builder.append(" group: ");
+        builder.append(group);
+        builder.append(" user: ");
+        builder.append(user);
+        builder.append(" ip: ");
+        builder.append(ip);
+        return builder.toString();
     }
 
 }

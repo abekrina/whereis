@@ -3,11 +3,14 @@ package com.whereis.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.whereis.exceptions.groups.UserAlreadyInGroupException;
-import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.OrderBy;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.*;
@@ -32,12 +35,14 @@ public class User implements Serializable {
     @Column(nullable = false)
     protected String email;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @OrderBy(clause = "timestamp")
+    @OneToMany(mappedBy = "user")
+    @OrderBy(clause = "timestamp ASC")
     @JsonManagedReference
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected List<Location> locations = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected Set<UsersInGroup> groups = new HashSet<>();
 
     @OneToMany(mappedBy = "sentByUser", cascade = CascadeType.ALL)
@@ -95,13 +100,18 @@ public class User implements Serializable {
         return sentToUser.add(invite);
     }
 
+    //TODO: discuss why it returns false
+    public boolean deleteInviteForUser(Invite invite) {
+        return sentToUser.remove(invite);
+    }
+
     /**
      * Joins user to group
      * @param group target group to join to
      * @return <tt>true</tt> if user did not already join the group
      */
-    public boolean joinGroup(Group group) throws UserAlreadyInGroupException {
-        return groups.add(new UsersInGroup(this, group));
+    public boolean joinGroup(UsersInGroup group) throws UserAlreadyInGroupException {
+        return groups.add(group);
     }
 
     /**
@@ -124,7 +134,7 @@ public class User implements Serializable {
             return false;
         }
         User otherUser = (User) user;
-        return otherUser.getId() == id
+        return Objects.equals(otherUser.getId(), id)
                 && Objects.equals(otherUser.getEmail(), email)
                 && Objects.equals(otherUser.getFirstName(), firstName)
                 && Objects.equals(otherUser.getLastName(), lastName);

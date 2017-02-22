@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -156,6 +157,11 @@ public class ApiController extends AbstractController {
 
     @RequestMapping(value = "/{identity}/getlocations", method = RequestMethod.GET)
     public List<Location> getLocationOfGroupMembers(@PathVariable("identity") String identity) {
-        return locationService.getLastLocationsForGroupMembers(groupService.getByIdentity(identity), getCurrentUser());
+        Group targetGroup = groupService.getByIdentity(identity);
+        if (userService.checkUserInGroup(targetGroup, getCurrentUser())) {
+            return locationService.getLastLocationsForGroupMembers(groupService.getByIdentity(identity));
+        } else {
+            return new ArrayList<>();
+        }
     }
 }

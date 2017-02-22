@@ -43,7 +43,8 @@ public class DefaultInviteDao extends  AbstractDao<Invite> implements InviteDao 
         criteriaQuery.where(builder.and(builder.equal(inviteRoot.get("sentToUser"), invite.getSentToUser().getId())),
                 builder.equal(inviteRoot.get("group"), invite.getGroup().getId()));
         try {
-            return getSession().createQuery(criteriaQuery).getSingleResult();
+            Invite inviteToReturn = getSession().createQuery(criteriaQuery).getSingleResult();
+            return inviteToReturn;
         } catch (NoResultException e) {
             return null;
         }

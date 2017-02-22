@@ -13,6 +13,7 @@ import com.whereis.testconfig.TestHibernateConfiguration;
 import com.whereis.testconfig.TestWebMvcConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -67,6 +68,11 @@ public class DefaultInviteServivceIT extends AbstractIntegrationTest {
         userService.save(defaultUser);
         groupService.save(defaultGroup);
         inviteService.saveInviteForUser(defaultInvite);
+
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+
         Assert.assertEquals(inviteService.getPendingInviteFor(defaultUser, defaultGroup), defaultInvite);
     }
 
@@ -74,6 +80,11 @@ public class DefaultInviteServivceIT extends AbstractIntegrationTest {
     public void testGetPendingInviteIfNotExists() throws GroupException, UserException {
         userService.save(defaultUser);
         groupService.save(defaultGroup);
+
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+
         Assert.assertNull(inviteService.getPendingInviteFor(defaultUser, defaultGroup));
     }
 }

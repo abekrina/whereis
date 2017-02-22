@@ -6,7 +6,7 @@ import com.whereis.model.User;
 public class ControllerTestHelper {
 
     public static GoogleAuthentication getTestAuthentication(User testUser) {
-        GoogleAuthentication authentication = new GoogleAuthentication("123", "123");
+        GoogleAuthentication authentication = new GoogleAuthentication("123");
         authentication.setPrincipal(testUser);
         authentication.setAuthenticated(true);
         return authentication;

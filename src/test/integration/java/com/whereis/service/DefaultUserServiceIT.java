@@ -40,6 +40,8 @@ public class DefaultUserServiceIT extends AbstractIntegrationTest {
 
     private User defaultUser;
 
+    private User defaultUser2;
+
     private Group defaultGroup;
 
     private Invite defaultInvite;
@@ -49,6 +51,11 @@ public class DefaultUserServiceIT extends AbstractIntegrationTest {
         defaultUser.setEmail("sweetpotatodevelopment@gmail.com");
         defaultUser.setFirstName("Potato");
         defaultUser.setLastName("Development");
+
+        defaultUser2 = new User();
+        defaultUser2.setEmail("abekrina@gmail.com");
+        defaultUser2.setFirstName("Alena");
+        defaultUser2.setLastName("Bekrina");
     }
 
     private void setupDefaultGroup() {
@@ -61,6 +68,7 @@ public class DefaultUserServiceIT extends AbstractIntegrationTest {
         defaultInvite = new Invite();
         defaultInvite.setSentToUser(defaultUser);
         defaultInvite.setGroup(defaultGroup);
+        defaultInvite.setSentByUser(defaultUser2);
     }
 
     @BeforeMethod
@@ -120,12 +128,19 @@ public class DefaultUserServiceIT extends AbstractIntegrationTest {
         groupService.save(defaultGroup);
         inviteService.saveInviteForUser(defaultInvite);
 
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+
         // Add user to group
         userService.joinGroup(defaultGroup, defaultUser);
 
         TestTransaction.flagForCommit();
         TestTransaction.end();
         TestTransaction.start();
+
+        userService.checkUserInGroup(defaultGroup, defaultUser);
+//        inviteService.saveInviteForUser(defaultInvite);
 
         // Add same user one more time
         userService.joinGroup(defaultGroup, defaultUser);

@@ -20,5 +20,7 @@ public interface GroupDao {
 
     void refresh(Group group);
 
+    void merge(Group group);
+
     Group getByIdentity(String identity);
 }

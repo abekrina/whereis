@@ -34,6 +34,7 @@ public class DefaultLocationServiceIT extends AbstractIntegrationTest {
 
     private Location defaultLocation;
     private Location defaultLocation2;
+    private Location defaultLocation3;
 
 
     private void setupDefaultUser()   {
@@ -63,6 +64,13 @@ public class DefaultLocationServiceIT extends AbstractIntegrationTest {
         defaultLocation2.setLongitude(222222);
         defaultLocation2.setIp("192.168.0.0");
         defaultLocation2.setGroup(defaultGroup);
+
+        defaultLocation3 = new Location();
+        defaultLocation3.setUser(defaultUser);
+        defaultLocation3.setLatitude(333333);
+        defaultLocation3.setLongitude(333333);
+        defaultLocation3.setIp("192.168.0.0");
+        defaultLocation3.setGroup(defaultGroup);
     }
 
     @BeforeMethod
@@ -80,13 +88,16 @@ public class DefaultLocationServiceIT extends AbstractIntegrationTest {
         // Save locations
         userService.saveUserLocation(defaultLocation);
         userService.saveUserLocation(defaultLocation2);
+        userService.saveUserLocation(defaultLocation3);
 
         TestTransaction.flagForCommit();
         TestTransaction.end();
         TestTransaction.start();
 
-        Assert.assertEquals(locationService.getLastLocationForUser(defaultUser), defaultLocation2);
+        Assert.assertEquals(locationService.getLastLocationForUser(defaultUser), defaultLocation3);
         Assert.assertTrue(locationService.getLastLocationForUser(defaultUser).getTimestamp()
-                .after(locationService.get(defaultLocation.getId()).getTimestamp()));
+                .after(locationService.get(defaultLocation2.getId()).getTimestamp()) ||
+                locationService.getLastLocationForUser(defaultUser).getTimestamp()
+                        .equals(locationService.get(defaultLocation2.getId()).getTimestamp()));
     }
 }

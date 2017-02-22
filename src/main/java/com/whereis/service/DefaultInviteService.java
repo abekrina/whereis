@@ -1,5 +1,6 @@
 package com.whereis.service;
 
+import com.whereis.dao.GroupDao;
 import com.whereis.dao.InviteDao;
 import com.whereis.dao.UserDao;
 import com.whereis.exceptions.invites.UserAlreadyInvitedException;
@@ -21,6 +22,9 @@ public class DefaultInviteService implements InviteService {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private GroupDao groupDao;
 
     @Override
     public Invite get(int id) {
@@ -69,10 +73,11 @@ public class DefaultInviteService implements InviteService {
 
     @Override
     public void saveInviteForUser(Invite invite) throws UserAlreadyInvitedException {
-        // TODO: discuss | можно ли так сохранять объекты с помощью дао внутри методов сервиса?
         save(invite);
         invite.getSentToUser().addInviteForUser(invite);
+        invite.getGroup().addInviteToGroup(invite);
         userDao.merge(invite.getSentToUser());
+        groupDao.merge(invite.getGroup());
         try {
             userDao.update(invite.getSentToUser());
         } catch (NoSuchUserException e) {

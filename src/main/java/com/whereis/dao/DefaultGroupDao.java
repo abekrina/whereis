@@ -53,6 +53,11 @@ public class DefaultGroupDao extends AbstractDao<Group> implements GroupDao {
     }
 
     @Override
+    public void merge(Group group) {
+        getSession().merge(group);
+    }
+
+    @Override
     public Group getByIdentity(String identity) {
         CriteriaBuilder builder = getCriteriaBuilder();
         @SuppressWarnings("unchecked")

@@ -1,15 +1,14 @@
 package com.whereis.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.whereis.AbstractIntegrationTest;
 import com.whereis.authentication.GoogleAuthentication;
 import com.whereis.dao.GroupDao;
 import com.whereis.dao.LocationDao;
-import com.whereis.model.Group;
-import com.whereis.model.Invite;
-import com.whereis.model.Location;
-import com.whereis.model.User;
+import com.whereis.dao.UsersInGroupsDao;
+import com.whereis.model.*;
 import com.whereis.service.GroupService;
 import com.whereis.service.InviteService;
 import com.whereis.service.LocationService;
@@ -77,6 +76,8 @@ public class ApiControllerIT extends AbstractIntegrationTest {
     @Autowired
     InviteService inviteService;
 
+    @Autowired
+    UsersInGroupsDao usersInGroupsDao;
 
     private User defaultUser1;
 
@@ -138,8 +139,9 @@ public class ApiControllerIT extends AbstractIntegrationTest {
         userService.save((User)authentication.getPrincipal());
         groupService.save(defaultGroup);
 
-        JsonObject invitedUser = new JsonObject();
-        invitedUser.addProperty("email", defaultUser1.getEmail() );
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode invitedUser = mapper.createObjectNode();
+        invitedUser.set("email", mapper.convertValue(defaultUser1.getEmail(), JsonNode.class));
         mockMvc.perform(MockMvcRequestBuilders.post("/group/{identity}/invite", defaultGroup.getIdentity())
                 .with(authentication(authentication))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -194,8 +196,8 @@ public class ApiControllerIT extends AbstractIntegrationTest {
         userService.save(defaultUser1);
         userService.save(defaultUser2);
         groupService.save(defaultGroup);
-        inviteService.saveInviteForUser(new Invite(defaultUser1, defaultGroup));
-        inviteService.saveInviteForUser(new Invite(defaultUser2, defaultGroup));
+        inviteService.saveInviteForUser(new Invite(defaultUser1, defaultGroup, defaultUser2));
+        inviteService.saveInviteForUser(new Invite(defaultUser2, defaultGroup, defaultUser1));
         userService.joinGroup(defaultGroup, defaultUser1);
         userService.joinGroup(defaultGroup, defaultUser2);
 
@@ -209,9 +211,10 @@ public class ApiControllerIT extends AbstractIntegrationTest {
 
         GoogleAuthentication authentication = ControllerTestHelper.getTestAuthentication(defaultUser1);
 
-        JsonObject location = new JsonObject();
-        location.addProperty("latitude", expectedLocation.getLatitude());
-        location.addProperty("longitude", expectedLocation.getLongitude());
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode location = mapper.createObjectNode();
+        location.set("latitude", mapper.convertValue(expectedLocation.getLatitude(), JsonNode.class));
+        location.set("longitude", mapper.convertValue(expectedLocation.getLongitude(), JsonNode.class));
 
         // Send query with test data
         mockMvc.perform(MockMvcRequestBuilders.put("/group/{identity}/savemylocation",
@@ -237,15 +240,18 @@ public class ApiControllerIT extends AbstractIntegrationTest {
     // TODO: add case with more locations with auth.principal location. Shouldn't return auth.principal's location
     @Test
     @WithMockUser
-    @Rollback(false)
     public void testGetLocations() throws Exception {
         userService.save(defaultUser1);
         userService.save(defaultUser2);
         groupService.save(defaultGroup);
-        inviteService.saveInviteForUser(new Invite(defaultUser1, defaultGroup));
-        inviteService.saveInviteForUser(new Invite(defaultUser2, defaultGroup));
+        inviteService.saveInviteForUser(new Invite(defaultUser1, defaultGroup, defaultUser2));
+        inviteService.saveInviteForUser(new Invite(defaultUser2, defaultGroup, defaultUser1));
         userService.joinGroup(defaultGroup, defaultUser1);
         userService.joinGroup(defaultGroup, defaultUser2);
+
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
 
         // Setup data
         Location expectedLocation = new Location();
@@ -255,21 +261,32 @@ public class ApiControllerIT extends AbstractIntegrationTest {
         expectedLocation.setGroup(defaultGroup);
         expectedLocation.setIp("127.0.0.1");
 
+        User testUser = userService.get(defaultUser1.getId());
+        Group testGroup = groupService.get(defaultGroup.getId());
         userService.saveUserLocation(expectedLocation);
 
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+
+        List<Location> expectedLocations = new ArrayList<>();
+        expectedLocations.add(expectedLocation);
+        ObjectMapper mapper = new ObjectMapper();
+        String expectedResponce = mapper.writeValueAsString(expectedLocations);
+
+        testGroup = groupService.get(defaultGroup.getId());
+
         GoogleAuthentication authentication = ControllerTestHelper.getTestAuthentication(defaultUser1);
+
+
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/group/{identity}/getlocations",
                 defaultGroup.getIdentity()).with(authentication(authentication)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().json(expectedResponce))
                 .andReturn();
 
-        List<Location> expectedLocations = new ArrayList<>();
-        expectedLocations.add(expectedLocation);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String expectedResponce = mapper.writeValueAsString(expectedLocations);
 
         Assert.assertEquals(result.getResponse().getContentAsString(), expectedResponce);
     }

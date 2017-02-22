@@ -48,6 +48,7 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public Location getLastLocationForUser(User user) {
+        usersDao.refresh(user);
         List<Location> locations = user.getLocations();
         if (locations.isEmpty()) {
             return null;
@@ -57,18 +58,15 @@ public class DefaultLocationService implements LocationService {
     }
 
     @Override
-    public List<Location> getLastLocationsForGroupMembers(Group group, User currentUser) {
-        if (userService.checkUserInGroup(group, currentUser)) {
-            Set<User> usersInGroup = group.getUsersInGroup();
-            List<Location> locations = new ArrayList<>();
-            for (User user : usersInGroup) {
-                Location location = getLastLocationForUser(user);
-                if (location != null) {
-                    locations.add(getLastLocationForUser(user));
-                }
+    public List<Location> getLastLocationsForGroupMembers(Group group) {
+        Set<User> usersInGroup = group.getUsersInGroup();
+        List<Location> locations = new ArrayList<>();
+        for (User user : usersInGroup) {
+            Location location = getLastLocationForUser(user);
+            if (location != null) {
+                locations.add(getLastLocationForUser(user));
             }
-            return locations;
         }
-        return new ArrayList<>();
+        return locations;
     }
 }
