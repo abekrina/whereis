@@ -2,7 +2,6 @@ package com.whereis.service;
 
 import com.google.api.services.plus.Plus;
 import com.google.api.services.plus.model.Person;
-import com.whereis.authentication.GoogleAuthenticationFilter;
 import com.whereis.dao.GroupDao;
 import com.whereis.dao.UserDao;
 import com.whereis.dao.UsersInGroupsDao;
@@ -25,10 +24,10 @@ import java.util.Set;
 @Transactional
 public class DefaultUserService implements UserService {
 
-    private static final Logger logger = LogManager.getLogger(GoogleAuthenticationFilter.class);
+    private static final Logger logger = LogManager.getLogger(DefaultUserService.class);
 
     @Autowired
-    public UserDao dao;
+    public UserDao userDao;
 
     @Autowired
     public GroupDao groupDao;
@@ -44,32 +43,32 @@ public class DefaultUserService implements UserService {
 
     @Override
     public User get(int id) {
-        return dao.get(id);
+        return userDao.get(id);
     }
 
     @Override
     public void save(User user) throws UserWithEmailExistsException {
-        dao.save(user);
+        userDao.save(user);
     }
 
     @Override
     public void update(User user) throws NoSuchUserException {
-        dao.update(user);
+        userDao.update(user);
     }
 
     @Override
     public boolean delete(User user) {
-        return dao.delete(user.getClass(), user.getId());
+        return userDao.delete(user.getClass(), user.getId());
     }
 
     @Override
     public User getByEmail(String email) {
-        return dao.getByEmail(email);
+        return userDao.getByEmail(email);
     }
 
     @Override
     public void deleteByEmail(String email) {
-        dao.deleteByEmail(email);
+        userDao.deleteByEmail(email);
     }
 
     @Override
@@ -96,7 +95,9 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
+    @Transactional
     public boolean checkUserInGroup(Group group, User user) {
+        user = userDao.get(user.getId());
         return user.getGroups().contains(group);
     }
 
@@ -106,40 +107,48 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
+    @Transactional
     public void saveUserLocation(Location location) {
         // TODO: check if all this is needed
+        location.setUser(userDao.get(location.getUser().getId()));
         locationService.save(location);
         location.getUser().saveUserLocation(location);
         location.getGroup().addLocationOfUser(location);
-        //dao.merge(location.getUser());
-//        locationService.refresh(location);
-//        locationService.save(location);
     }
 
     @Override
+    @Transactional
     public void leaveGroup(Group group, User user) throws NoUserInGroupException {
-        if (!user.leave(group)){
-            throw new NoUserInGroupException("There is no user " + user + " in group " + group);
-        }
-
+        group = groupDao.get(group.getId());
+        UsersInGroup relationToDelete = group.getUserToGroupRelation(user);
+        user = userDao.get(user.getId());
+        user.leave(relationToDelete);
+        group.deleteUserFromGroup(relationToDelete);
+        usersInGroupsDao.delete(relationToDelete.getClass(), relationToDelete.getId());
     }
 
     @Override
+    @Transactional
     public void joinGroup(Group group, User user) throws UserAlreadyInGroupException, NoInviteForUserToGroupException {
         Invite inviteForUser = inviteService.getPendingInviteFor(user, group);
-        UsersInGroup usersInGroup = new UsersInGroup(user, group);
         if (inviteForUser == null) {
             throw new NoInviteForUserToGroupException("There is no invite for user " + user + " to group " + group);
         }
-        if (!user.joinGroup(usersInGroup)){
+        if (!checkUserInGroup(group, user)) {
+            UsersInGroup usersInGroup = new UsersInGroup(user, group);
+            usersInGroupsDao.save(usersInGroup);
+            group = groupDao.get(group.getId());
+            group.addUserToGroup(usersInGroup);
+            user = userDao.get(user.getId());
+            user.joinGroup(usersInGroup);
+            user.deleteInviteForUser(inviteForUser);
+            group.deleteInviteToGroup(inviteForUser);
+            inviteService.delete(inviteForUser);
+        } else {
+            user.deleteInviteForUser(inviteForUser);
+            group.deleteInviteToGroup(inviteForUser);
             inviteService.delete(inviteForUser);
             throw new UserAlreadyInGroupException("User " + this + "already joined group " + group);
-        } else {
-            //usersInGroupsDao.save(usersInGroup);
-            group.addUserToGroup(usersInGroup);
-            groupDao.merge(group);
-            boolean check = user.deleteInviteForUser(inviteForUser);
-            dao.merge(user);
         }
     }
 }

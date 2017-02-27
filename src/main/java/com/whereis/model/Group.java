@@ -3,7 +3,7 @@ package com.whereis.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Cascade;
+import com.whereis.exceptions.groups.NoUserInGroupException;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -24,15 +24,13 @@ public class Group {
     @Column(nullable = false)
     protected String identity;
 
-    @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, targetEntity = UsersInGroup.class)
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @OneToMany(mappedBy = "group")
     protected Set<UsersInGroup> users = new HashSet<>();
 
     @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, targetEntity = Location.class)
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected Set<Location> locations = new HashSet<>();
 
-    @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "group", orphanRemoval = true, cascade = CascadeType.ALL)
     @JsonIgnore
     protected Set<Invite> invites = new HashSet<>();
 
@@ -64,8 +62,21 @@ public class Group {
         return Collections.unmodifiableSet(usersToReturn);
     }
 
-    public void addUserToGroup(UsersInGroup usersInGroup) {
-        users.add(usersInGroup);
+    public boolean addUserToGroup(UsersInGroup usersInGroup) {
+        return users.add(usersInGroup);
+    }
+
+    public UsersInGroup getUserToGroupRelation(User user) throws NoUserInGroupException {
+        for (UsersInGroup usersInGroup : users) {
+            if (usersInGroup.getUser().equals(user)) {
+                return usersInGroup;
+            }
+        }
+        throw new NoUserInGroupException("User " + user + " not in the group " + this);
+    }
+
+    public boolean deleteUserFromGroup(UsersInGroup user) throws NoUserInGroupException {
+        return users.remove(user);
     }
 
     public Set<Invite> getInvites() {
@@ -77,6 +88,8 @@ public class Group {
     public boolean addLocationOfUser(Location location) {
         return locations.add(location);
     }
+
+    public boolean deleteInviteToGroup(Invite invite) { return invites.remove(invite); }
 
     @Override
     public String toString() {

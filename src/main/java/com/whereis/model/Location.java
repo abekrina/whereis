@@ -24,7 +24,6 @@ public class Location {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     @JsonBackReference
-    //@Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected User user;
 
     @Column(name = "timestamp")
@@ -46,7 +45,6 @@ public class Location {
     @NotNull
     @ManyToOne()
     @JoinColumn(name = "group_id")
-    //@Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected Group group;
 
     public Location() {}
@@ -127,6 +125,7 @@ public class Location {
                 && ((Location) anotherLocation).getIp().equals(ip);
     }
 
+    // TODO: change to use user and group property or change to id if it is ok
     @Override
     public int hashCode() {
         return Objects.hash(id, timestamp, latitude, longitude, group, user, ip);

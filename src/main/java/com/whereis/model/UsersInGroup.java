@@ -20,20 +20,19 @@ public class UsersInGroup {
 
     @NotNull
     @ManyToOne(targetEntity = User.class)
-    @JoinColumn(name = "userId", insertable = false, updatable = false)
+    @JoinColumn(name = "userId", updatable = false)
     protected User user;
 
     @NotNull
     @ManyToOne(targetEntity = Group.class)
-    @JoinColumn(name = "groupId", insertable = false, updatable = false)
+    @JoinColumn(name = "groupId", updatable = false)
     protected Group group;
 
     @CreationTimestamp
     protected Timestamp joinedAt;
 
-    public UsersInGroup() {
+    public UsersInGroup() {}
 
-    }
     public UsersInGroup(User user, Group group) {
         this.user = user;
         this.group = group;
@@ -77,14 +76,17 @@ public class UsersInGroup {
         }
         UsersInGroup usersInGroup = (UsersInGroup) usersInGroupObj;
         return Objects.equals(usersInGroup.getId(), id) &&
-                Objects.equals(usersInGroup.getGroup(), group) &&
+                Objects.equals(usersInGroup.getGroup().getIdentity(), group.getIdentity()) &&
                 Objects.equals(usersInGroup.getJoinedAt(), joinedAt) &&
-                Objects.equals(usersInGroup.getUser(), user);
+                Objects.equals(usersInGroup.getId(), user.getId()) &&
+                Objects.equals(usersInGroup.getUser().getFirstName(), user.getFirstName()) &&
+                Objects.equals(usersInGroup.getUser().getLastName(), user.getLastName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, group);
+        return Objects.hash(id, user.getFirstName() + user.getLastName() + user.getId()
+                , group.getIdentity(), joinedAt);
     }
 
     @Override

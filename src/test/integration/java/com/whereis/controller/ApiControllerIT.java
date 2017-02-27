@@ -7,6 +7,7 @@ import com.whereis.AbstractIntegrationTest;
 import com.whereis.authentication.GoogleAuthentication;
 import com.whereis.dao.GroupDao;
 import com.whereis.dao.LocationDao;
+import com.whereis.dao.UserDao;
 import com.whereis.dao.UsersInGroupsDao;
 import com.whereis.model.*;
 import com.whereis.service.GroupService;
@@ -63,6 +64,9 @@ public class ApiControllerIT extends AbstractIntegrationTest {
 
     @Autowired
     GroupDao groupDao;
+
+    @Autowired
+    UserDao userDao;
 
     @Autowired
     LocationService locationService;
@@ -185,6 +189,7 @@ public class ApiControllerIT extends AbstractIntegrationTest {
         TestTransaction.end();
         TestTransaction.start();
 
+        userDao.refresh(defaultUser1);
         Assert.assertFalse(userService.checkUserInGroup(defaultGroup, defaultUser1));
         Assert.assertFalse(userService.getGroupsForUser(defaultUser1).contains(defaultGroup));
     }
@@ -245,17 +250,13 @@ public class ApiControllerIT extends AbstractIntegrationTest {
         userService.save(defaultUser2);
         groupService.save(defaultGroup);
         inviteService.saveInviteForUser(new Invite(defaultUser1, defaultGroup, defaultUser2));
-        inviteService.saveInviteForUser(new Invite(defaultUser2, defaultGroup, defaultUser1));
         userService.joinGroup(defaultGroup, defaultUser1);
+        inviteService.saveInviteForUser(new Invite(defaultUser2, defaultGroup, defaultUser1));
         userService.joinGroup(defaultGroup, defaultUser2);
-
-        TestTransaction.flagForCommit();
-        TestTransaction.end();
-        TestTransaction.start();
 
         // Setup data
         Location expectedLocation = new Location();
-        expectedLocation.setUser(defaultUser2);
+        expectedLocation.setUser(defaultUser1);
         expectedLocation.setLatitude(37.345345);
         expectedLocation.setLongitude(-121.34535);
         expectedLocation.setGroup(defaultGroup);
@@ -277,8 +278,6 @@ public class ApiControllerIT extends AbstractIntegrationTest {
         testGroup = groupService.get(defaultGroup.getId());
 
         GoogleAuthentication authentication = ControllerTestHelper.getTestAuthentication(defaultUser1);
-
-
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/group/{identity}/getlocations",
                 defaultGroup.getIdentity()).with(authentication(authentication)))

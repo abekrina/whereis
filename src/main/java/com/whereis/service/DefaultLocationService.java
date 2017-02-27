@@ -1,5 +1,6 @@
 package com.whereis.service;
 
+import com.whereis.dao.GroupDao;
 import com.whereis.dao.LocationDao;
 import com.whereis.dao.UserDao;
 import com.whereis.model.Group;
@@ -26,6 +27,9 @@ public class DefaultLocationService implements LocationService {
     @Autowired
     UserDao usersDao;
 
+    @Autowired
+    GroupDao groupDao;
+
     @Override
     public Location get(int id) {
         return locationDao.get(id);
@@ -48,6 +52,7 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public Location getLastLocationForUser(User user) {
+        // TODO: check without refresh
         usersDao.refresh(user);
         List<Location> locations = user.getLocations();
         if (locations.isEmpty()) {
@@ -58,7 +63,9 @@ public class DefaultLocationService implements LocationService {
     }
 
     @Override
+    @Transactional
     public List<Location> getLastLocationsForGroupMembers(Group group) {
+        group = groupDao.get(group.getId());
         Set<User> usersInGroup = group.getUsersInGroup();
         List<Location> locations = new ArrayList<>();
         for (User user : usersInGroup) {

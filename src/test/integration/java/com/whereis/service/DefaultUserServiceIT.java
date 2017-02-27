@@ -125,6 +125,7 @@ public class DefaultUserServiceIT extends AbstractIntegrationTest {
     @Test(expectedExceptions = UserAlreadyInGroupException.class)
     public void testSaveRelationAlreadyExisting() throws GroupException, InviteException, UserException {
         userService.save(defaultUser);
+        userService.save(defaultUser2);
         groupService.save(defaultGroup);
         inviteService.saveInviteForUser(defaultInvite);
 
@@ -139,10 +140,14 @@ public class DefaultUserServiceIT extends AbstractIntegrationTest {
         TestTransaction.end();
         TestTransaction.start();
 
-        userService.checkUserInGroup(defaultGroup, defaultUser);
-//        inviteService.saveInviteForUser(defaultInvite);
+        Assert.assertTrue(userService.checkUserInGroup(defaultGroup, defaultUser));
+
+        Invite newInvite = new Invite(defaultInvite.getSentToUser(), defaultInvite.getGroup(), defaultInvite.getSentByUser());
+        inviteService.saveInviteForUser(newInvite);
 
         // Add same user one more time
         userService.joinGroup(defaultGroup, defaultUser);
   }
+
+
 }

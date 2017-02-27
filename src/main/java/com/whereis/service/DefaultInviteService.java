@@ -8,8 +8,10 @@ import com.whereis.exceptions.users.NoSuchUserException;
 import com.whereis.model.Group;
 import com.whereis.model.Invite;
 import com.whereis.model.User;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import java.util.Map;
@@ -43,6 +45,8 @@ public class DefaultInviteService implements InviteService {
 
     @Override
     public boolean delete(Invite invite) {
+        invite.getSentToUser().deleteInviteForUser(invite);
+        invite.getGroup().deleteInviteToGroup(invite);
         return dao.delete(invite.getClass(), invite.getId());
     }
 
@@ -61,13 +65,15 @@ public class DefaultInviteService implements InviteService {
      * @return invite for user to group or null if not found
      */
     @Override
+    @Transactional
     public Invite getPendingInviteFor(User user, Group group) {
-            Set<Invite> inviteSet = user.getUserInvites();
-            for (Invite invite : inviteSet) {
-                if (invite.getGroup().equals(group)) {
-                    return invite;
-                }
+        user = userDao.get(user.getId());
+        Set<Invite> inviteSet = user.getUserInvites();
+        for (Invite invite : inviteSet) {
+            if (invite.getGroup().equals(group)) {
+                return invite;
             }
+        }
         return null;
     }
 
@@ -76,12 +82,5 @@ public class DefaultInviteService implements InviteService {
         save(invite);
         invite.getSentToUser().addInviteForUser(invite);
         invite.getGroup().addInviteToGroup(invite);
-        userDao.merge(invite.getSentToUser());
-        groupDao.merge(invite.getGroup());
-        try {
-            userDao.update(invite.getSentToUser());
-        } catch (NoSuchUserException e) {
-            e.printStackTrace();
-        }
     }
 }

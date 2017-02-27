@@ -70,11 +70,6 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
             return tokenAuth;
         }
 
-        if (!tokenAuth.getName().equals(httpSession.getAttribute("unique_visitor_code"))) {
-            tokenAuth.setAuthenticated(false);
-            throw new InsufficientAuthenticationException("Unique visitor code changed");
-        }
-
         GoogleTokenResponse tokenResponse = null;
         try {
             tokenResponse = new GoogleAuthorizationCodeTokenRequest(
@@ -87,6 +82,7 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
         } catch (TokenResponseException e) {
             logger.error("User not authorized by Google due to error " + e.getDetails().getError() +
                     " see explanation here https://tools.ietf.org/html/rfc6749#section-8.5 ", e);
+            //TODO: should we throw exception here?
             throw new UnapprovedClientAuthenticationException("Google refused to authenticate due error "
                     + e.getDetails().getError(), e);
         } catch (IOException e) {

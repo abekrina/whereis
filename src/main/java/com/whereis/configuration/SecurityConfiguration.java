@@ -5,6 +5,7 @@ import com.whereis.authentication.GoogleAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,14 +25,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .addFilterBefore(authenticationTokenFilter, BasicAuthenticationFilter.class)
-                .antMatcher("/api/*")
+                .antMatcher("/api/**")
                 .authenticationProvider(tokenAuthenticationProvider)
                 .authorizeRequests()
-                .anyRequest().authenticated();
-/*        .and()
-                .csrf()
-                //TODO: Enable this
-                .disable();*/
+                .antMatchers(HttpMethod.GET).authenticated()
+                .anyRequest().authenticated()
+                .and()
+                .csrf().disable();
     }
 
     @Override

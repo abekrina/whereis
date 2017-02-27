@@ -48,6 +48,7 @@ public class ApiController extends AbstractController {
             userService.joinGroup(group, getCurrentUser());
 
         } catch (Exception e) {
+            logger.catching(e);
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity(HttpStatus.CREATED);
@@ -159,7 +160,7 @@ public class ApiController extends AbstractController {
     public List<Location> getLocationOfGroupMembers(@PathVariable("identity") String identity) {
         Group targetGroup = groupService.getByIdentity(identity);
         if (userService.checkUserInGroup(targetGroup, getCurrentUser())) {
-            return locationService.getLastLocationsForGroupMembers(groupService.getByIdentity(identity));
+            return locationService.getLastLocationsForGroupMembers(targetGroup);
         } else {
             return new ArrayList<>();
         }

@@ -11,6 +11,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.Set;
 
 @Transactional
 @Repository("inviteDao")
@@ -43,8 +44,7 @@ public class DefaultInviteDao extends  AbstractDao<Invite> implements InviteDao 
         criteriaQuery.where(builder.and(builder.equal(inviteRoot.get("sentToUser"), invite.getSentToUser().getId())),
                 builder.equal(inviteRoot.get("group"), invite.getGroup().getId()));
         try {
-            Invite inviteToReturn = getSession().createQuery(criteriaQuery).getSingleResult();
-            return inviteToReturn;
+            return getSession().createQuery(criteriaQuery).getSingleResult();
         } catch (NoResultException e) {
             return null;
         }

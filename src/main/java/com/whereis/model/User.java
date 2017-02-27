@@ -4,11 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.whereis.exceptions.groups.UserAlreadyInGroupException;
 import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.OrderBy;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -38,17 +37,18 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user")
     @OrderBy(clause = "timestamp ASC")
     @JsonManagedReference
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @Cascade(CascadeType.ALL)
     protected List<Location> locations = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected Set<UsersInGroup> groups = new HashSet<>();
 
-    @OneToMany(mappedBy = "sentByUser", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "sentByUser")
+    @Cascade(CascadeType.ALL)
     protected Set<Invite> sentByUser = new HashSet<>();
 
-    @OneToMany(mappedBy = "sentToUser", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "sentToUser")
+    @Cascade(CascadeType.ALL)
     protected Set<Invite> sentToUser = new HashSet<>();
 
     public int getId() {
@@ -100,7 +100,6 @@ public class User implements Serializable {
         return sentToUser.add(invite);
     }
 
-    //TODO: discuss why it returns false
     public boolean deleteInviteForUser(Invite invite) {
         return sentToUser.remove(invite);
     }
@@ -119,8 +118,8 @@ public class User implements Serializable {
      * @param group to leave
      * @return <tt>true</tt> if user was in the group
      */
-    public boolean leave(Group group) {
-        return groups.remove(new UsersInGroup(this, group));
+    public boolean leave(UsersInGroup group) {
+        return groups.remove(group);
     }
 
     public boolean saveUserLocation(Location location) {

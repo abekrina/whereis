@@ -3,9 +3,7 @@ package com.whereis.service;
 import com.whereis.AbstractIntegrationTest;
 import com.whereis.exceptions.groups.GroupException;
 import com.whereis.exceptions.invites.InviteException;
-import com.whereis.exceptions.invites.UserAlreadyInvitedException;
 import com.whereis.exceptions.users.UserException;
-import com.whereis.exceptions.users.UserWithEmailExistsException;
 import com.whereis.model.Group;
 import com.whereis.model.Invite;
 import com.whereis.model.User;
@@ -31,17 +29,24 @@ public class DefaultInviteServivceIT extends AbstractIntegrationTest {
     @Autowired
     InviteService inviteService;
 
-    private User defaultUser;
+    private User defaultSentToUser;
+
+    private User defaultSentByUser;
 
     private Group defaultGroup;
 
     private Invite defaultInvite;
 
-    private void setupDefaultUser()   {
-        defaultUser = new User();
-        defaultUser.setEmail("sweetpotatodevelopment@gmail.com");
-        defaultUser.setFirstName("Potato");
-        defaultUser.setLastName("Development");
+    private void setupDefaultUsers()   {
+        defaultSentToUser = new User();
+        defaultSentToUser.setEmail("sweetpotatodevelopment@gmail.com");
+        defaultSentToUser.setFirstName("Potato");
+        defaultSentToUser.setLastName("Development");
+
+        defaultSentByUser = new User();
+        defaultSentByUser.setEmail("abekrina@gmail.com");
+        defaultSentByUser.setFirstName("Alena");
+        defaultSentByUser.setLastName("Bekrina");
     }
 
     private void setupDefaultGroup() {
@@ -52,20 +57,22 @@ public class DefaultInviteServivceIT extends AbstractIntegrationTest {
 
     private void setupDefaultInvite() {
         defaultInvite = new Invite();
-        defaultInvite.setSentToUser(defaultUser);
+        defaultInvite.setSentToUser(defaultSentToUser);
         defaultInvite.setGroup(defaultGroup);
+        defaultInvite.setSentByUser(defaultSentByUser);
     }
 
     @BeforeMethod
     public void setupTestData() {
-        setupDefaultUser();
+        setupDefaultUsers();
         setupDefaultGroup();
         setupDefaultInvite();
     }
 
     @Test
     public void testGetPendingInvite() throws UserException, GroupException, InviteException {
-        userService.save(defaultUser);
+        userService.save(defaultSentToUser);
+        userService.save(defaultSentByUser);
         groupService.save(defaultGroup);
         inviteService.saveInviteForUser(defaultInvite);
 
@@ -73,18 +80,18 @@ public class DefaultInviteServivceIT extends AbstractIntegrationTest {
         TestTransaction.end();
         TestTransaction.start();
 
-        Assert.assertEquals(inviteService.getPendingInviteFor(defaultUser, defaultGroup), defaultInvite);
+        Assert.assertEquals(inviteService.getPendingInviteFor(defaultSentToUser, defaultGroup), defaultInvite);
     }
 
     @Test
     public void testGetPendingInviteIfNotExists() throws GroupException, UserException {
-        userService.save(defaultUser);
+        userService.save(defaultSentToUser);
         groupService.save(defaultGroup);
 
         TestTransaction.flagForCommit();
         TestTransaction.end();
         TestTransaction.start();
 
-        Assert.assertNull(inviteService.getPendingInviteFor(defaultUser, defaultGroup));
+        Assert.assertNull(inviteService.getPendingInviteFor(defaultSentToUser, defaultGroup));
     }
 }

@@ -17,8 +17,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.sql.Timestamp;
-
 @ContextConfiguration(classes = {TestHibernateConfiguration.class, TestWebMvcConfiguration.class})
 @WebAppConfiguration
 public class DefaultInviteDaoIT extends AbstractIntegrationTest {
@@ -32,8 +30,8 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
     UserDao userDao;
 
     private Invite defaultInvite;
-    private User defaultUser;
-    private User defaultUser2;
+    private User defaultSentToUser;
+    private User defaultSentByUser;
     private Group defaultGroup;
 
     @BeforeMethod
@@ -44,15 +42,15 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
     }
 
     private void setupDefaultUsers() {
-        defaultUser = new User();
-        defaultUser.setEmail("sweetpotatodevelopment@gmail.com");
-        defaultUser.setFirstName("Potato");
-        defaultUser.setLastName("Development");
+        defaultSentToUser = new User();
+        defaultSentToUser.setEmail("sweetpotatodevelopment@gmail.com");
+        defaultSentToUser.setFirstName("Potato");
+        defaultSentToUser.setLastName("Development");
 
-        defaultUser2 = new User();
-        defaultUser2.setEmail("abekrina@gmail.com");
-        defaultUser2.setFirstName("Alena");
-        defaultUser2.setLastName("Bekrina");
+        defaultSentByUser = new User();
+        defaultSentByUser.setEmail("abekrina@gmail.com");
+        defaultSentByUser.setFirstName("Alena");
+        defaultSentByUser.setLastName("Bekrina");
     }
 
     private void setupDefaultGroup() {
@@ -64,13 +62,14 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
     private void setupDefaultInvite() {
         defaultInvite = new Invite();
         defaultInvite.setGroup(defaultGroup);
-        defaultInvite.setSentByUser(defaultUser2);
-        defaultInvite.setSentToUser(defaultUser);
+        defaultInvite.setSentByUser(defaultSentByUser);
+        defaultInvite.setSentToUser(defaultSentToUser);
     }
 
     @Test
     public void testSaveInvite() throws UserAlreadyInvitedException, GroupWithIdentityExistsException, UserWithEmailExistsException {
-        userDao.save(defaultUser);
+        userDao.save(defaultSentToUser);
+        userDao.save(defaultSentByUser);
         groupDao.save(defaultGroup);
         inviteDao.save(defaultInvite);
 
@@ -84,7 +83,8 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
 
     @Test(expectedExceptions = UserAlreadyInvitedException.class)
     public void testSaveDuplicateInvite() throws UserAlreadyInvitedException, GroupWithIdentityExistsException, UserWithEmailExistsException {
-        userDao.save(defaultUser);
+        userDao.save(defaultSentToUser);
+        userDao.save(defaultSentByUser);
         groupDao.save(defaultGroup);
         inviteDao.save(defaultInvite);
 
@@ -92,13 +92,20 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
         TestTransaction.end();
         TestTransaction.start();
 
+        userDao.refresh(defaultSentToUser);
+        Invite duplicateInvite = new Invite();
+        duplicateInvite.setGroup(defaultInvite.getGroup());
+        duplicateInvite.setSentByUser(defaultSentByUser);
+        duplicateInvite.setSentToUser(defaultSentToUser);
+
         Assert.assertEquals(inviteDao.get(defaultInvite.getId()), defaultInvite);
         inviteDao.save(defaultInvite);
     }
 
     @Test
     public void testGetSameInvite() throws UserAlreadyInvitedException, GroupWithIdentityExistsException, UserWithEmailExistsException {
-        userDao.save(defaultUser);
+        userDao.save(defaultSentToUser);
+        userDao.save(defaultSentByUser);
         groupDao.save(defaultGroup);
         inviteDao.save(defaultInvite);
 
@@ -116,7 +123,7 @@ public class DefaultInviteDaoIT extends AbstractIntegrationTest {
 
     @Test
     public void testGetSameInviteIfNotExists() throws GroupWithIdentityExistsException, UserWithEmailExistsException {
-        userDao.save(defaultUser);
+        userDao.save(defaultSentToUser);
         groupDao.save(defaultGroup);
 
         Assert.assertNull(inviteDao.getSameInvite(defaultInvite));

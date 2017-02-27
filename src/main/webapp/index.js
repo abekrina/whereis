@@ -54,17 +54,10 @@
     }
 
     function onUpdate() {
-        if (user) {
-            const profile = user.getBasicProfile();
-
-            if (profile) {
-                alert(`Hello, ${profile.getName()} <${profile.getEmail()}>`);
-            }
-        }
     }
 
     function connectToServer(code) {
-        return fetch(`/api/login?unique_visitor_code=${config.unique_visitor_code}`, {
+        return fetch(`/api/login`, {
             credentials: 'include',
             method: 'POST',
             body: code

@@ -27,7 +27,6 @@ public class GoogleAuthenticationFilter implements Filter {
         if (context.getAuthentication() != null && context.getAuthentication().isAuthenticated()) {
             // do nothing
         } else {
-            Map<String,String[]> params = req.getParameterMap();
             BufferedReader bodyReader = req.getReader();
             String code = null;
             try {
@@ -35,11 +34,9 @@ public class GoogleAuthenticationFilter implements Filter {
             } catch (IOException exception) {
                 logger.info("Request body is empty, there is no security code in it");
             }
-            if (!params.isEmpty()) {
-                if (code != null) {
-                    Authentication auth = new GoogleAuthentication(code);
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                }
+            if (code != null) {
+                Authentication auth = new GoogleAuthentication(code);
+                context.setAuthentication(auth);
             }
         }
 

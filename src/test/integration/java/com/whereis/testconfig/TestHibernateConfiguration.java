@@ -45,7 +45,7 @@ public class TestHibernateConfiguration {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
-  @Bean
+    @Bean
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()
                 .generateUniqueName(true)
@@ -55,7 +55,7 @@ public class TestHibernateConfiguration {
                 .build();
     }
 
-/*  @Bean
+/*       @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(environment.getRequiredProperty("test.jdbc.driverClassName"));

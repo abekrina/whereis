@@ -25,7 +25,7 @@ import java.util.Set;
 @Repository("userDao")
 public class DefaultUserDao extends AbstractDao<User> implements UserDao {
 
-    private static final Logger logger = LogManager.getLogger(GoogleAuthenticationFilter.class);
+    private static final Logger logger = LogManager.getLogger(DefaultUserDao.class);
 
     @Override
     public void save(User user) throws UserWithEmailExistsException {

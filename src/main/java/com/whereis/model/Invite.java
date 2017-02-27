@@ -18,13 +18,11 @@ public class Invite {
     protected int id;
 
     @ManyToOne
-    @Cascade(CascadeType.ALL)
     @JoinColumn(name = "sentByUser")
     protected User sentByUser;
 
     @ManyToOne
     @JoinColumn(name = "sentToUser")
-    @Cascade(CascadeType.ALL)
     protected User sentToUser;
 
     @Column(name = "timestamp")
@@ -37,7 +35,8 @@ public class Invite {
     @JoinColumn(name = "groupId")
     protected Group group;
 
-    public Invite() {}
+    public Invite() {
+    }
 
     public Invite(User sentToUser, Group group, User sentByUser) {
         this.sentToUser = sentToUser;
@@ -100,6 +99,7 @@ public class Invite {
                         sentToUser.getFirstName() + sentToUser.getLastName() + sentToUser.getId());
     }
 
+    // TODO: возможно ли использовать id вместо хеша?
     @Override
     public int hashCode() {
         return Objects.hash(id, group.getName(), sentByUser.getFirstName() + sentByUser.getLastName() +

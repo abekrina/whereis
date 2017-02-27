@@ -53,7 +53,7 @@ public abstract class AbstractIntegrationTest extends AbstractTransactionalTestN
             Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
             // if Postgresql:
-            //statement.execute("TRUNCATE TABLE " + tableName + " CASCADE;");
+            // statement.execute("TRUNCATE TABLE " + tableName + " CASCADE;");
 
             // if h2:
             statement.execute("SET REFERENTIAL_INTEGRITY FALSE;");
