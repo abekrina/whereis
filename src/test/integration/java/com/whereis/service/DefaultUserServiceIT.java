@@ -95,7 +95,9 @@ public class DefaultUserServiceIT extends AbstractIntegrationTest {
     }
 
     @Test(expectedExceptions = NoUserInGroupException.class)
-    public void testLeaveUserNotGroupMember() throws NoUserInGroupException {
+    public void testLeaveUserNotGroupMember() throws Exception {
+        userService.save(defaultUser);
+        groupService.save(defaultGroup);
         // Try to delete row about user in group
         userService.leaveGroup(defaultGroup, defaultUser);
     }
@@ -118,7 +120,9 @@ public class DefaultUserServiceIT extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testFindAbsentRelationInDB() {
+    public void testFindAbsentRelationInDB() throws Exception {
+        userService.save(defaultUser);
+        groupService.save(defaultGroup);
         Assert.assertEquals(userService.getGroupsForUser(defaultUser), new HashSet<Group>());
     }
 
@@ -145,9 +149,11 @@ public class DefaultUserServiceIT extends AbstractIntegrationTest {
         Invite newInvite = new Invite(defaultInvite.getSentToUser(), defaultInvite.getGroup(), defaultInvite.getSentByUser());
         inviteService.saveInviteForUser(newInvite);
 
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+
         // Add same user one more time
         userService.joinGroup(defaultGroup, defaultUser);
   }
-
-
 }

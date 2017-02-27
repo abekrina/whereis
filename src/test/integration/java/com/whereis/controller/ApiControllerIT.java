@@ -189,7 +189,6 @@ public class ApiControllerIT extends AbstractIntegrationTest {
         TestTransaction.end();
         TestTransaction.start();
 
-        userDao.refresh(defaultUser1);
         Assert.assertFalse(userService.checkUserInGroup(defaultGroup, defaultUser1));
         Assert.assertFalse(userService.getGroupsForUser(defaultUser1).contains(defaultGroup));
     }
