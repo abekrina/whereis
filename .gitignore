@@ -1,4 +1,4 @@
-target/
+application/target/
 model/generated-classes
 !.mvn/wrapper/maven-wrapper.jar
 .DS_Store
