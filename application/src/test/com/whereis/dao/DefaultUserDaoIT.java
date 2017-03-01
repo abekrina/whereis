@@ -14,7 +14,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-// TODO: Настроить surefire
 // TODO: настроить записть логов в файл
 @ContextConfiguration(classes = {TestHibernateConfiguration.class, TestWebMvcConfiguration.class})
 @WebAppConfiguration

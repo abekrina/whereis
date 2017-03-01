@@ -1,6 +1,8 @@
 package com.whereis.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.whereis.exceptions.groups.UserAlreadyInGroupException;
 import org.hibernate.annotations.*;
@@ -17,17 +19,14 @@ import java.util.*;
 @Entity
 @FilterDef(name = "lastLocation")
 @Table(name = "users")
+
 public class User implements Serializable {
     @Id
     @GeneratedValue
     protected int id;
 
-    @NotNull
-    @Column(nullable = false)
     protected String firstName;
 
-    @NotNull
-    @Column(nullable = false)
     protected String lastName;
 
     @NotNull
@@ -36,7 +35,7 @@ public class User implements Serializable {
 
     @OneToMany(mappedBy = "user")
     @OrderBy(clause = "timestamp ASC")
-    @JsonManagedReference
+    //@JsonBackReference
     @Cascade(CascadeType.ALL)
     protected List<Location> locations = new ArrayList<>();
 
@@ -79,10 +78,10 @@ public class User implements Serializable {
         this.lastName = last_name;
     }
 
-    @JsonIgnore
     public List<Location> getLocations() {
         return Collections.unmodifiableList(locations);
     }
+
     @JsonIgnore
     public Set<Group> getGroups() {
         Set<Group> groupsToReturn = new HashSet<>();

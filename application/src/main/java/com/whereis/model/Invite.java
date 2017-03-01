@@ -99,6 +99,7 @@ public class Invite {
     }
 
     // TODO: возможно ли использовать id вместо хеша?
+    // TODO: сделать id
     @Override
     public int hashCode() {
         return Objects.hash(id, group.getName(), sentByUser.getFirstName() + sentByUser.getLastName() +

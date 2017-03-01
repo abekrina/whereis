@@ -5,6 +5,7 @@ import com.whereis.exceptions.groups.NoUserInGroupException;
 import com.whereis.exceptions.groups.UserAlreadyInGroupException;
 import com.whereis.exceptions.invites.NoInviteForUserToGroupException;
 import com.whereis.exceptions.invites.UserAlreadyInvitedException;
+import com.whereis.exceptions.users.UserWithEmailExistsException;
 import com.whereis.model.*;
 import com.whereis.service.GroupService;
 import com.whereis.service.InviteService;
@@ -43,8 +44,8 @@ public class ApiController extends AbstractController {
     public ResponseEntity createGroup(@RequestBody Group group) {
         try {
             groupService.save(group);
+            inviteService.saveInviteForUser(new Invite(getCurrentUser(), group, getCurrentUser()));
             userService.joinGroup(group, getCurrentUser());
-
         } catch (Exception e) {
             logger.catching(e);
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
@@ -54,6 +55,14 @@ public class ApiController extends AbstractController {
 
     @RequestMapping(value = "/{identity}/invite", method = RequestMethod.POST)
     public ResponseEntity inviteUser(@PathVariable("identity") String identity, @RequestBody User invitedUser) {
+        if (userService.getByEmail(invitedUser.getEmail())==null) {
+            try {
+                userService.save(invitedUser);
+            } catch (UserWithEmailExistsException e) {
+                //TODO: write error message
+                logger.error("Error during savin user from invite ", e);
+            }
+        }
         Invite invite = new Invite();
         invite.setGroup(groupService.getByIdentity(identity));
         invite.setSentToUser(userService.getByEmail(invitedUser.getEmail()));
@@ -66,43 +75,6 @@ public class ApiController extends AbstractController {
             return new ResponseEntity(HttpStatus.I_AM_A_TEAPOT);
         }
         return new ResponseEntity(HttpStatus.OK);
-    }
-
-    // TODO: delete this
-    @RequestMapping(value = "/getInviteExample", method = RequestMethod.GET)
-    public Invite getInviteExample() {
-        User defaultUser1 = new User();
-        defaultUser1.setEmail("sweetpotatodevelopment@gmail.com");
-        defaultUser1.setFirstName("Potato");
-        defaultUser1.setLastName("Development");
-
-        User defaultUser2 = new User();
-        defaultUser2.setEmail("abekrina@gmail.com");
-        defaultUser2.setFirstName("Alena");
-        defaultUser2.setLastName("Bekrina");
-
-        Group defaultGroup = new Group();
-        defaultGroup.setIdentity("i1d2e3n4t5i6t7y8");
-        defaultGroup.setName("Default Group");
-
-        try {
-            //userService.save(defaultUser1);
-            //userService.save(defaultUser2);
-            groupService.save(defaultGroup);
-        } catch (GroupWithIdentityExistsException e ) {
-            //e.printStackTrace();
-            logger.debug("catched");
-        } catch (DataIntegrityViolationException ex) {
-            logger.debug("catched");
-
-        }
-
-        Invite example = new Invite();
-        example.setGroup(defaultGroup);
-        example.setSentToUser(defaultUser2);
-        example.setSentByUser(defaultUser1);
-
-        return example;
     }
 
     @RequestMapping(value = "/{identity}/join", method = RequestMethod.POST)

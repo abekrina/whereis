@@ -74,7 +74,10 @@ public class DefaultInviteService implements InviteService {
     }
 
     @Override
+    @Transactional
     public void saveInviteForUser(Invite invite) throws UserAlreadyInvitedException {
+        invite.setSentToUser(userDao.get(invite.getSentToUser().getId()));
+        invite.setGroup(groupDao.get(invite.getGroup().getId()));
         save(invite);
         invite.getSentToUser().addInviteForUser(invite);
         invite.getGroup().addInviteToGroup(invite);

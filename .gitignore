@@ -2,6 +2,9 @@ application/target/
 model/generated-classes
 !.mvn/wrapper/maven-wrapper.jar
 .DS_Store
+*secrets.properties
+seleniumtests/target/
+target/
 
 ### STS ###
 .apt_generated
@@ -17,10 +20,4 @@ model/generated-classes
 *.iml
 *.ipr
 
-### NetBeans ###
-nbproject/private/
-build/
-nbbuild/
-dist/
-nbdist/
-.nb-gradle/
+

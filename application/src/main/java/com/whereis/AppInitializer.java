@@ -8,7 +8,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;

@@ -1,7 +1,7 @@
 package com.whereis.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.hibernate.annotations.*;
 
 import javax.persistence.*;
@@ -19,9 +19,9 @@ public class Location {
     @GeneratedValue
     protected int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "userId")
-    @JsonBackReference
+    @JsonIgnoreProperties({"locations", "groups", "userInvites"})
     protected User user;
 
     @Column(name = "timestamp")
@@ -41,8 +41,9 @@ public class Location {
     protected String ip;
 
     @NotNull
-    @ManyToOne()
-    @JoinColumn(name = "group_id")
+    @ManyToOne
+    @JoinColumn(name = "groupId")
+    @JsonIgnore
     protected Group group;
 
     public Location() {}
@@ -61,7 +62,6 @@ public class Location {
         return id;
     }
 
-    @JsonIgnore
     public User getUser() {
         return user;
     }
@@ -98,6 +98,7 @@ public class Location {
         this.ip = ip;
     }
 
+    @JsonIgnore
     public Group getGroup() {
         return group;
     }
@@ -123,7 +124,6 @@ public class Location {
                 && ((Location) anotherLocation).getIp().equals(ip);
     }
 
-    // TODO: change to use user and group property or change to id if it is ok
     @Override
     public int hashCode() {
         return Objects.hash(id, timestamp, latitude, longitude, group, user, ip);

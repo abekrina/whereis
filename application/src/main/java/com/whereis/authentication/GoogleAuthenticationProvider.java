@@ -10,6 +10,8 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.plus.Plus;
+import com.google.api.services.plus.model.Person;
+import com.whereis.exceptions.users.NoSuchUserException;
 import com.whereis.model.User;
 import com.whereis.service.UserService;
 
@@ -81,7 +83,7 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
         } catch (TokenResponseException e) {
             logger.error("User not authorized by Google due to error " + e.getDetails().getError() +
                     " see explanation here https://tools.ietf.org/html/rfc6749#section-8.5 ", e);
-            //TODO: should we throw exception here?
+            // TODO: google how to handle exceptions as json responce
             throw new UnapprovedClientAuthenticationException("Google refused to authenticate due error "
                     + e.getDetails().getError(), e);
         } catch (IOException e) {
@@ -105,6 +107,22 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
             //TODO: welcome new user by email :)
             auth.setPrincipal(newUser);
         } else {
+            if (user.getFirstName() == null || "".equals(user.getFirstName())) {
+                Plus plus = new Plus.Builder(TRANSPORT, JSON_FACTORY, buildCredential(auth.getGoogleTokenResponse()))
+                        .setApplicationName("")
+                        .build();
+                Person person = plus.people().get("me").execute();
+                user.setFirstName(person.getName().getGivenName());
+                userService.merge(user);
+            }
+            if (user.getLastName() == null || "".equals(user.getLastName())) {
+                Plus plus = new Plus.Builder(TRANSPORT, JSON_FACTORY, buildCredential(auth.getGoogleTokenResponse()))
+                        .setApplicationName("")
+                        .build();
+                Person person = plus.people().get("me").execute();
+                user.setLastName(person.getName().getFamilyName());
+                userService.merge(user);
+            }
             auth.setPrincipal(user);
         }
     }

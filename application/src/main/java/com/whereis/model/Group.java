@@ -12,6 +12,7 @@ import java.util.*;
 @Entity
 @Table(name = "groups")
 public class Group {
+    //TODO: make uids for every entity
     @Id
     @GeneratedValue
     protected int id;

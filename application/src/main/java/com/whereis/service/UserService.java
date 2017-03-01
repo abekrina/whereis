@@ -17,6 +17,9 @@ public interface UserService {
     User get(int id);
     void save(User user) throws UserWithEmailExistsException;
     void update(User user) throws NoSuchUserException;
+
+    void merge(User user);
+
     boolean delete(User user);
     User getByEmail(String email);
     void deleteByEmail(String email);

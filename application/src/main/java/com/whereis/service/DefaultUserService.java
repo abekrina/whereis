@@ -57,6 +57,11 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
+    public void merge(User user) {
+        userDao.merge(user);
+    }
+
+    @Override
     public boolean delete(User user) {
         return userDao.delete(user.getClass(), user.getId());
     }
@@ -102,7 +107,6 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    @Transactional
     public Set<Group> getGroupsForUser(User user) {
         user = userDao.get(user.getId());
         return user.getGroups();
@@ -111,7 +115,6 @@ public class DefaultUserService implements UserService {
     @Override
     @Transactional
     public void saveUserLocation(Location location) {
-        // TODO: check if all this is needed
         location.setUser(userDao.get(location.getUser().getId()));
         locationService.save(location);
         location.getUser().saveUserLocation(location);

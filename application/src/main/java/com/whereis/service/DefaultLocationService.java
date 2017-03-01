@@ -6,6 +6,7 @@ import com.whereis.dao.UserDao;
 import com.whereis.model.Group;
 import com.whereis.model.User;
 import com.whereis.model.Location;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,8 +52,7 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public Location getLastLocationForUser(User user) {
-        // TODO: check without refresh
-        usersDao.refresh(user);
+        user = usersDao.get(user.getId());
         List<Location> locations = user.getLocations();
         if (locations.isEmpty()) {
             return null;
@@ -70,7 +70,9 @@ public class DefaultLocationService implements LocationService {
         for (User user : usersInGroup) {
             Location location = getLastLocationForUser(user);
             if (location != null) {
-                locations.add(getLastLocationForUser(user));
+                location.setUser(usersDao.get(location.getUser().getId()));
+                Hibernate.initialize(location.getUser());
+                locations.add(location);
             }
         }
         return locations;
