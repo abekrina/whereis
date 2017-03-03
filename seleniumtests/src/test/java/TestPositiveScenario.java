@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 import java.util.concurrent.TimeUnit;
 
 public class TestPositiveScenario {
-    @Test
+    //@Test
     public void testCreateGroup() {
         System.setProperty("webdriver.chrome.driver", "/Users/amakarova/Downloads/chromedriver");
         WebDriver chromeDriver = new ChromeDriver();

@@ -51,25 +51,36 @@
 					<compilerArgument>-proc:none</compilerArgument>
 				</configuration>
 			</plugin>
-			<!--<plugin>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>${jetty.version}</version>
-				<configuration>
-					<httpConnector>
-						<port>8080</port>
-						<host>localhost</host>
-					</httpConnector>
-					<scanIntervalSeconds>10</scanIntervalSeconds>
-				</configuration>
-			</plugin>
+			<!-- Surefire -->
 			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>${war-plugin.version}</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<excludes>
+						<exclude>none</exclude>
+					</excludes>
+					<includes>
+						<include>**/*IT.java</include>
+					</includes>
 				</configuration>
-			</plugin>-->
+				<executions>
+					<execution>
+						<id>integration-test</id>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<phase>integration-test</phase>
+						<configuration>
+							<excludes>
+								<exclude>none</exclude>
+							</excludes>
+							<includes>
+								<include>**/*IT.java</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>
