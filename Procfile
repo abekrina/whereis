@@ -1,1 +1,1 @@
-web: mvn jetty:run
+web: cd application/ && mvn jetty:run

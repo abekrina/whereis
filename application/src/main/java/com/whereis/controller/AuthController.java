@@ -21,7 +21,6 @@ public class AuthController extends AbstractController {
 
     @RequestMapping("/login")
     public void login() {
-        int i = 0;
     }
 
     @RequestMapping(value="/logout")
