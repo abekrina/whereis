@@ -76,7 +76,7 @@ public class ApiController extends AbstractController {
         }
         return new ResponseEntity(HttpStatus.OK);
     }
-
+//sdf
     @RequestMapping(value = "/{identity}/join", method = RequestMethod.POST)
     public ResponseEntity joinGroup(@PathVariable("identity") String identity) {
         Group targetGroup = groupService.getByIdentity(identity);

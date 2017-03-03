@@ -29,6 +29,11 @@
 			<artifactId>testng</artifactId>
 			<version>${testng.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-runner</artifactId>
+			<version>9.4.2.v20170220</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -41,6 +46,20 @@
 			</resource>
 		</resources>
 		<plugins>
+			<!-- WAR -->
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>${war-plugin.version}</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -51,7 +70,32 @@
 					<compilerArgument>-proc:none</compilerArgument>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.eclipse.jetty</groupId>
+									<artifactId>jetty-runner</artifactId>
+									<version>9.4.2.v20170220</version>
+									<destFileName>jetty-runner.jar</destFileName>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<!-- Surefire -->
+			<!-- Try without it, google which tests maven run inside "test" -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
