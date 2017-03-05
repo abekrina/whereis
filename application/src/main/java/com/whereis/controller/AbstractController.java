@@ -10,14 +10,10 @@ import javax.servlet.http.HttpSession;
 
 abstract class AbstractController {
 
+    String CLIENT_ID = System.getProperty("WHEREIS_GOOGLE_CLIENT_ID");
+
     @Autowired
     protected HttpSession httpSession;
-
-    @Value("${google.client.id}")
-    String CLIENT_ID;
-
-    @Value("${google.client.secret}")
-    String CLIENT_SECRET;
 
     protected User getCurrentUser() {
         SecurityContext context = (SecurityContext) httpSession.getAttribute("SPRING_SECURITY_CONTEXT");

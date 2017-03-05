@@ -21,7 +21,6 @@
 
 
             <postgresql.version>9.4-1205-jdbc42</postgresql.version>
-            <jetty.version>9.4.2.v20170220</jetty.version>
             <jackson.version>2.5.0</jackson.version>
 
             <spring.version>4.3.4.RELEASE</spring.version>
@@ -195,68 +194,64 @@
                     <directory>./src/main/resources</directory>
                 </resource>
             </resources>
-            <plugins>
-                <!-- Compiler -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${compiler-plugin.version}</version>
-                    <configuration>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
-                        <compilerArgument>-proc:none</compilerArgument>
-                    </configuration>
-                </plugin>
+                <plugins>
+                    <!-- WAR -->
+                    <plugin>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <version>${war-plugin.version}</version>
+                        <configuration>
+                            <failOnMissingWebXml>false</failOnMissingWebXml>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
 
+                    <!-- Compiler -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>${compiler-plugin.version}</version>
+                        <configuration>
+                            <source>${java.version}</source>
+                            <target>${java.version}</target>
+                            <compilerArgument>-proc:none</compilerArgument>
+                        </configuration>
+                    </plugin>
 
-
-                <!-- Jetty -->
-                <plugin>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-maven-plugin</artifactId>
-                    <version>${jetty.version}</version>
-                    <configuration>
-                        <httpConnector>
-                            <port>8080</port>
-                            <host>localhost</host>
-                        </httpConnector>
-                        <scanIntervalSeconds>10</scanIntervalSeconds>
-                    </configuration>
-                </plugin>
-
-
-
-<!--                 Surefire
-                 Try without it-->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                        <excludes>
-                            <exclude>none</exclude>
-                        </excludes>
-                        <includes>
-                            <include>**/*IT.java</include>
-                        </includes>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>integration-test</id>
-                            <goals>
-                                <goal>test</goal>
-                            </goals>
-                            <phase>integration-test</phase>
-                            <configuration>
-                                <excludes>
-                                    <exclude>none</exclude>
-                                </excludes>
-                                <includes>
-                                    <include>**/*IT.java</include>
-                                </includes>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
+                    <!--                 Surefire
+                                     Try without it-->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>none</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/*IT.java</include>
+                            </includes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <phase>integration-test</phase>
+                                <configuration>
+                                    <excludes>
+                                        <exclude>none</exclude>
+                                    </excludes>
+                                    <includes>
+                                        <include>**/*IT.java</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
         </build>
 </project>

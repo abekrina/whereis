@@ -25,8 +25,10 @@ import java.util.Properties;
 @EnableTransactionManagement
 @ComponentScan(basePackages = "com.whereis")
 @PropertySource("classpath:application.properties")
-@PropertySource("classpath:secrets.properties")
 public class HibernateConfiguration {
+
+    String JDBC_USERNAME = System.getenv("POSTGRES_USERNAME");
+    String JDBC_PASSWORD = System.getenv("POSTGRES_PASSWORD");
 
     @Autowired
     private Environment environment;
@@ -50,8 +52,8 @@ public class HibernateConfiguration {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(environment.getRequiredProperty("jdbc.driverClassName"));
         dataSource.setUrl(environment.getRequiredProperty("jdbc.url"));
-        dataSource.setUsername(environment.getRequiredProperty("jdbc.username"));
-        dataSource.setPassword(environment.getRequiredProperty("jdbc.password"));
+        dataSource.setUsername(JDBC_USERNAME);
+        dataSource.setPassword(JDBC_PASSWORD);
 
         return dataSource;
     }
