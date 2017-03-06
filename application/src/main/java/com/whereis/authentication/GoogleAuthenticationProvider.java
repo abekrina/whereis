@@ -40,9 +40,9 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
 
     private static final JacksonFactory JSON_FACTORY = new JacksonFactory();
 
-    String CLIENT_ID = System.getProperty("WHEREIS_GOOGLE_CLIENT_ID");
+    String CLIENT_ID = System.getenv("WHEREIS_GOOGLE_CLIENT_ID");
 
-    String CLIENT_SECRET = System.getProperty("WHEREIS_GOOGLE_CLIENT_SECRET");
+    String CLIENT_SECRET = System.getenv("WHEREIS_GOOGLE_CLIENT_SECRET");
 
     @Autowired
     private UserService userService;

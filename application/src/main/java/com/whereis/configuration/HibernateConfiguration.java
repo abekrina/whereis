@@ -29,6 +29,7 @@ public class HibernateConfiguration {
 
     String JDBC_USERNAME = System.getenv("POSTGRES_USERNAME");
     String JDBC_PASSWORD = System.getenv("POSTGRES_PASSWORD");
+    String JDBC_DATABASE_URL = System.getenv("JDBC_DATABASE_URL");
 
     @Autowired
     private Environment environment;
@@ -51,7 +52,7 @@ public class HibernateConfiguration {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(environment.getRequiredProperty("jdbc.driverClassName"));
-        dataSource.setUrl(environment.getRequiredProperty("jdbc.url"));
+        dataSource.setUrl(JDBC_DATABASE_URL);
         dataSource.setUsername(JDBC_USERNAME);
         dataSource.setPassword(JDBC_PASSWORD);
 
