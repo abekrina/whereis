@@ -40,11 +40,9 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
 
     private static final JacksonFactory JSON_FACTORY = new JacksonFactory();
 
-    @Value("${google.client.id}")
-    String CLIENT_ID;
+    String CLIENT_ID = System.getenv("WHEREIS_GOOGLE_CLIENT_ID");
 
-    @Value("${google.client.secret}")
-    String CLIENT_SECRET;
+    String CLIENT_SECRET = System.getenv("WHEREIS_GOOGLE_CLIENT_SECRET");
 
     @Autowired
     private UserService userService;
@@ -74,7 +72,8 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
         GoogleTokenResponse tokenResponse = null;
         try {
             tokenResponse = new GoogleAuthorizationCodeTokenRequest(
-                    TRANSPORT, JSON_FACTORY, CLIENT_ID, CLIENT_SECRET, tokenAuth.getCode(), "postmessage"
+                    TRANSPORT, JSON_FACTORY, CLIENT_ID, CLIENT_SECRET, tokenAuth.getCode(),
+                    "https://rocky-river-45878.herokuapp.com"
             ).execute();
 
             tokenAuth.setCredentials(tokenResponse);
