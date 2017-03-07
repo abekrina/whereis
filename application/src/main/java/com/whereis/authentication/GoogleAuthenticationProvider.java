@@ -72,7 +72,8 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
         GoogleTokenResponse tokenResponse = null;
         try {
             tokenResponse = new GoogleAuthorizationCodeTokenRequest(
-                    TRANSPORT, JSON_FACTORY, CLIENT_ID, CLIENT_SECRET, tokenAuth.getCode(), "postmessage"
+                    TRANSPORT, JSON_FACTORY, CLIENT_ID, CLIENT_SECRET, tokenAuth.getCode(),
+                    "https://rocky-river-45878.herokuapp.com"
             ).execute();
 
             tokenAuth.setCredentials(tokenResponse);
