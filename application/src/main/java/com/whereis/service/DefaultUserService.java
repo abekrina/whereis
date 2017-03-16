@@ -107,6 +107,7 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
+    @Transactional
     public Set<Group> getGroupsForUser(User user) {
         user = userDao.get(user.getId());
         return user.getGroups();
