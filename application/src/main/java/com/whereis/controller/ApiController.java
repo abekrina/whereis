@@ -138,7 +138,7 @@ public class ApiController extends AbstractController {
     }
 
     //TODO: make test for this
-    @RequestMapping(value = "/getforcurrentuser/", method = RequestMethod.GET)
+    @RequestMapping(value = "/getforcurrentuser", method = RequestMethod.GET)
     public Set<Group> getGroups() {
         User currentUser = getCurrentUser();
         logger.info("get groups ready to return");
