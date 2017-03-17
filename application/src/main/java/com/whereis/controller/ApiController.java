@@ -42,16 +42,22 @@ public class ApiController extends AbstractController {
     private static final Logger logger = LogManager.getLogger(ApiController.class);
 
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity createGroup(@RequestBody Group group) {
+    public Group createGroup(@RequestBody Group group) {
+
+        groupService.save(group);
         try {
-            groupService.save(group);
             inviteService.saveInviteForUser(new Invite(getCurrentUser(), group, getCurrentUser()));
-            userService.joinGroup(group, getCurrentUser());
-        } catch (Exception e) {
-            logger.catching(e);
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        } catch (UserAlreadyInvitedException e) {
+            logger.error("Invite for new group already exists, probably it is a collision", e);
         }
-        return new ResponseEntity(HttpStatus.CREATED);
+        try {
+            userService.joinGroup(group, getCurrentUser());
+        } catch (UserAlreadyInGroupException | NoInviteForUserToGroupException e) {
+            logger.error("Error during creation of new group", e);
+            groupService.delete(group);
+            return new Group();
+        }
+        return groupService.get(group.getId());
     }
 
     @RequestMapping(value = "/{identity}/invite", method = RequestMethod.POST)

@@ -6,7 +6,7 @@ import com.whereis.model.Group;
 
 public interface GroupService {
     Group get(int id);
-    void save(Group group) throws GroupWithIdentityExistsException;
+    void save(Group group);
 
     void update(Group group) throws NoSuchGroupException;
     boolean delete(Group group);
