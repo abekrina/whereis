@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/group")
@@ -134,5 +135,12 @@ public class ApiController extends AbstractController {
         } else {
             return new ArrayList<>();
         }
+    }
+
+    //TODO: make test for this
+    @RequestMapping(value = "/getforcurrentuser", method = RequestMethod.GET)
+    public Set<Group> getGroups() {
+        User currentUser = getCurrentUser();
+        return userService.getGroupsForUser(currentUser);
     }
 }
