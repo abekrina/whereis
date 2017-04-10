@@ -127,11 +127,14 @@ public class ApiController extends AbstractController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    /*
+     * Return locations of all members without location of current user
+     */
     @RequestMapping(value = "/{identity}/getlocations", method = RequestMethod.GET)
     public List<Location> getLocationOfGroupMembers(@PathVariable("identity") String identity) {
         Group targetGroup = groupService.getByIdentity(identity);
         if (userService.checkUserInGroup(targetGroup, getCurrentUser())) {
-            return locationService.getLastLocationsForGroupMembers(targetGroup);
+            return locationService.getLastLocationsForGroupMembers(targetGroup, getCurrentUser());
         } else {
             return new ArrayList<>();
         }
