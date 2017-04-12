@@ -68,14 +68,14 @@ public class DefaultLocationService implements LocationService {
         Set<User> usersInGroup = group.getUsersInGroup();
         List<Location> locations = new ArrayList<>();
         for (User user : usersInGroup) {
-            //if (!user.equals(currentUser)) {
+            if (!user.equals(currentUser)) {
                 Location location = getLastLocationForUser(user);
                 if (location != null) {
                     location.setUser(usersDao.get(location.getUser().getId()));
                     Hibernate.initialize(location.getUser());
                     locations.add(location);
                 }
-           // }
+            }
         }
         return locations;
     }
