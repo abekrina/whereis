@@ -63,16 +63,18 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     @Transactional
-    public List<Location> getLastLocationsForGroupMembers(Group group) {
+    public List<Location> getLastLocationsForGroupMembers(Group group, User currentUser) {
         group = groupDao.get(group.getId());
         Set<User> usersInGroup = group.getUsersInGroup();
         List<Location> locations = new ArrayList<>();
         for (User user : usersInGroup) {
-            Location location = getLastLocationForUser(user);
-            if (location != null) {
-                location.setUser(usersDao.get(location.getUser().getId()));
-                Hibernate.initialize(location.getUser());
-                locations.add(location);
+            if (!user.equals(currentUser)) {
+                Location location = getLastLocationForUser(user);
+                if (location != null) {
+                    location.setUser(usersDao.get(location.getUser().getId()));
+                    Hibernate.initialize(location.getUser());
+                    locations.add(location);
+                }
             }
         }
         return locations;

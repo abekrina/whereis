@@ -42,16 +42,22 @@ public class ApiController extends AbstractController {
     private static final Logger logger = LogManager.getLogger(ApiController.class);
 
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity createGroup(@RequestBody Group group) {
+    public Group createGroup(@RequestBody Group group) {
+
+        groupService.save(group);
         try {
-            groupService.save(group);
             inviteService.saveInviteForUser(new Invite(getCurrentUser(), group, getCurrentUser()));
-            userService.joinGroup(group, getCurrentUser());
-        } catch (Exception e) {
-            logger.catching(e);
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        } catch (UserAlreadyInvitedException e) {
+            logger.error("Invite for new group already exists, probably it is a collision", e);
         }
-        return new ResponseEntity(HttpStatus.CREATED);
+        try {
+            userService.joinGroup(group, getCurrentUser());
+        } catch (UserAlreadyInGroupException | NoInviteForUserToGroupException e) {
+            logger.error("Error during creation of new group", e);
+            groupService.delete(group);
+            return new Group();
+        }
+        return groupService.get(group.getId());
     }
 
     @RequestMapping(value = "/{identity}/invite", method = RequestMethod.POST)
@@ -127,11 +133,14 @@ public class ApiController extends AbstractController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    /*
+     * Return locations of all members without location of current user
+     */
     @RequestMapping(value = "/{identity}/getlocations", method = RequestMethod.GET)
     public List<Location> getLocationOfGroupMembers(@PathVariable("identity") String identity) {
         Group targetGroup = groupService.getByIdentity(identity);
         if (userService.checkUserInGroup(targetGroup, getCurrentUser())) {
-            return locationService.getLastLocationsForGroupMembers(targetGroup);
+            return locationService.getLastLocationsForGroupMembers(targetGroup, getCurrentUser());
         } else {
             return new ArrayList<>();
         }

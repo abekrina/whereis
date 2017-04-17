@@ -44,6 +44,7 @@ public class DefaultLocationServiceIT extends AbstractIntegrationTest {
     private Location defaultLocation;
     private Location defaultLocation2;
     private Location defaultLocation3;
+    private Location defaultLocation4;
 
 
     private void setupDefaultUsers()   {
@@ -85,6 +86,13 @@ public class DefaultLocationServiceIT extends AbstractIntegrationTest {
         defaultLocation3.setLongitude(333333);
         defaultLocation3.setIp("192.168.0.0");
         defaultLocation3.setGroup(defaultGroup);
+
+        defaultLocation4 = new Location();
+        defaultLocation4.setUser(defaultSentByUser);
+        defaultLocation4.setLatitude(333333);
+        defaultLocation4.setLongitude(333333);
+        defaultLocation4.setIp("192.168.0.0");
+        defaultLocation4.setGroup(defaultGroup);
     }
 
     private void setupDefaultInvite() {
@@ -136,6 +144,7 @@ public class DefaultLocationServiceIT extends AbstractIntegrationTest {
         userService.saveUserLocation(defaultLocation);
         userService.saveUserLocation(defaultLocation2);
         userService.saveUserLocation(defaultLocation3);
+        userService.saveUserLocation(defaultLocation4);
 
         TestTransaction.flagForCommit();
         TestTransaction.end();
@@ -148,6 +157,6 @@ public class DefaultLocationServiceIT extends AbstractIntegrationTest {
 
         testGroup.getUsersInGroup();
 
-        Assert.assertEquals(locationService.getLastLocationsForGroupMembers(defaultGroup), expectedLocations);
+        Assert.assertEquals(locationService.getLastLocationsForGroupMembers(defaultGroup, defaultSentByUser), expectedLocations);
     }
 }
