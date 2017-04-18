@@ -82,6 +82,7 @@ public class User implements Serializable {
         this.lastName = last_name;
     }
 
+    @JsonIgnore
     public List<Location> getLocations() {
         return Collections.unmodifiableList(locations);
     }
@@ -95,6 +96,7 @@ public class User implements Serializable {
         return Collections.unmodifiableSet(groupsToReturn);
     }
 
+    @JsonIgnore
     public Set<Invite> getUserInvites() {
         return Collections.unmodifiableSet(sentToUser);
     }
