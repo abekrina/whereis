@@ -36,16 +36,20 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user")
     @OrderBy(clause = "timestamp ASC")
     //@JsonBackReference
+    @JsonIgnore
     @Cascade(CascadeType.ALL)
     protected List<Location> locations = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     protected Set<UsersInGroup> groups = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "sentByUser")
     @Cascade(CascadeType.ALL)
     protected Set<Invite> sentByUser = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "sentToUser")
     @Cascade(CascadeType.ALL)
     protected Set<Invite> sentToUser = new HashSet<>();
