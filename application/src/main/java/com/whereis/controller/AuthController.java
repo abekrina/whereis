@@ -1,5 +1,6 @@
 package com.whereis.controller;
 
+import com.whereis.model.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -20,7 +21,8 @@ public class AuthController extends AbstractController {
     }
 
     @RequestMapping("/login")
-    public void login() {
+    public User login() {
+        return getCurrentUser();
     }
 
     @RequestMapping(value="/logout")
