@@ -22,27 +22,34 @@ public class GoogleAuthentication implements Authentication {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return new ArrayList<GrantedAuthority>(0);
     }
+
     @Override
     public Object getCredentials() {
         return googleToken.getAccessToken();
     }
+
     GoogleTokenResponse getGoogleToken() {
         return googleToken;
     }
+
     GoogleTokenResponse getGoogleTokenResponse() {
         return googleToken;
     }
-    public void setCredentials(GoogleTokenResponse token){
+
+    void setCredentials(GoogleTokenResponse token){
         this.googleToken = token;
     }
+
     @Override
     public Object getDetails() {
         return googleToken.getExpiresInSeconds();
     }
+
     @Override
     public Object getPrincipal() {
         return principal;
     }
+
     public void setPrincipal(User user) {
         this.principal = user;
     }
@@ -51,16 +58,18 @@ public class GoogleAuthentication implements Authentication {
     public boolean isAuthenticated() {
         return isAuthenticated;
     }
+
     @Override
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
         this.isAuthenticated = isAuthenticated;
     }
+
     @Override
     public String getName() {
         return principal.getFirstName() + " " + principal.getLastName();
     }
 
-    public String getCode() {
+    String getCode() {
         return code;
     }
 }
