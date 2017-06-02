@@ -1,6 +1,6 @@
 package com.whereis.authentication;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.whereis.model.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,13 +9,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class GoogleAuthentication implements Authentication {
-    private String code;
-    private GoogleTokenResponse googleToken;
+    private String tokenToVerify = "";
+    private GoogleIdToken googleToken;
     private boolean isAuthenticated = false;
     private User principal;
 
-    public GoogleAuthentication(String code) {
-        this.code = code;
+    public GoogleAuthentication(String tokenToVerify) {
+        this.tokenToVerify = tokenToVerify;
     }
 
     @Override
@@ -25,24 +25,16 @@ public class GoogleAuthentication implements Authentication {
 
     @Override
     public Object getCredentials() {
-        return googleToken.getAccessToken();
-    }
-
-    GoogleTokenResponse getGoogleToken() {
         return googleToken;
     }
 
-    GoogleTokenResponse getGoogleTokenResponse() {
-        return googleToken;
-    }
-
-    void setCredentials(GoogleTokenResponse token){
+    void setCredentials(GoogleIdToken token){
         this.googleToken = token;
     }
 
     @Override
     public Object getDetails() {
-        return googleToken.getExpiresInSeconds();
+        return googleToken.getPayload().getExpirationTimeSeconds();
     }
 
     @Override
@@ -69,7 +61,7 @@ public class GoogleAuthentication implements Authentication {
         return principal.getFirstName() + " " + principal.getLastName();
     }
 
-    String getCode() {
-        return code;
+    public String getIdTokenToVerify() {
+        return tokenToVerify;
     }
 }

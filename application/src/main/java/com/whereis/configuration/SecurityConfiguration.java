@@ -28,7 +28,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatcher("/api/**")
                 .authenticationProvider(tokenAuthenticationProvider)
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET).authenticated()
+                .antMatchers(HttpMethod.POST).authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable();
@@ -46,5 +46,3 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new GoogleAuthenticationFilter();
     }
 }
-
-//TODO: выяснить можно ли разделить пользователей по ролям чтобы хендлить админство в группе
