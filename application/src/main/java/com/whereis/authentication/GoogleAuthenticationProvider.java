@@ -42,11 +42,15 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
             return null;
         }
         GoogleAuthentication tokenAuth = (GoogleAuthentication) authentication;
+        GoogleIdToken idToken = null;
+
+        if (tokenAuth.getCredentials() != null) {
+            idToken = (GoogleIdToken) tokenAuth.getCredentials();
+        }
 
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(TRANSPORT, JSON_FACTORY)
                 .setAudience(Collections.singletonList(CLIENT_ID))
                 .build();
-        GoogleIdToken idToken = null;
 
         try {
             idToken = verifier.verify(tokenAuth.getIdTokenToVerify());
