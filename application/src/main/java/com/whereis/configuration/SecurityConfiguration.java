@@ -2,6 +2,8 @@ package com.whereis.configuration;
 
 import com.whereis.authentication.GoogleAuthenticationFilter;
 import com.whereis.authentication.GoogleAuthenticationProvider;
+import com.whereis.authentication.TokenVerifyFilter;
+import com.whereis.authentication.TokenVerifyProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,39 +12,52 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
-    GoogleAuthenticationFilter authenticationTokenFilter;
+    GoogleAuthenticationFilter googleAuthenticationFilter;
+    @Autowired
+    GoogleAuthenticationProvider googleAuthenticationProvider;
 
     @Autowired
-    GoogleAuthenticationProvider tokenAuthenticationProvider;
+    TokenVerifyFilter tokenVerifyFilter;
+    @Autowired
+    TokenVerifyProvider tokenVerifyProvider;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .addFilterBefore(authenticationTokenFilter, BasicAuthenticationFilter.class)
-                .antMatcher("/api/**")
-                .authenticationProvider(tokenAuthenticationProvider)
+                .addFilterBefore(googleAuthenticationFilter, BasicAuthenticationFilter.class)
+                .antMatcher("/login")
+                .authenticationProvider(googleAuthenticationProvider)
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST).authenticated()
+                .anyRequest().authenticated()
+                .and()
+                .addFilterAfter(tokenVerifyFilter, RememberMeAuthenticationFilter.class)
+                .antMatcher("/api/**")
+                .authenticationProvider(tokenVerifyProvider)
+                .authorizeRequests()
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable();
     }
 
-    @Override
-    public void configure(WebSecurity web) {
-        web
-                .ignoring()
-                .antMatchers("/", "/api/config.json");
-    }
-
     @Bean
     public GoogleAuthenticationFilter filter() {
         return new GoogleAuthenticationFilter();
+    }
+
+    @Bean
+    public TokenVerifyFilter tokenVerifyFilter() {
+        return new TokenVerifyFilter();
+    }
+
+    @Bean
+    public TokenVerifyProvider tokenVerifyProvider() {
+        return new TokenVerifyProvider();
     }
 }

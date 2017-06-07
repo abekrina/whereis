@@ -38,34 +38,37 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        if (!(authentication instanceof GoogleAuthentication)) {
-            return null;
-        }
-        GoogleAuthentication tokenAuth = (GoogleAuthentication) authentication;
-        GoogleIdToken idToken = null;
-
-        if (tokenAuth.getCredentials() != null) {
-            idToken = (GoogleIdToken) tokenAuth.getCredentials();
-        }
+        GoogleAuthentication googleAuthentication = (GoogleAuthentication) authentication;
 
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(TRANSPORT, JSON_FACTORY)
                 .setAudience(Collections.singletonList(CLIENT_ID))
                 .build();
 
+        GoogleIdToken idToken = null;
+
         try {
-            idToken = verifier.verify(tokenAuth.getIdTokenToVerify());
+            if (googleAuthentication.getCredentials() != null) {
+                GoogleIdToken googleIdToken = (GoogleIdToken) googleAuthentication.getCredentials();
+                if (googleIdToken.verify(verifier)) {
+                    googleAuthentication.setAuthenticated(true);
+                    return googleAuthentication;
+                } else {
+                    throw new GoogleAuthenticationException("User's token has been expired");
+                }
+            } else {
+                idToken = verifier.verify(googleAuthentication.getIdTokenToVerify());
+            }
         } catch (GeneralSecurityException e) {
             logger.error("User not authorized by Google due to error " + e);
+            throw new GoogleAuthenticationException(e.getMessage());
         } catch (IOException e) {
             logger.error("Error when verifying ID token: ", e);
         }
 
-
         if (idToken != null) {
             GoogleIdToken.Payload payload = idToken.getPayload();
 
-            tokenAuth.setCredentials(idToken);
-            tokenAuth.setAuthenticated(true);
+            googleAuthentication.setCredentials(idToken);
 
             User user = userService.getByEmail(payload.getEmail());
 
@@ -75,20 +78,21 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
                 } catch (IOException e) {
                     return null;
                 }
-                tokenAuth.setPrincipal(user);
             } else {
                 user.setFirstName(payload.get("given_name") == null ? (String)payload.get("name") :
                         (String)payload.get("given_name"));
                 user.setLastName((String)payload.get("family_name"));
                 userService.merge(user);
-                tokenAuth.setPrincipal(user);
             }
+
+            googleAuthentication.setPrincipal(user);
+            googleAuthentication.setAuthenticated(true);
 
         } else {
             System.out.println("Invalid ID token.");
         }
 
-        return tokenAuth;
+        return googleAuthentication;
     }
 
     @Override

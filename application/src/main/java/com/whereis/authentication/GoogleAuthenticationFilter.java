@@ -23,7 +23,7 @@ public class GoogleAuthenticationFilter implements Filter {
     }
 
     /**
-     * Checks if there is a token in Cookies and move request forward by filter chain
+     * Checks if there is a token in body and move request forward by filter chain
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse responce, FilterChain filterChain) throws IOException,
