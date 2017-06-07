@@ -47,17 +47,7 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
         GoogleIdToken idToken = null;
 
         try {
-            if (googleAuthentication.getCredentials() != null) {
-                GoogleIdToken googleIdToken = (GoogleIdToken) googleAuthentication.getCredentials();
-                if (googleIdToken.verify(verifier)) {
-                    googleAuthentication.setAuthenticated(true);
-                    return googleAuthentication;
-                } else {
-                    throw new GoogleAuthenticationException("User's token has been expired");
-                }
-            } else {
-                idToken = verifier.verify(googleAuthentication.getIdTokenToVerify());
-            }
+            idToken = verifier.verify(googleAuthentication.getIdTokenToVerify());
         } catch (GeneralSecurityException e) {
             logger.error("User not authorized by Google due to error " + e);
             throw new GoogleAuthenticationException(e.getMessage());
@@ -96,8 +86,8 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public boolean supports(Class<?> aClass) {
-        if (aClass.equals(GoogleAuthentication.class)) {
+    public boolean supports(Class<?> authenticationClass) {
+        if (authenticationClass.equals(GoogleAuthentication.class)) {
             return true;
         } else {
             return false;

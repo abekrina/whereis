@@ -36,11 +36,7 @@ public class TokenVerifyProvider implements AuthenticationProvider {
                 .build();
 
         try {
-            if (idToken.verify(verifier)) {
-                googleAuthentication.setAuthenticated(true);
-            } else {
-                googleAuthentication.setAuthenticated(false);
-            }
+            googleAuthentication.setAuthenticated(idToken.verify(verifier));
         } catch (GeneralSecurityException e) {
             logger.error("User not authorized by Google due to error " + e);
             throw new GoogleAuthenticationException(e.getMessage());
@@ -52,7 +48,11 @@ public class TokenVerifyProvider implements AuthenticationProvider {
     }
 
     @Override
-    public boolean supports(Class<?> authentication) {
-        return false;
+    public boolean supports(Class<?> authenticationClass) {
+        if (authenticationClass.equals(GoogleAuthentication.class)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
