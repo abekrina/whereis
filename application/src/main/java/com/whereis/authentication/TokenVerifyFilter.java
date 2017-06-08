@@ -9,7 +9,7 @@ import javax.servlet.*;
 import java.io.IOException;
 
 public class TokenVerifyFilter implements Filter {
-    private static final Logger logger = LogManager.getLogger(TokenVerifyFilter.class);
+    private static final Logger logger = LogManager.getRootLogger();
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -20,6 +20,7 @@ public class TokenVerifyFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         SecurityContext context = SecurityContextHolder.getContext();
         if (context.getAuthentication() instanceof GoogleAuthentication) {
+            logger.error("TOKEIDTOKENID tokenId verify filter");
             chain.doFilter(request, response);
         }
     }

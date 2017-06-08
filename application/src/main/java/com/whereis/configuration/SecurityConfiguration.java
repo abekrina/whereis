@@ -6,7 +6,9 @@ import com.whereis.authentication.TokenVerifyFilter;
 import com.whereis.authentication.TokenVerifyProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -17,47 +19,58 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-    @Autowired
-    GoogleAuthenticationFilter googleAuthenticationFilter;
-    @Autowired
-    GoogleAuthenticationProvider googleAuthenticationProvider;
+@ComponentScan(basePackages = "com.whereis")
+public class SecurityConfiguration {
 
-    @Autowired
-    TokenVerifyFilter tokenVerifyFilter;
-    @Autowired
-    TokenVerifyProvider tokenVerifyProvider;
+    @Configuration
+    @Order(1)
+    public class FirstLoginSecurityConfiguration extends WebSecurityConfigurerAdapter {
+        @Autowired
+        GoogleAuthenticationFilter googleAuthenticationFilter;
+        @Autowired
+        GoogleAuthenticationProvider googleAuthenticationProvider;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .addFilterBefore(googleAuthenticationFilter, BasicAuthenticationFilter.class)
-                .antMatcher("/login")
-                .authenticationProvider(googleAuthenticationProvider)
-                .authorizeRequests()
-                .anyRequest().authenticated()
-                .and()
-                .addFilterAfter(tokenVerifyFilter, RememberMeAuthenticationFilter.class)
-                .antMatcher("/api/**")
-                .authenticationProvider(tokenVerifyProvider)
-                .authorizeRequests()
-                .anyRequest().authenticated()
-                .and()
-                .csrf().disable();
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http
+                    .addFilterBefore(googleAuthenticationFilter, BasicAuthenticationFilter.class)
+                    .antMatcher("/api/login")
+                    .authenticationProvider(googleAuthenticationProvider)
+                    .authorizeRequests()
+                    .anyRequest().authenticated()
+                    .and()
+                    .csrf().disable();
+        }
+
+        @Bean
+        public GoogleAuthenticationFilter filter() {
+            return new GoogleAuthenticationFilter();
+        }
     }
 
-    @Bean
-    public GoogleAuthenticationFilter filter() {
-        return new GoogleAuthenticationFilter();
-    }
+    @Configuration
+    @Order(2)
+    public class ReturnedUserSecurityConfiguration extends WebSecurityConfigurerAdapter {
+        @Autowired
+        TokenVerifyFilter tokenVerifyFilter;
+        @Autowired
+        TokenVerifyProvider tokenVerifyProvider;
 
-    @Bean
-    public TokenVerifyFilter tokenVerifyFilter() {
-        return new TokenVerifyFilter();
-    }
+        @Override
+        protected void configure(HttpSecurity httpSecurity) throws Exception {
+            httpSecurity
+                    .addFilterAfter(tokenVerifyFilter, RememberMeAuthenticationFilter.class)
+                    .antMatcher("/api/group/**")
+                    .authenticationProvider(tokenVerifyProvider)
+                    .authorizeRequests()
+                    .anyRequest().authenticated()
+                    .and()
+                    .csrf().disable();
+        }
 
-    @Bean
-    public TokenVerifyProvider tokenVerifyProvider() {
-        return new TokenVerifyProvider();
+        @Bean
+        public TokenVerifyFilter tokenVerifyFilter() { return new TokenVerifyFilter(); }
+        @Bean
+        public TokenVerifyProvider tokenVerifyProvider() { return new TokenVerifyProvider(); }
     }
 }

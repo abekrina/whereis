@@ -1,17 +1,22 @@
+/*
 package com.whereis.configuration;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.ConfigurationFactory;
-import org.apache.logging.log4j.core.config.ConfigurationSource;
-import org.apache.logging.log4j.core.config.Order;
+import org.apache.logging.log4j.core.appender.FileAppender;
+import org.apache.logging.log4j.core.config.*;
 import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.api.Component;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
+import org.apache.logging.log4j.core.config.properties.PropertiesConfiguration;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import java.net.URI;
 
@@ -21,7 +26,7 @@ public class LogConfigurationFactory extends ConfigurationFactory {
 
     static Configuration createConfiguration(final String name, ConfigurationBuilder<BuiltConfiguration> builder) {
         builder.setConfigurationName(name);
-        builder.setStatusLevel(Level.ERROR);
+        builder.setStatusLevel(Level.ALL);
         builder.add(builder.newFilter("ThresholdFilter", Filter.Result.ACCEPT, Filter.Result.NEUTRAL).
                 addAttribute("level", Level.DEBUG));
 
@@ -55,4 +60,29 @@ public class LogConfigurationFactory extends ConfigurationFactory {
     protected String[] getSupportedTypes() {
         return new String[] {"*"};
     }
+
+    public class Config extends PropertiesConfiguration {
+
+        public Config(final ConfigurationSource configSource) {
+            super(LogManager.getContext(false), configSource, );
+        }
+
+        @Override
+        protected void doConfigure() {
+            super.doConfigure();
+            final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+            final Layout layout = PatternLayout.createLayout(PatternLayout.SIMPLE_CONVERSION_PATTERN, config, null,
+                    null,null, null);
+            final Appender appender = FileAppender.createAppender("target/test.log", "false", "false", "File", "true",
+                    "false", "false", "4000", layout, null, "false", null, config);
+            appender.start();
+            addAppender(appender);
+            LoggerConfig loggerConfig = LoggerConfig.createLogger("false", "info", "org.apache.logging.log4j",
+                    "true", refs, null, config, null );
+            loggerConfig.addAppender(appender, null, null);
+            addLogger("org.apache.logging.log4j", loggerConfig);
+        }
+
+    }
 }
+*/

@@ -25,7 +25,7 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     protected HttpSession httpSession;
 
-    private static final Logger logger = LogManager.getLogger(GoogleAuthenticationProvider.class);
+    private static final Logger logger = LogManager.getRootLogger();
 
     private static final HttpTransport TRANSPORT = new NetHttpTransport();
 
@@ -38,6 +38,7 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        logger.info("KEKEKEKEKEKEKEKEK on login provider");
         GoogleAuthentication googleAuthentication = (GoogleAuthentication) authentication;
 
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(TRANSPORT, JSON_FACTORY)

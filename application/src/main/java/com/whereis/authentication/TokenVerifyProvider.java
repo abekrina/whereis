@@ -18,7 +18,7 @@ import java.util.Collections;
 
 public class TokenVerifyProvider implements AuthenticationProvider {
 
-    private static final Logger logger = LogManager.getLogger(GoogleAuthenticationProvider.class);
+    private static final Logger logger = LogManager.getRootLogger();
 
     private static final HttpTransport TRANSPORT = new NetHttpTransport();
 
@@ -28,6 +28,8 @@ public class TokenVerifyProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        logger.info("TOKEIDTOKENID tokenId verify provider");
+
         GoogleAuthentication googleAuthentication = (GoogleAuthentication) authentication;
         GoogleIdToken idToken = (GoogleIdToken) googleAuthentication.getCredentials();
 
