@@ -9,7 +9,7 @@ import javax.servlet.*;
 import java.io.IOException;
 
 public class GoogleAuthenticationFilter implements Filter {
-    private static final Logger logger = LogManager.getRootLogger();
+    private static final Logger logger = LogManager.getLogger(GoogleAuthenticationFilter.class);
 
     @Override
     public void init(FilterConfig fc) throws ServletException {
@@ -26,7 +26,6 @@ public class GoogleAuthenticationFilter implements Filter {
         String body = request.getReader().readLine();
         if (body != null && body.length() > 1) {
             context.setAuthentication(new GoogleAuthentication(body));
-            logger.error("KEKEKEKEKEKEKEKEK on login filter");
             filterChain.doFilter(request, responce);
         }
     }
