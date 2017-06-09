@@ -2,17 +2,13 @@ package com.whereis.authentication;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.servlet.*;
-import javax.servlet.Filter;
-import java.io.BufferedReader;
 import java.io.IOException;
 
 public class GoogleAuthenticationFilter implements Filter {
-
     private static final Logger logger = LogManager.getLogger(GoogleAuthenticationFilter.class);
 
     @Override
@@ -20,28 +16,22 @@ public class GoogleAuthenticationFilter implements Filter {
         logger.info("Init GoogleAuthenticationFilter");
     }
 
+    /**
+     * Checks if there is a token in body and move request forward by filter chain
+     */
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain fc) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse responce, FilterChain filterChain) throws IOException,
+            ServletException {
         SecurityContext context = SecurityContextHolder.getContext();
-        if (context.getAuthentication() != null && context.getAuthentication().isAuthenticated()) {
-            // do nothing
-        } else {
-            BufferedReader bodyReader = req.getReader();
-            String code = null;
-            try {
-                 code = bodyReader.readLine();
-            } catch (IOException exception) {
-                logger.info("Request body is empty, there is no security code in it");
-            }
-            if (code != null) {
-                Authentication auth = new GoogleAuthentication(code);
-                context.setAuthentication(auth);
-            }
+        String body = request.getReader().readLine();
+        if (body != null && body.length() > 1) {
+            context.setAuthentication(new GoogleAuthentication(body));
+            filterChain.doFilter(request, responce);
         }
-
-        fc.doFilter(req, res);
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        logger.info("GoogleAuthenticationFilter have been turned off");
+    }
 }

@@ -12,8 +12,6 @@ import javax.servlet.http.HttpSession;
 
 abstract class AbstractController {
 
-    String CLIENT_ID = System.getenv("WHEREIS_GOOGLE_CLIENT_ID");
-
     @Autowired
     protected HttpSession httpSession;
 

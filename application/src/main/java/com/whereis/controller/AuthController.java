@@ -13,14 +13,7 @@ import java.util.HashMap;
 @RestController
 public class AuthController extends AbstractController {
 
-    @RequestMapping(value = "/config.json", method = RequestMethod.GET)
-    public HashMap<String, String> getConfig() {
-        HashMap<String, String> config = new HashMap<>();
-        config.put("clientId", CLIENT_ID);
-        return config;
-    }
-
-    @RequestMapping("/login")
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public User login() {
         return getCurrentUser();
     }

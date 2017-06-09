@@ -10,7 +10,7 @@
     }
 
     function loadConfig() {
-        return fetch('/api/config.json', { credentials: 'include' })
+        return fetch('/api/login', method: 'POST', { credentials: 'include' })
             .then((response) => response.json());
     }
 

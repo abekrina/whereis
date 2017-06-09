@@ -1,5 +1,7 @@
 package com.whereis.service;
 
+import com.google.api.client.auth.openidconnect.IdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.services.plus.Plus;
 import com.google.api.services.plus.model.Person;
 import com.whereis.dao.GroupDao;
@@ -97,6 +99,36 @@ public class DefaultUserService implements UserService {
             throw new IOException("Attempting to register user this email which already exists ", userWithEmailExistsException);
         }
         return newUser;
+    }
+
+    /**
+     * Creates and saves new User with data from payload
+     * @param payload
+     * @return a new User
+     * @throws IOException
+     */
+    @Override
+    public User createGoogleUser(GoogleIdToken.Payload payload) throws IOException {
+        User user = new User();
+
+        String firstName = (String)payload.get("given_name");
+        if (firstName == null) {
+            user.setFirstName((String)payload.get("name"));
+        } else {
+            user.setFirstName(firstName);
+        }
+        user.setLastName((String)payload.get("family_name"));
+        user.setEmail(payload.getEmail());
+
+        try {
+            save(user);
+            logger.info("User firstname: " + user.getFirstName() + " lastname: " + user.getLastName() + " email: "
+            + user.getEmail());
+        } catch (UserWithEmailExistsException userWithEmailExistsException) {
+            logger.error("Attempting to register user this email which already exists ", userWithEmailExistsException);
+            throw new IOException("Attempting to register user this email which already exists ", userWithEmailExistsException);
+        }
+        return user;
     }
 
     @Override

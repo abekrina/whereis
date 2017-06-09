@@ -1,5 +1,6 @@
 package com.whereis.service;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.services.plus.Plus;
 import com.whereis.exceptions.invites.NoInviteForUserToGroupException;
 import com.whereis.exceptions.users.NoSuchUserException;
@@ -28,6 +29,8 @@ public interface UserService {
     void leaveGroup(Group group, User user) throws NoUserInGroupException;
 
     void joinGroup(Group group, User user) throws UserAlreadyInGroupException, NoInviteForUserToGroupException;
+
+    User createGoogleUser(GoogleIdToken.Payload plus) throws IOException;
 
     boolean checkUserInGroup(Group group, User user);
 
