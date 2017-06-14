@@ -1,0 +1,8 @@
+# Jenkinsfile
+# Package project
+
+node {
+    git url: 'https://github.com/bekrina/whereis'
+    def mvnHome = tool 'M3'
+    sh "${mvnHome}/bin/mvn package -Dmaven.test.skip=true"
+}

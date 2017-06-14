@@ -13,7 +13,7 @@
 	<packaging>pom</packaging>
 
 	<name>whereis</name>
-	<description>Project for easy finding you friends and relatives</description>
+	<description></description>
 
 	<properties>
 		<testng.version>6.9.8</testng.version>
