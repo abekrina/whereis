@@ -39,7 +39,7 @@ public class ApiController extends AbstractController {
     @Autowired
     LocationService locationService;
 
-    private static final Logger logger = LogManager.getLogger(ApiController.class);
+    private static final Logger logger = LogManager.getRootLogger();
 
     @RequestMapping(method = RequestMethod.PUT)
     public Group createGroup(@RequestBody Group group) {
