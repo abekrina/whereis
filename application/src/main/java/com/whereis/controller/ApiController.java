@@ -151,7 +151,7 @@ public class ApiController extends AbstractController {
     public Set<Group> getGroups() {
         User currentUser = getCurrentUser();
         Set<Group> groupSet = userService.getGroupsForUser(currentUser);
-        logger.error("group is " + groupSet.iterator().next());
+        logger.info("group is " + groupSet.iterator().next());
         return groupSet;
     }
 }
