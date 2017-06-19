@@ -22,6 +22,7 @@ public class GoogleAuthenticationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse responce, FilterChain filterChain) throws IOException,
             ServletException {
+        logger.error("Google authentication filter");
         SecurityContext context = SecurityContextHolder.getContext();
         String body = request.getReader().readLine();
         if (body != null && body.length() > 1) {

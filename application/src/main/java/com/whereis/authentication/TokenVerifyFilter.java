@@ -18,6 +18,7 @@ public class TokenVerifyFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        logger.error("Token verify filter");
         SecurityContext context = SecurityContextHolder.getContext();
         if (context.getAuthentication() instanceof GoogleAuthentication) {
             chain.doFilter(request, response);
