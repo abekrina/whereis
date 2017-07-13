@@ -47,6 +47,7 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
         GoogleIdToken idToken = null;
 
         try {
+            logger.error("TOKEN: " + googleAuthentication.getIdTokenToVerify());
             idToken = verifier.verify(googleAuthentication.getIdTokenToVerify());
         } catch (GeneralSecurityException e) {
             logger.error("User not authorized by Google due to error " + e);
