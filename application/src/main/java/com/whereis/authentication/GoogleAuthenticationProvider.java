@@ -31,7 +31,7 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
 
     private static final JacksonFactory JSON_FACTORY = new JacksonFactory();
 
-    String CLIENT_ID = System.getenv("WHEREIS_GOOGLE_CLIENT_ID");
+    private String CLIENT_ID = System.getenv("WHEREIS_GOOGLE_CLIENT_ID");
 
     @Autowired
     private UserService userService;
@@ -42,7 +42,9 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
 
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(TRANSPORT, JSON_FACTORY)
                 .setAudience(Collections.singletonList(CLIENT_ID))
+                .setIssuer("accounts.google.com")
                 .build();
+
 
         GoogleIdToken idToken = null;
 
