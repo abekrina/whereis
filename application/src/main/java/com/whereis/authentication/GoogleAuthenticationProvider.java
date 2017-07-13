@@ -81,6 +81,43 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
 
         } else {
             System.out.println("Invalid ID token.");
+
+            try {
+                logger.error("TOKEN: " + googleAuthentication.getIdTokenToVerify());
+                idToken = verifier.verify(googleAuthentication.getIdTokenToVerify());
+            } catch (GeneralSecurityException e) {
+                logger.error("User not authorized by Google due to error " + e);
+                throw new GoogleAuthenticationException(e.getMessage());
+            } catch (IOException e) {
+                logger.error("Error when verifying ID token: ", e);
+            }
+
+            if (idToken != null) {
+                GoogleIdToken.Payload payload = idToken.getPayload();
+
+                googleAuthentication.setCredentials(idToken);
+
+                User user = userService.getByEmail(payload.getEmail());
+
+                if (user == null) {
+                    try {
+                        user = userService.createGoogleUser(payload);
+                    } catch (IOException e) {
+                        return null;
+                    }
+                } else {
+                    user.setFirstName(payload.get("given_name") == null ? (String)payload.get("name") :
+                            (String)payload.get("given_name"));
+                    user.setLastName((String)payload.get("family_name"));
+                    userService.merge(user);
+                }
+
+                googleAuthentication.setPrincipal(user);
+                googleAuthentication.setAuthenticated(true);
+
+            } else {
+                System.out.println("Invalid ID token. AGAIN `>_<");
+            }
         }
 
         return googleAuthentication;
